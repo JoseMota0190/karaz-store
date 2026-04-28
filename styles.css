@@ -138,20 +138,20 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--burgundy);
   letter-spacing: .02em;
   white-space: nowrap;
 }
 
 .navbar__name em {
   font-style: italic;
-  color: var(--teal-light);
+  color: var(--gold);
 }
 
 .navbar__sub {
   font-size: .58rem;
   font-weight: 500;
-  color: rgba(255,255,255,.55);
+  color: var(--mid);
   letter-spacing: .12em;
   text-transform: uppercase;
 }
@@ -172,10 +172,11 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   justify-content: center;
   transition: background .15s, transform .15s;
   opacity: 1;
+  color: var(--burgundy);
 }
 
 .navbar__social:hover {
-  background: rgba(255,255,255,.15);
+  background: rgba(92,15,20,.1);
   transform: translateY(-2px) scale(1.1);
 }
 
