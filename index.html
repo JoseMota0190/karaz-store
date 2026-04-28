@@ -102,13 +102,20 @@
              alt="Karaz" style="width:100%;max-height:300px;border-radius:12px;object-fit:cover;box-shadow:rgba(0,0,0,0.05) 0px 10px 30px;">
       </div>
       <!-- Texto derecha -->
-      <div class="karaz-intro__text" style="flex:1;min-width:320px;max-width:550px;padding-left:60px;">
+<div class="karaz-intro__text" style="flex:1;min-width:320px;max-width:550px;padding-left:60px;">
         <p style="color:#5C0F14;font-family:'Cormorant+Garamond',serif;font-size:30px;margin-bottom:24px;letter-spacing:3px;text-transform:uppercase;">EXPERIENCIA KARAZ</p>
-        <p style="color:#5C0F14;font-size:18px;line-height:1.8;margin-bottom:16px;font-style:italic;">
+        <p class="desktop-only" style="color:#5C0F14;font-size:18px;line-height:1.8;margin-bottom:16px;font-style:italic;">
           <em>En Karaz creemos que la verdadera <strong>joya</strong> eres tú.</em>
         </p>
-        <p style="color:#6a5a58;font-size:15px;line-height:1.7;">
+        <p class="desktop-only" style="color:#6a5a58;font-size:15px;line-height:1.7;font-style:italic;">
           <em>Seleccionamos piezas que celebrar y realzan tu belleza natural con sofisticación y sutileza.</em>
+        </p>
+        <!-- Versión móvil simplificada -->
+        <p class="mobile-only" style="color:#5C0F14;font-size:16px;line-height:1.6;font-style:italic;">
+          <em>En Karaz creemos que la verdadera <strong>joya</strong> eres tú.</em>
+        </p>
+        <p class="mobile-only" style="color:#6a5a58;font-size:14px;line-height:1.5;font-style:italic;margin-top:8px;">
+          <em>Seleccionamos piezas que celebrar y realzan tu belleza natural.</em>
         </p>
       </div>
     </div>
@@ -137,16 +144,6 @@
     <!-- Título elegante centrado con líneas -->
     <div class="catalog-heading">
       <h2 class="catalog-heading__title" style="font-size:26px;letter-spacing:0.5em;text-transform:uppercase;color:#5C0F14;font-family:'Cormorant+Garamond',serif;font-weight:400;">NUESTRA COLECCIÓN</h2>
-    </div>
-
-    <!-- Menú móvil categorías -->
-    <div class="catalog-mobile-nav" id="catalog-mobile-nav" style="display:none;">
-      <button class="active" data-cat="anillos">Anillos</button>
-      <button data-cat="pulseras">Pulseras</button>
-      <button data-cat="collares">Collares</button>
-      <button data-cat="aretes">Aretes</button>
-      <button data-cat="earcuffs">Earcuffs</button>
-      <button data-cat="sets">Sets</button>
     </div>
 
     <!-- Carrusel de categorías con imágenes lifestyle -->

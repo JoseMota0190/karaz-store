@@ -436,37 +436,14 @@ function initCatCards() {
   $('catalog-back')?.addEventListener('click', () => {
     closeCategory();
   });
-
-  // Menú móvil categorías - mostrar en móvil
-  const mobileNav = $('catalog-mobile-nav');
-  if (mobileNav && window.innerWidth <= 480) {
-    mobileNav.style.display = 'flex';
-    mobileNav.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Actualizar estado activo
-        mobileNav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        // Abrir categoría
-        openCategory(btn.dataset.cat);
-      });
-    });
-  }
 }
 
 function openCategory(cat) {
   const cards = $('cat-cards');
   const gridWrap = $('catalog-grid-wrap');
-  const mobileNav = $('catalog-mobile-nav');
 
   cards.style.opacity = '0';
   cards.style.transform = 'translateY(-12px)';
-
-  // Actualizar menú móvil activo
-  if (mobileNav) {
-    mobileNav.querySelectorAll('button').forEach(b => {
-      b.classList.toggle('active', b.dataset.cat === cat);
-    });
-  }
 
   setTimeout(() => {
     cards.style.display = 'none';
@@ -488,14 +465,8 @@ function openCategory(cat) {
 function closeCategory() {
   const cards = $('cat-cards');
   const gridWrap = $('catalog-grid-wrap');
-  const mobileNav = $('catalog-mobile-nav');
 
   gridWrap.classList.remove('visible');
-
-  // Reset menú móvil
-  if (mobileNav) {
-    mobileNav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-  }
 
   setTimeout(() => {
     gridWrap.style.display = 'none';
