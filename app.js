@@ -99,13 +99,20 @@ function setAttr(id, attr, val) {
 // ══════════════════════════════════════════════
 
 async function loadConfig() {
-  CONFIG = { storeId: STORE_ID };
+  // Valores por defecto
+  const defaults = {
+    storeId: STORE_ID,
+    whatsappNumber: '584242422452',
+    currencySymbol: 'Bs',
+    currency: 'VES'
+  };
+  CONFIG = defaults;
 
   try {
     const res = await fetch(`${API_URL}/api/config?store=${STORE_ID}`);
     if (res.ok) {
       const apiConfig = await res.json();
-      CONFIG = { ...CONFIG, ...apiConfig };
+      CONFIG = { ...defaults, ...apiConfig };
     } else {
       console.error(`Store "${STORE_ID}" not found. HTTP ${res.status}`);
     }
