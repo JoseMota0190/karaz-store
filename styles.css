@@ -2501,6 +2501,17 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
     padding: 0 14px 20px !important; 
   }
   
+  /* Forzar ocultación total de categorías en móvil */
+  .cat-cards.hidden-mobile,
+  .catalog-grid-wrap.visible ~ .cat-cards {
+    display: none !important;
+    visibility: hidden;
+    height: 0 !important;
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
   /* Experiencia simplificada en móvil */
   .karaz-experience { padding: 20px 4% 10px 4% !important; }
   .karaz-intro { 

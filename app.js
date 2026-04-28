@@ -446,6 +446,7 @@ function openCategory(cat) {
   cards.style.transform = 'translateY(-12px)';
 
   setTimeout(() => {
+    cards.classList.add('hidden-mobile');
     cards.style.display = 'none';
     gridWrap.style.display = 'block';
 
@@ -467,6 +468,7 @@ function closeCategory() {
   const gridWrap = $('catalog-grid-wrap');
 
   gridWrap.classList.remove('visible');
+    cards.classList.remove('hidden-mobile');
 
   setTimeout(() => {
     gridWrap.style.display = 'none';
