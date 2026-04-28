@@ -1,0 +1,96 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .k-hero {
+    background: #5C0F14;
+    padding: 3.5rem 2rem 4rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Jost', sans-serif;
+  }
+  .k-wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px;
+    font-weight: 400;
+    color: #D9BCA3;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 2rem;
+  }
+  .k-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 160px;
+    margin-bottom: 2rem;
+  }
+  .k-divider-line { flex: 1; height: 0.5px; background: #7a3030; }
+  .k-divider-dot { width: 4px; height: 4px; background: #a07060; border-radius: 50%; }
+
+  /* Eslógan 1 — subtítulo descriptivo */
+  .k-slogan-1 {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: #a07060;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  /* Eslógan 2 — título emocional principal */
+  .k-slogan-2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 46px;
+    font-weight: 300;
+    line-height: 1.15;
+    color: #F5EDE4;
+  }
+  .k-slogan-2 em {
+    font-style: italic;
+    color: #D9BCA3;
+    display: block;
+  }
+
+  .k-loc {
+    margin-top: 1.2rem;
+    font-size: 11px;
+    font-weight: 300;
+    color: #7a4040;
+    letter-spacing: 0.1em;
+  }
+  .k-cta {
+    margin-top: 2.2rem;
+    display: inline-block;
+    background: #D9BCA3;
+    color: #5C0F14;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 12px 36px;
+    cursor: pointer;
+    border-radius: 1px;
+  }
+</style>
+
+<div class="k-hero">
+  <p class="k-wordmark">Karaz.</p>
+  <div class="k-divider">
+    <div class="k-divider-line"></div>
+    <div class="k-divider-dot"></div>
+    <div class="k-divider-line"></div>
+  </div>
+
+  <p class="k-slogan-1">Accesorios elegantes y atemporales</p>
+  <h1 class="k-slogan-2">
+    La verdadera
+    <em>joya eres tú</em>
+  </h1>
+
+  <p class="k-loc">Caracas · Venezuela</p>
+  <a class="k-cta">Ver catálogo</a>
+</div>
