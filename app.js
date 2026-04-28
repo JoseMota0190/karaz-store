@@ -321,7 +321,7 @@ async function loadProducts() {
       return;
     }
   } catch {}
-  // Fallback: cargar desde JSON local
+  // Fallback: cargar desde JSON local solo si API falla
   try {
     const res = await fetch('productos.json');
     PRODUCTS = await res.json();
