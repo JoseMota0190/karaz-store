@@ -1,53 +1,61 @@
 /* =============================================
-   AGUAMARINA STORE — styles.css v2
-   Branding: Teal · Blanco · Artesanal
+   KARAZ — styles.css v2
+   Branding: Granate · Crema · Blanco
    Mobile First · Vanilla CSS
    ============================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ── CSS Variables (Paleta Aguamarina) ───────── */
+/* ── CSS Variables (Paleta KARAZ) ───────── */
 :root {
-  /* Teal — color principal de la marca */
-  --teal:         #2BB5A0;
-  --teal-dark:    #1A8A78;
-  --teal-darker:  #116B5E;
-  --teal-light:   #5FCABB;
-  --teal-pale:    #D6F2EE;
-  --teal-ultra:   #EEF9F7;
+  /* Granate — color principal de la marca */
+  --burgundy:      #5C0F14;
+  --burgundy-dark: #3D0A0E;
+  --burgundy-darker: #2A0609;
+  --burgundy-light: #8B1E27;
+  --burgundy-pale: #E8D5D8;
+  --burgundy-ultra: #F5EDE4;
 
   /* Neutros */
   --white:        #FFFFFF;
-  --cream:        #FAFBFA;
-  --cream-warm:   #F5F7F5;
-  --border:       #E2EDEB;
-  --border-mid:   #C8DEDD;
+  --cream:        #F5EDE4;
+  --cream-warm:   #F0E6DF;
+  --border:       #E8E0D8;
+  --border-mid:   #D5CCC2;
 
   /* Texto */
-  --dark:         #1C2E2B;
-  --mid:          #4A6B66;
-  --light-text:   #8AADA8;
+  --dark:         #1A0A0A;
+  --mid:          #5A4A48;
+  --light-text:   #9A8A88;
 
-  /* Acento dorado — para precios y detalles */
-  --gold:         #C9A55A;
+  /* Dorado — para precios y detalles */
+  --gold:         #C9A962;
   --gold-light:   #E8C97A;
 
   /* WhatsApp */
   --wa:           #25D366;
   --wa-dark:      #128C7E;
 
-  /* Sombras con tinte teal */
-  --shadow-xs:  0 1px 6px  rgba(43,181,160,0.10);
-  --shadow-sm:  0 3px 14px rgba(43,181,160,0.14);
-  --shadow-md:  0 8px 32px rgba(28,46,43,0.10);
-  --shadow-lg:  0 18px 60px rgba(28,46,43,0.14);
-  --shadow-teal: 0 6px 24px rgba(43,181,160,0.30);
+  /* Sombras */
+  --shadow-xs:  0 1px 6px  rgba(92,15,20,0.10);
+  --shadow-sm:  0 3px 14px rgba(92,15,20,0.14);
+  --shadow-md:  0 8px 32px rgba(26,10,10,0.10);
+  --shadow-lg:  0 18px 60px rgba(26,10,10,0.14);
+  --shadow-burgundy: 0 6px 24px rgba(92,15,20,0.30);
 
   /* Radios */
   --r-xs:   6px;
   --r-sm:   10px;
   --r-md:   16px;
   --r-lg:   24px;
+
+  /* Alias para compatibilidad — teal → burgundy */
+  --teal:         var(--burgundy);
+  --teal-dark:    var(--burgundy-dark);
+  --teal-darker:  var(--burgundy-darker);
+  --teal-light:   var(--burgundy-light);
+  --teal-pale:    var(--burgundy-pale);
+  --teal-ultra:   var(--burgundy-ultra);
   --r-xl:   32px;
   --r-full: 9999px;
 
@@ -85,16 +93,16 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   position: sticky;
   top: 0;
   z-index: 200;
-  /* Fondo teal oscuro — contraste fuerte con el hero blanco */
-  background: var(--teal-darker);
-  border-bottom: 3px solid var(--teal-dark);
+  /* Fondo cremaístico */
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
   transition: background .3s, box-shadow .3s;
 }
 
-/* Al hacer scroll: un poco más oscuro con sombra */
+/* Al hacer scroll: sombra suave */
 .navbar--scrolled {
-  background: var(--teal-darker);
-  box-shadow: 0 4px 20px rgba(17,107,94,.35);
+  background: var(--cream);
+  box-shadow: 0 4px 20px rgba(26,10,10,.08);
 }
 
 .navbar__inner {
@@ -262,10 +270,11 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 .hero {
   position: relative;
   overflow: hidden;
-  padding: 40px 24px 36px;
+  padding: 60px 24px 50px;
   text-align: center;
-  background: #ffffff;
-  border-bottom: 1px solid var(--border);
+  /* Fondo granate oscuro */
+  background: var(--burgundy);
+  border-bottom: none;
 }
 
 /* Marca de agua — concha de fondo */
@@ -323,9 +332,9 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   font-size: .68rem;
   letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--teal-dark);
-  background: var(--teal-ultra);
-  border: 1px solid var(--teal-pale);
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--gold-light);
   border-radius: var(--r-full);
   padding: 5px 18px;
   margin-bottom: 14px;
@@ -334,9 +343,9 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 }
 
 .hero__title {
-  font-size: clamp(2rem, 7vw, 3rem);
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
   font-weight: 400;
-  color: var(--dark);
+  color: var(--cream-warm);
   line-height: 1.15;
   margin-bottom: 8px;
   letter-spacing: -.02em;
@@ -344,12 +353,12 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 
 .hero__title em {
   font-style: italic;
-  color: var(--teal);
+  color: var(--gold);
 }
 
 .hero__tagline {
   font-size: .88rem;
-  color: var(--mid);
+  color: var(--cream-warm);
   letter-spacing: .04em;
   margin-bottom: 20px;
   font-style: italic;
@@ -358,7 +367,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 
 .hero__sub {
   font-size: .9rem;
-  color: var(--mid);
+  color: var(--cream-warm);
   max-width: 320px;
   margin: 0 auto;
   line-height: 1.7;
@@ -1684,8 +1693,8 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   align-items: center;
   gap: 6px;
   font-size: .76rem;
-  color: var(--mid);
-  background: var(--cream-warm);
+  color: var(--dark);
+  background: var(--cream);
   border: 1px solid var(--border);
   border-radius: var(--r-full);
   padding: 6px 14px;
@@ -1695,16 +1704,16 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 }
 
 .hero__info-chip--wa {
-  color: var(--teal-dark);
+  color: var(--burgundy);
   font-weight: 600;
-  background: var(--teal-ultra);
-  border-color: var(--teal-pale);
+  background: var(--cream);
+  border-color: var(--gold);
 }
 
 .hero__info-chip--wa:hover {
-  background: var(--teal);
-  color: #fff;
-  border-color: var(--teal);
+  background: var(--gold);
+  color: var(--dark);
+  border-color: var(--gold);
 }
 
 .hero__info-sep { display: none; }
@@ -1723,13 +1732,14 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    FOOTER
    ══════════════════════════════════════════════ */
 .site-footer {
-  background: var(--dark);
-  color: rgba(255,255,255,.75);
+  background: var(--white);
+  color: var(--dark);
   padding: 36px 20px 40px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 28px;
   margin-top: 40px;
+  border-top: 1px solid var(--border);
 }
 
 @media (min-width: 640px) {
@@ -1749,18 +1759,18 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 .site-footer__name {
   font-family: var(--font-display);
   font-size: 1rem;
-  color: #fff;
+  color: var(--burgundy);
   font-weight: 400;
 }
 
 .site-footer__name em {
   font-style: italic;
-  color: var(--teal-light);
+  color: var(--gold);
 }
 
 .site-footer__tagline {
   font-size: .72rem;
-  color: rgba(255,255,255,.45);
+  color: var(--mid);
   margin-top: 3px;
   letter-spacing: .04em;
 }
@@ -1780,12 +1790,12 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 }
 
 .site-footer__row a {
-  color: var(--teal-light);
+  color: var(--burgundy-light);
   text-decoration: none;
   transition: color .15s;
 }
 
-.site-footer__row a:hover { color: var(--teal); }
+.site-footer__row a:hover { color: var(--burgundy); }
 
 .site-footer__social {
   display: flex;
@@ -1798,12 +1808,12 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   align-items: center;
   gap: 8px;
   font-size: .8rem;
-  color: rgba(255,255,255,.65);
+  color: var(--mid);
   text-decoration: none;
   transition: color .15s;
 }
 
-.footer__social-btn:hover { color: var(--teal-light); }
+.footer__social-btn:hover { color: var(--burgundy); }
 
 /* Footer logo image */
 .site-footer__logo-img {
