@@ -94,7 +94,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   position: sticky;
   top: 0;
   z-index: 200;
-  /* Fondo cremaístico */
+  width: 100%;
   background: var(--cream);
   border-bottom: 1px solid var(--border);
   transition: background .3s, box-shadow .3s;
@@ -271,6 +271,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    ══════════════════════════════════════════════ */
 .hero {
   position: relative;
+  width: 100%;
   overflow: hidden;
   padding: 60px 24px 70px;
   text-align: center;
@@ -1732,6 +1733,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    FOOTER
    ══════════════════════════════════════════════ */
 .site-footer {
+  width: 100%;
   background: var(--white);
   color: var(--dark);
   padding: 36px 20px 40px;
