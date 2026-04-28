@@ -2288,19 +2288,20 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 
 .cat-card__label {
   font-family: 'Jost', sans-serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 3px;
-  color: #D9BCA3;
+  color: #fff;
 }
 
 .cat-card__cta {
-  font-size: .72rem;
+  font-size: .75rem;
   color: #D9BCA3;
   font-weight: 500;
-  letter-spacing: .08em;
+  letter-spacing: .1em;
   transition: color .2s;
+  text-transform: uppercase;
 }
 
 .cat-card:hover .cat-card__cta { color: #fff; }
