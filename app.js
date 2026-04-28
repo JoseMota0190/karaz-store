@@ -34,7 +34,7 @@ function detectStoreId() {
   return 'aguamarina';
 }
 
-const STORE_ID = 'aguamarina';
+const STORE_ID = 'karaz';
 
 function apiHeaders(extra = {}) {
   return { 'x-store-id': STORE_ID, ...extra };
