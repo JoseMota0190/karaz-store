@@ -91,20 +91,20 @@
     <p class="hero__location" style="margin-top:1.2rem;font-size:13px;font-weight:300;color:#D9BCA3;letter-spacing:0.1em;">Caracas · Venezuela</p>
   </section>
 
-  <!-- ── LA EXPERIENCIA KARAZ ────────────────────── -->
+<!-- ── LA EXPERIENCIA KARAZ ────────────────────── -->
   <section class="karaz-experience" style="background:#F5EDE4;padding:80px 10%;">
     
     <!-- Bloque Superior: Intro -->
-    <div class="karaz-intro" style="display:flex;align-items:center;gap:50px;flex-wrap:wrap;">
+    <div class="karaz-intro" style="display:flex;align-items:center;gap:60px;flex-wrap:wrap;">
       <!-- Foto izquierda -->
       <div class="karaz-intro__img" style="flex:1;min-width:250px;max-width:30%;">
         <img src="https://res.cloudinary.com/dh6kkq9w7/image/upload/v1777370732/stores/karaz/experiencia-1.jpg" 
-             alt="Karaz" style="width:100%;max-height:300px;border-radius:4px;object-fit:cover;">
+             alt="Karaz" style="width:100%;max-height:300px;border-radius:12px;object-fit:cover;box-shadow:rgba(0,0,0,0.05) 0px 10px 30px;">
       </div>
       <!-- Texto derecha -->
-      <div class="karaz-intro__text" style="flex:1;min-width:320px;">
+      <div class="karaz-intro__text" style="flex:1;min-width:320px;max-width:550px;">
         <p style="color:#5C0F14;font-family:'Cormorant+Garamond',serif;font-size:30px;margin-bottom:24px;letter-spacing:3px;text-transform:uppercase;">EXPERIENCIA KARAZ</p>
-        <p style="color:#5a4a48;font-size:16px;line-height:1.9;letter-spacing:0.04em;">
+        <p style="color:#5a4a48;font-size:16px;line-height:1.8;letter-spacing:0.5px;">
           Creemos que la verdadera <strong>joya</strong> eres tú. En Karaz, seleccionamos piezas únicas diseñadas para destacar tu belleza natural y acompañarte en cada momento. Nuestra filosofía une la elegancia atemporal con una experiencia pensando exclusivamente para ti.
         </p>
       </div>
@@ -113,19 +113,30 @@
     <!-- Bloque Central: Los 3 Pilares -->
     <div class="karaz-pillars" style="display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:50px;text-align:center;">
       <div class="karaz-pillar" style="padding:20px;display:flex;flex-direction:column;align-items:center;">
-        <span style="font-size:1.4rem;margin-bottom:12px;filter:grayscale(20%);">💎</span>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5C0F14" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <p style="color:#5C0F14;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">CALIDAD GARANTIZADA</p>
         <p style="color:#6a5a58;font-size:13px;line-height:1.5;">Detalles que brillan con materiales eternos</p>
       </div>
       <div class="karaz-pillar" style="padding:20px;display:flex;flex-direction:column;align-items:center;">
-        <span style="font-size:1.4rem;margin-bottom:12px;filter:grayscale(20%);">🎁</span>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5C0F14" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
         <p style="color:#5C0F14;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">PERFECTO PARA REGALAR</p>
         <p style="color:#6a5a58;font-size:13px;line-height:1.5;">El regalo perfecto para dar y recibir</p>
       </div>
       <div class="karaz-pillar" style="padding:20px;display:flex;flex-direction:column;align-items:center;">
-        <span style="font-size:1.4rem;margin-bottom:12px;filter:grayscale(20%);">📍</span>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5C0F14" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         <p style="color:#5C0F14;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">ENVIOS A TODO EL PAIS</p>
         <p style="color:#6a5a58;font-size:13px;line-height:1.5;">Llevamos la elegancia de Karaz a cada rincón</p>
+      </div>
+    </div>
+
+    <!-- CTA + Scroll Bridge -->
+    <div style="text-align:center;margin-top:40px;">
+      <a href="#experiencia" onclick="document.getElementById('cat-cards').scrollIntoView({behavior:'smooth'});return false;" style="background:#5C0F14;color:#F5EDE4;padding:12px 32px;text-transform:uppercase;font-size:12px;letter-spacing:2px;text-decoration:none;display:inline-block;transition:all .3s;border:1px solid #5C0F14;" class="cta-btn">Ver Colección</a>
+      <div style="margin-top:20px;animation:bounce 2s infinite;">
+        <svg width="24" height="40" viewBox="0 0 24 40" fill="none" stroke="#5C0F14" stroke-width="1.5">
+          <line x1="12" y1="0" x2="12" y2="30" stroke-linecap="round"/>
+          <polyline points="6 24 12 30 18 24" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
     </div>
 

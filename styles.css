@@ -325,6 +325,18 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   mix-blend-mode: multiply;
 }
 
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(8px); }
+  60% { transform: translateY(4px); }
+}
+
+.cta-btn:hover {
+  background: #F5EDE4 !important;
+  color: #5C0F14 !important;
+  transform: scale(1.05);
+}
+
 @keyframes heroIconIn {
   from { opacity: 0; transform: scale(.7) rotate(-10deg); }
   to   { opacity: 1; transform: scale(1) rotate(0deg); }
@@ -2064,7 +2076,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    ══════════════════════════════════════════════ */
 .catalog-main {
   max-width: 960px;
-  margin: 0 auto;
+  margin: 120px auto 0;
   padding: 0 14px 40px;
 }
 
@@ -2275,6 +2287,11 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
     rgba(92,15,20,.6) 75%,
     rgba(92,15,20,.85) 100%
   );
+  transition: opacity .3s ease;
+}
+
+.cat-card:hover .cat-card__overlay {
+  opacity: 0.85;
 }
 
 .cat-card__content {
@@ -2295,6 +2312,11 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   text-transform: uppercase;
   letter-spacing: 3px;
   color: #fff;
+  transition: transform .3s ease;
+}
+
+.cat-card:hover .cat-card__label {
+  transform: translateY(-4px);
 }
 
 .cat-card__cta {
