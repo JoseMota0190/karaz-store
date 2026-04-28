@@ -119,9 +119,6 @@ async function loadConfig() {
   } catch (err) {
     console.error('Error loading config:', err);
   }
-  
-  // Forzar el número de WhatsApp correcto (ignorar lo que devuelva el API)
-  CONFIG.whatsappNumber = '584242422452';
 }
 
 // ══════════════════════════════════════════════
