@@ -75,7 +75,7 @@ html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: var(--font-body);
   color: var(--dark);
-  background: var(--cream);
+  background: #ffffff;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -95,14 +95,14 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   top: 0;
   z-index: 200;
   width: 100%;
-  background: #ffffff;
+  background: #F5EDE4;
   border-bottom: 1px solid var(--border);
   transition: background .3s, box-shadow .3s;
 }
 
 /* Al hacer scroll: sombra suave */
 .navbar--scrolled {
-  background: #ffffff;
+  background: #F5EDE4;
   box-shadow: 0 4px 20px rgba(26,10,10,.08);
 }
 
@@ -1746,7 +1746,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    ══════════════════════════════════════════════ */
 .site-footer {
   width: 100%;
-  background: var(--white);
+  background: #F5EDE4;
   color: var(--dark);
   padding: 36px 20px 40px;
   display: grid;
