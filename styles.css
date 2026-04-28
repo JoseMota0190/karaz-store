@@ -95,14 +95,14 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   top: 0;
   z-index: 200;
   width: 100%;
-  background: var(--cream);
+  background: var(--white);
   border-bottom: 1px solid var(--border);
   transition: background .3s, box-shadow .3s;
 }
 
 /* Al hacer scroll: sombra suave */
 .navbar--scrolled {
-  background: var(--cream);
+  background: var(--white);
   box-shadow: 0 4px 20px rgba(26,10,10,.08);
 }
 
@@ -2082,7 +2082,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 .catalog-main {
   max-width: 960px;
   margin: 10px auto 0;
-  padding: 0 14px 40px;
+  padding: 0 14px 30px;
 }
 
 /* Banner */
