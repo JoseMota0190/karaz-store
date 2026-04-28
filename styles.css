@@ -2468,20 +2468,43 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   .navbar__name { font-size: 18px; }
   .navbar__sub { display: none; }
   
+  /* Título colección más visible */
+  .catalog-heading__title { font-size: 18px !important; letter-spacing: 0.3em !important; margin-bottom: 20px; }
+  
   /* Experiencia más compacta */
   .karaz-intro { flex-direction: column; gap: 24px; padding: 0 4%; }
   .karaz-intro__img { max-width: 100% !important; }
   .karaz-intro__text { padding-left: 0 !important; }
   
-  /* Categorías - 2 columnas en móvil */
-  .cat-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .cat-card__label { font-size: 11px; letter-spacing: 1px; }
-  .cat-card__cta { font-size: 10px; }
+  /* Categorías - scroll horizontal, 1 o 2 a la vez */
+  .cat-cards { 
+    display: flex; 
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px; 
+    padding: 0 12px;
+    margin-bottom: 30px;
+  }
+  .cat-card {
+    flex: 0 0 auto;
+    width: 80%;
+    scroll-snap-align: center;
+  }
+  .cat-card__img-wrap { 
+    aspect-ratio: 4/3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .cat-card:active { transform: scale(0.98); }
+  .cat-card:hover .cat-card__img-wrap { box-shadow: 0 4px 16px rgba(92,15,20,0.3); }
+  .cat-card__label { font-size: 14px; letter-spacing: 2px; }
+  .cat-card__cta { font-size: 12px; }
+  .cat-card__content { padding: 12px 16px; }
   
   /* Productos grid - 2 columnas en móvil */
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .product-card__name { font-size: 12px; }
-  .product-card__price { font-size: 13px; }
+  .product-card__name { font-size: 11px; }
+  .product-card__price { font-size: 12px; }
   
   /* Footer más compacto */
   .site-footer { padding: 24px 16px; gap: 20px; }
