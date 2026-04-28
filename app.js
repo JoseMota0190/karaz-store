@@ -470,6 +470,7 @@ function closeCategory() {
 
   setTimeout(() => {
     gridWrap.style.display = 'none';
+    cards.style.cssText = '';
     cards.style.display = 'block';
 
     cards.style.opacity = '1';

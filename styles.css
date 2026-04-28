@@ -2496,7 +2496,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
     text-align: center;
   }
   .karaz-intro__img { 
-    max-width: 50% !important; 
+    max-width: 70% !important; 
     margin: 0 auto;
   }
   .karaz-intro__text { 
@@ -2504,7 +2504,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
     text-align: center;
   }
   .karaz-intro__text p:first-child { 
-    font-size: 16px !important; 
+    font-size: 24px !important; 
     margin-bottom: 10px !important; 
     letter-spacing: 2px !important;
   }
