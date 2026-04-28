@@ -2493,6 +2493,14 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
     padding: 0 10px;
   }
   
+  /* Reducir espacio cuando categoría abierta */
+  .catalog-heading { 
+    padding: 16px 14px 8px !important; 
+  }
+  .catalog-grid-wrap { 
+    padding: 0 14px 20px !important; 
+  }
+  
   /* Experiencia simplificada en móvil */
   .karaz-experience { padding: 20px 4% 10px 4% !important; }
   .karaz-intro { 
@@ -2538,7 +2546,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
     flex-direction: column;
     gap: 14px;
     padding: 0 16px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
   .cat-card {
     width: 100%;
