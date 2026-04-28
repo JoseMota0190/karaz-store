@@ -49,9 +49,9 @@ function lsKey(key) {
 // ══════════════════════════════════════════════
 
 function formatPrice(amount) {
-  const sym = CONFIG.currencySymbol || '$';
+  const sym = CONFIG.currencySymbol || 'Bs';
   const n = Math.round(Number(amount));
-  return `Ref. ${n}${sym}`;
+  return `${sym} ${n.toLocaleString('es-VE')}`;
 }
 
 function getParam(key) {
@@ -401,7 +401,7 @@ function buildWhatsAppURL() {
   const total   = formatPrice(cartTotal());
   const name    = CONFIG.storeName || 'Tienda';
   const number  = CONFIG.whatsappNumber || '';
-  const message = `Hola! quiero hacer un pedido en *${name}* ✨\n\n${lines}\n\n*Total: ${total}*\n\n¿Me confirmás disponibilidad y coordinamos el envío? 🚚`;
+  const message = `Hola! Quiero hacer un pedido en ${name} ✨\n\n${lines}\n\n*Total: ${total}*\n\n¿Me confirman disponibilidad y coordinamos el envío? 🚚`;
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
@@ -505,11 +505,11 @@ function renderCard(p) {
         <div class="product-card__name">${sanitize(p.name)}</div>
         <div class="product-card__price">${formatPrice(p.price)}</div>
         <button class="product-card__btn"
-          onclick="event.stopPropagation(); quickAddToCart('${p.id}', this)">
-          Añadir al carrito
-        </button>
-      </div>
-    </article>`;
+onclick="event.stopPropagation(); quickAddToCart('${p.id}', this)">
+            Agregar al carrito
+          </button>
+        </div>
+      </article>`;
 }
 
 function renderGrid(products) {
@@ -614,7 +614,7 @@ function renderCartPage() {
       <div class="cart-empty">
         <div class="cart-empty__icon">🛒</div>
         <p class="cart-empty__title">Tu carrito está vacío</p>
-        <p class="cart-empty__sub">Descubrí nuestras piezas únicas ✨</p>
+        <p class="cart-empty__sub">Descubre nuestras piezas únicas ✨</p>
         <a href="index.html" class="btn-primary"
           style="display:inline-flex; padding:13px 28px; text-decoration:none; border-radius:var(--r-md);">
           Ver catálogo
@@ -679,7 +679,7 @@ function changeQty(id, delta) {
 }
 
 function removeItemAndRefresh(id) { removeFromCart(id); renderCartPage(); }
-function confirmClear() { if (confirm('¿Vaciar carrito?')) { clearCart(); renderCartPage(); } }
+function confirmClear() { if (confirm('¿Vaciar el carrito?')) { clearCart(); renderCartPage(); } }
 
 // ══════════════════════════════════════════════
 // ADMIN  (admin.html) — backend multi-tenant
@@ -865,7 +865,7 @@ async function saveProduct() {
 }
 
 async function deleteProduct(id) {
-  if (!confirm('¿Eliminar este producto?')) return;
+  if (!confirm('¿Eliminar este producto del carrito?')) return;
   try {
     const password = localStorage.getItem(lsKey('admin_logged')) || '';
     const res = await fetch(`${API_URL}/api/productos/${id}`, {
