@@ -36,6 +36,14 @@ function detectStoreId() {
 
 const STORE_ID = 'karaz';
 
+// CONFIG por defecto (se sobrescribe desde API)
+let CONFIG = {
+  storeId: STORE_ID,
+  whatsappNumber: '584242422452',
+  currencySymbol: 'Bs',
+  currency: 'VES'
+};
+
 function apiHeaders(extra = {}) {
   return { 'x-store-id': STORE_ID, ...extra };
 }
