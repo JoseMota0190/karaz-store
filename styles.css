@@ -2469,7 +2469,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 /* ══════════════════════════════════════════════
    RESPONSIVE MÓVIL - KARAZ
    ══════════════════════════════════════════════ */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   /* Versiones mobile - overrides */
   .desktop-only { display: none !important; }
   .mobile-only { display: block !important; }
