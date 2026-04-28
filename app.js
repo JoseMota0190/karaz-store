@@ -316,14 +316,17 @@ async function loadProducts() {
       headers: apiHeaders()
     });
     const data = await res.json();
-    PRODUCTS = data.filter(p => p.activo !== false).map(mapProduct);
-  } catch {
-    try {
-      const res = await fetch('productos.json');
-      PRODUCTS = await res.json();
-    } catch {
-      PRODUCTS = [];
+    if (data.length > 0) {
+      PRODUCTS = data.filter(p => p.activo !== false).map(mapProduct);
+      return;
     }
+  } catch {}
+  // Fallback: cargar desde JSON local
+  try {
+    const res = await fetch('productos.json');
+    PRODUCTS = await res.json();
+  } catch {
+    PRODUCTS = [];
   }
 }
 
