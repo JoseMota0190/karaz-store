@@ -2239,9 +2239,9 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    ══════════════════════════════════════════════ */
 .cat-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  max-width: 960px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 800px;
   margin: 0 auto 40px;
   padding: 0 14px;
   transition: opacity .3s var(--ease), transform .3s var(--ease);
@@ -2251,7 +2251,12 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   .cat-cards {
     display: flex !important;
     flex-direction: column;
+    align-items: center;
     gap: 16px;
+  }
+  .cat-card {
+    width: 85%;
+    max-width: 400px;
   }
 }
 
