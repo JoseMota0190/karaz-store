@@ -2230,6 +2230,10 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   font-size: .9rem;
 }
 
+/* Toggle global para desktop/móvil */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
 /* ══════════════════════════════════════════════
    CARRUSEL DE CATEGORÍAS — LIFESTYLE
    ══════════════════════════════════════════════ */
@@ -2245,7 +2249,8 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 
 @media (max-width: 600px) {
   .cat-cards {
-    grid-template-columns: 1fr;
+    display: flex !important;
+    flex-direction: column;
     gap: 16px;
   }
 }
@@ -2465,7 +2470,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    RESPONSIVE MÓVIL - KARAZ
    ══════════════════════════════════════════════ */
 @media (max-width: 480px) {
-  /* Versiones desktop/móvil */
+  /* Versiones mobile - overrides */
   .desktop-only { display: none !important; }
   .mobile-only { display: block !important; }
   
