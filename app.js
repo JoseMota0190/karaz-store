@@ -36,8 +36,7 @@ function detectStoreId() {
 
 const STORE_ID = 'karaz';
 
-// CONFIG (se inicializa en loadConfig con valores por defecto)
-let CONFIG = {};
+
 
 function apiHeaders(extra = {}) {
   return { 'x-store-id': STORE_ID, ...extra };
@@ -111,17 +110,20 @@ async function loadConfig() {
   };
   CONFIG = defaults;
 
-  try {
-    const res = await fetch(`${API_URL}/api/config?store=${STORE_ID}`);
-    if (res.ok) {
-      const apiConfig = await res.json();
-      CONFIG = { ...defaults, ...apiConfig };
-    } else {
-      console.error(`Store "${STORE_ID}" not found. HTTP ${res.status}`);
-    }
-  } catch (err) {
-    console.error('Error loading config:', err);
-  }
+    try {
+     const res = await fetch(`${API_URL}/api/config?store=${STORE_ID}`);
+     if (res.ok) {
+       const apiConfig = await res.json();
+       CONFIG = { ...defaults, ...apiConfig };
+       // Force Venezuelan Bolivar as currency regardless of API config
+       CONFIG.currencySymbol = 'Bs';
+       CONFIG.currency = 'VES';
+     } else {
+       console.error(`Store "${STORE_ID}" not found. HTTP ${res.status}`);
+     }
+   } catch (err) {
+     console.error('Error loading config:', err);
+   }
 }
 
 // ══════════════════════════════════════════════
