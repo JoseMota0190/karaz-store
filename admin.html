@@ -318,7 +318,8 @@
     var busq = document.getElementById('buscarInput').value.toLowerCase();
     var filt = productos.filter(function(p) {
       var ok = (!catActiva || (p.categoria || p.category) === catActiva);
-      var ok2 = (!busq || (p.name && p.name.toLowerCase().includes(busq)));
+      var nombreProd = (p.nombre || p.name || '').toLowerCase();
+      var ok2 = (!busq || nombreProd.includes(busq));
       return ok && ok2;
     });
     render(filt);
