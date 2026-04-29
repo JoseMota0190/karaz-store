@@ -7,6 +7,7 @@
 
 let CONFIG   = {};
 let PRODUCTS = [];
+let lightboxStore = [];
 
 // ══════════════════════════════════════════════
 // API — backend multi-tenant
@@ -548,6 +549,7 @@ function quickAddToCart(id, btn) {
 // ══════════════════════════════════════════════
 
 async function initProductDetail() {
+  lightboxStore = [];
   await loadConfig();
   injectConfig();
   await loadProducts();
@@ -572,11 +574,12 @@ function renderProductDetail(p) {
   document.title = `${p.name} · ${CONFIG.storeName || 'Catálogo Web'}`;
   
   const images = [p.image, p.imagen2, p.imagen3].filter(Boolean);
-  const mainImg = cloudinaryThumb(images[0], 800) || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
-  const lightboxImgs = images.map(img => cloudinaryThumb(img, 1000)).filter(Boolean).join(',');
+  const mainImg = images[0] || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
+  
+  lightboxStore = images.length ? images : [mainImg];
   
   const thumbnails = images.map((img, idx) => {
-    const thumbSrc = cloudinaryThumb(img, 200) || `https://placehold.co/100x100/D6F2EE/1A8A78?text=${idx+1}`;
+    const thumbSrc = img || `https://placehold.co/100x100/D6F2EE/1A8A78?text=${idx+1}`;
     return `<img class="product-detail__thumb ${idx === 0 ? 'active' : ''}" 
       src="${sanitize(thumbSrc)}" 
       onclick="openLightbox(${idx})" 
@@ -594,7 +597,6 @@ function renderProductDetail(p) {
       </a>
       <img src="${sanitize(mainImg)}" alt="${sanitize(p.name)}"
         class="product-detail__main-img"
-        data-lightbox-images="${encodeURIComponent(lightboxImgs)}"
         onclick="openLightbox(0)"
         onerror="this.src='https://placehold.co/600x600/D6F2EE/1A8A78?text=✨'">
       ${images.length > 1 ? `<div class="product-detail__thumbs">${thumbnails}</div>` : ''}
@@ -909,19 +911,22 @@ async function deleteProduct(id) {
 // LIGHTBOX for product images
 // ══════════════════════════════════════════════
 
-let currentLightboxIndex = 0;
+let lightboxStore = [];
 
 function openLightbox(index) {
-  const mainImg = document.querySelector('.product-detail__main-img');
-  const imageData = mainImg?.getAttribute?.('data-lightbox-images') || '';
-  const decoded = decodeURIComponent(imageData);
-  const images = decoded ? decoded.split(',').filter(Boolean) : [];
-  if (!images.length) return;
+  if (!lightboxStore.length) {
+    const mainImg = document.querySelector('.product-detail__main-img');
+    if (mainImg) {
+      lightboxStore = [mainImg.src];
+    }
+  }
+  if (!lightboxStore.length || !lightboxStore[0]) return;
+  
   currentLightboxIndex = index;
   const lightbox = $('lightbox');
   const img = $('lightbox-img');
   if (lightbox && img) {
-    img.src = images[currentLightboxIndex] || images[0];
+    img.src = lightboxStore[currentLightboxIndex];
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -937,14 +942,10 @@ function closeLightbox(event) {
 }
 
 function changeLightboxImage(delta) {
-  const mainImg = document.querySelector('.product-detail__main-img');
-  const imageData = mainImg?.getAttribute?.('data-lightbox-images') || '';
-  const decoded = decodeURIComponent(imageData);
-  const images = decoded ? decoded.split(',').filter(Boolean) : [];
-  if (!images.length) return;
+  if (!lightboxStore.length) return;
   currentLightboxIndex += delta;
-  if (currentLightboxIndex < 0) currentLightboxIndex = images.length - 1;
-  if (currentLightboxIndex >= images.length) currentLightboxIndex = 0;
+  if (currentLightboxIndex < 0) currentLightboxIndex = lightboxStore.length - 1;
+  if (currentLightboxIndex >= lightboxStore.length) currentLightboxIndex = 0;
   const img = $('lightbox-img');
-  if (img) img.src = images[currentLightboxIndex];
+  if (img) img.src = lightboxStore[currentLightboxIndex];
 }
