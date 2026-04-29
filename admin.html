@@ -109,7 +109,7 @@
 
 <div class="admin-page" id="adminPage">
   <!-- NAVBAR -->
-  <header class="navbar" id="navbar" style="background:#F5EDE4;border-bottom:1px solid #E8E0D8;">
+  <header class="navbar" id="navbar">
     <div class="navbar__inner">
       <a href="index.html" class="navbar__brand">
         <img src="imagenes/logo_granate.png" alt="Karaz" class="navbar__logo-img">
@@ -126,18 +126,16 @@
       </div>
     </div>
   </header>
-  <!-- Logo Header -->
-  <div style="background:#F5EDE4;padding:30px 20px;text-align:center;">
-    <img src="imagenes/K-karaz.png" alt="Karaz" style="width:120px;height:auto;">
-  </div>
   <!-- Categorías -->
   <div class="filtros" id="filtros"></div>
-  <div class="buscar">
-    <input type="text" id="buscarInput" placeholder="Buscar...">
+  <!-- Logo Body -->
+  <div style="background:#F5EDE4;padding:60px 20px;text-align:center;min-height:400px;display:flex;align-items:center;justify-content:center;">
+    <img src="imagenes/K-karaz.png" alt="Karaz" style="width:200px;height:auto;">
   </div>
-  <div class="count" id="countDisplay"></div>
-  <div class="grid" id="gridDisplay"></div>
-  <button class="fab" id="nuevoBtn">+ Nuevo</button>
+  <!-- Grid productos (oculto por ahora) -->
+  <div class="count" id="countDisplay" style="display:none;"></div>
+  <div class="grid" id="gridDisplay" style="display:none;"></div>
+  <button class="fab" id="nuevoBtn" style="display:none;">+ Nuevo</button>
 </div>
 
 <div class="menu" id="productMenu">
@@ -265,7 +263,7 @@
   function renderFiltros() {
     var html = '';
     cats.forEach(function(c,i) {
-      var active = i === 0 ? ' active' : '';
+      var active = ''; // Sin ninguno preseleccionado
       html += '<button class="filtro-btn' + active + '" data-cat="' + c.id + '">' + c.label + '</button>';
     });
     document.getElementById('filtros').innerHTML = html;
@@ -274,6 +272,10 @@
       btn.onclick = function() {
         btns.forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
+        // Mostrar el grid cuando se selecciona una categoría
+        document.querySelector('.grid').style.display = 'grid';
+        document.querySelector('.count').style.display = 'block';
+        document.querySelector('.fab').style.display = 'block';
         filtrar();
       };
     });
