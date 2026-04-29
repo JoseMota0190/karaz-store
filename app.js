@@ -9,7 +9,6 @@ let CONFIG   = {};
 let PRODUCTS = [];
 let lightboxStore = [];
 let currentLightboxIndex = 0;
-let currentLightboxIndex = 0;
 
 // ══════════════════════════════════════════════
 // API — backend multi-tenant
