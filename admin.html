@@ -151,9 +151,17 @@
       <input type="text" id="buscarInput" placeholder="Buscar producto...">
     </div>
     <div id="featuredPanel" style="padding:12px 16px;display:none;">
-      <button id="openFeaturedBtn" style="display:flex;align-items:center;gap:8px;padding:12px 20px;background:#FFF5E6;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;width:100%;">
-        🔥 DESTACAR PRODUCTOS <span style="margin-left:auto;font-weight:400;font-size:0.85rem;">(hasta 4)</span>
-      </button>
+      <div id="featuredToggleBtn" style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF5E6;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;width:100%;justify-content:space-between;" onclick="toggleFeaturedPanel()">
+        <span>🔥 DESTACAR PRODUCTOS <span style="font-weight:400;font-size:0.8rem;">(hasta 4)</span></span>
+        <span id="featuredArrow">▼</span>
+      </div>
+      <div id="featuredContent" style="display:none;padding:10px 0;">
+        <div id="featuredList" style="max-height:180px;overflow-y:auto;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+          <span id="featuredCount" style="font-size:0.8rem;color:#666;">0 seleccionados</span>
+          <button id="saveFeaturedBtn" style="padding:8px 16px;background:#5C0F14;color:white;border:none;border-radius:6px;font-size:0.85rem;font-weight:600;cursor:pointer;">Guardar</button>
+        </div>
+      </div>
     </div>
     <div class="count" id="countDisplay"></div>
     <div class="grid" id="gridDisplay"></div>
@@ -288,9 +296,11 @@
     document.getElementById('modalCloseBtn').onclick = cerrarModal;
     document.getElementById('cancelBtn').onclick = cerrarModal;
     document.getElementById('saveBtn').onclick = guardar;
-    document.getElementById('openFeaturedBtn').onclick = abrirModalDestacados;
-    document.getElementById('closeFeaturedBtn').onclick = cerrarModalDestacados;
-    document.getElementById('saveFeaturedModalBtn').onclick = guardarDestacadosDesdeModal;
+    document.getElementById('openFeaturedBtn').onclick = function() {
+      toggleFeaturedPanel();
+      abrirModalDestacados();
+    };
+    document.getElementById('saveFeaturedBtn').onclick = guardarDestacadosDesdeModal;
     document.getElementById('menuEditBtn').onclick = abrirEditar;
     document.getElementById('menuDeleteBtn').onclick = eliminar;
     document.getElementById('menuCloseBtn').onclick = cerrarMenu;
@@ -387,6 +397,18 @@
   
   var featuredCurrentList = [];
   
+  function toggleFeaturedPanel() {
+    var content = document.getElementById('featuredContent');
+    var arrow = document.getElementById('featuredArrow');
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      arrow.textContent = '▲';
+    } else {
+      content.style.display = 'none';
+      arrow.textContent = '▼';
+    }
+  }
+  
   function abrirModalDestacados() {
     var currentCat = localStorage.getItem('adminActiveCategory');
     if (!currentCat) return;
@@ -406,32 +428,32 @@
     catProducts.forEach(function(p) {
       var isFeatured = p.destacadoOrden > 0;
       var checked = isFeatured ? 'checked' : '';
-      html += '<label style="display:flex;align-items:center;gap:10px;padding:10px;background:white;margin-bottom:8px;border-radius:8px;cursor:pointer;border:1px solid ' + (isFeatured ? '#5C0F14' : '#eee') + ';"><input type="checkbox" class="featured-modal-checkbox" value="' + (p.codigo || p.id) + '" ' + checked + ' style="width:20px;height:20px;"><img src="' + (p.imagen || p.image || '') + '" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"><div style="flex:1;"><div style="font-size:0.9rem;font-weight:600;">' + (p.nombre || p.name || '') + '</div><div style="font-size:0.85rem;color:#5C0F14;">$' + (p.precio || p.price || 0) + '</div></div>' + (isFeatured ? '<span style="font-size:1.2rem;">🔥</span>' : '') + '</label>';
+      html += '<label style="display:flex;align-items:center;gap:8px;padding:8px;background:white;margin-bottom:6px;border-radius:6px;cursor:pointer;border:1px solid ' + (isFeatured ? '#5C0F14' : '#eee') + ';"><input type="checkbox" class="featured-checkbox" value="' + (p.codigo || p.id) + '" ' + checked + ' style="width:18px;height:18px;"><span style="flex:1;font-size:0.85rem;">' + (p.nombre || p.name || '') + '</span><span style="color:#5C0F14;font-weight:600;font-size:0.85rem;">$' + (p.precio || p.price || 0) + '</span>' + (isFeatured ? ' 🔥' : '') + '</label>';
     });
     
     var featuredCount = catProducts.filter(function(p) { return p.destacadoOrden > 0; }).length;
-    document.getElementById('featuredModalList').innerHTML = html;
-    document.getElementById('featuredModalCount').textContent = featuredCount + ' seleccionados de 4 permitidos';
-    document.getElementById('featuredModal').style.display = 'flex';
+    document.getElementById('featuredList').innerHTML = html;
+    document.getElementById('featuredCount').textContent = featuredCount + ' seleccionados de 4 permitidos';
     
-    document.querySelectorAll('.featured-modal-checkbox').forEach(function(cb) {
+    document.querySelectorAll('.featured-checkbox').forEach(function(cb) {
       cb.onchange = function() {
-        var checked = document.querySelectorAll('.featured-modal-checkbox:checked');
+        var checked = document.querySelectorAll('.featured-checkbox:checked');
         if (checked.length > 4) {
           this.checked = false;
           alert('Máximo 4 productos destacados');
         }
-        document.getElementById('featuredModalCount').textContent = checked.length + ' seleccionados de 4 permitidos';
+        document.getElementById('featuredCount').textContent = checked.length + ' seleccionados de 4 permitidos';
       };
     });
   }
   
   function cerrarModalDestacados() {
-    document.getElementById('featuredModal').style.display = 'none';
+    document.getElementById('featuredContent').style.display = 'none';
+    document.getElementById('featuredArrow').textContent = '▼';
   }
   
   function guardarDestacadosDesdeModal() {
-    var checkedBoxes = document.querySelectorAll('.featured-modal-checkbox:checked');
+    var checkedBoxes = document.querySelectorAll('.featured-checkbox:checked');
     var selectedIds = Array.from(checkedBoxes).map(function(cb) { return cb.value; });
     
     if (selectedIds.length > 4) {
