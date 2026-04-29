@@ -447,26 +447,7 @@
       });
     });
   }
-      return;
-    }
-    
-    var completed = 0;
-    updates.forEach(function(u) {
-      fetch(API + '/api/productos/' + u.id, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': token },
-        body: JSON.stringify({ destacadoOrden: u.destacadoOrden })
-      })
-      .then(function() {
-        completed++;
-        if (completed === updates.length) {
-          showToast('Productos destacados actualizados');
-          cargarProductos();
-        }
-      });
-    });
-  }
-  
+
   function abrirEditarCard(prodId) {
     var prod = productos.find(function(p) { 
       return (p.codigo || p.id) === prodId; 
