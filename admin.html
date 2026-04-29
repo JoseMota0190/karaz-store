@@ -350,6 +350,7 @@
     var html = '';
     var currentCategory = localStorage.getItem('adminActiveCategory') || '';
     var isEditMode = window.currentEditMode === true;
+    console.log('renderProductosConAcciones - isEditMode:', isEditMode);
     var editCursor = isEditMode ? 'cursor:pointer;' : '';
     
     if (list.length === 0) {
@@ -742,35 +743,18 @@
   }
   
   function seleccionar(id) {
+    console.log('seleccionar called with id:', id);
     seleccionado = productos.find(function(p) { return (p.codigo || p.id) === id; });
     document.getElementById('menuDeleteBtn').dataset.prodId = id;
     document.getElementById('menuEditBtn').dataset.prodId = id;
     
-    if (currentMode === 'eliminar') {
-      //直接删除，不显示菜单
-      var prodNombre = seleccionado ? (seleccionado.nombre || seleccionado.name || 'este producto') : 'este producto';
-      if (confirm('¿Eliminar el producto "' + prodNombre + '"?')) {
-        var pass = localStorage.getItem(STORE + '_logged');
-        fetch(API + '/api/productos/' + id, {
-          method: 'DELETE',
-          headers: { 'x-store-id': STORE, 'x-admin-password': pass }
-        })
-        .then(function() {
-          alert('✓ Producto eliminado con éxito');
-          cargarProductos();
-          renderEliminar(productos);
-        })
-        .catch(function() { alert('Error al eliminar'); });
-      }
-    } else if (currentMode === 'editar') {
-      //打开编辑菜单 - 在显示之前隐藏删除按钮
-      var deleteBtn = document.getElementById('menuDeleteBtn');
-      var editBtn = document.getElementById('menuEditBtn');
-      deleteBtn.style.display = 'none';
-      editBtn.style.display = 'block';
-      document.querySelector('#productMenu .close').textContent = 'Cancelar';
-      if (seleccionado) document.getElementById('productMenu').classList.add('show');
-    }
+    // Always show menu for editing (from edit mode)
+    var deleteBtn = document.getElementById('menuDeleteBtn');
+    var editBtn = document.getElementById('menuEditBtn');
+    deleteBtn.style.display = 'block';
+    editBtn.style.display = 'block';
+    document.querySelector('#productMenu .close').textContent = 'Cancelar';
+    if (seleccionado) document.getElementById('productMenu').classList.add('show');
   }
   
   function cerrarMenu() {
