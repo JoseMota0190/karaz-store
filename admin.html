@@ -128,13 +128,23 @@
   </header>
   <!-- Categorías -->
   <div class="filtros" id="filtros"></div>
-  <!-- Logo Body -->
-  <div style="background:#F5EDE4;padding:60px 20px;text-align:center;min-height:400px;display:flex;align-items:center;justify-content:center;">
-    <img src="imagenes/K-karaz.png" alt="Karaz" style="width:200px;height:auto;">
+  <!-- Logo Body con botones -->
+  <div style="background:#F5EDE4;padding:40px 20px;text-align:center;">
+    <img src="imagenes/K-karaz.png" alt="Karaz" style="width:160px;height:auto;margin-bottom:24px;">
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button id="btnNuevo" style="flex:1;min-width:100px;max-width:150px;padding:14px 20px;background:#5C0F14;color:white;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;">+ Nuevo</button>
+      <button id="btnEditar" style="flex:1;min-width:100px;max-width:150px;padding:14px 20px;background:white;color:#5C0F14;border:2px solid #5C0F14;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;">✏️ Editar</button>
+      <button id="btnEliminar" style="flex:1;min-width:100px;max-width:150px;padding:14px 20px;background:white;color:#dc2626;border:2px solid #dc2626;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;">🗑️ Eliminar</button>
+    </div>
   </div>
-  <!-- Grid productos (oculto por ahora) -->
-  <div class="count" id="countDisplay" style="display:none;"></div>
-  <div class="grid" id="gridDisplay" style="display:none;"></div>
+  <!-- Área de edición/eliminación (oculta) -->
+  <div id="editArea" style="display:none;">
+    <div class="buscar">
+      <input type="text" id="buscarInput" placeholder="Buscar producto...">
+    </div>
+    <div class="count" id="countDisplay"></div>
+    <div class="grid" id="gridDisplay"></div>
+  </div>
   <button class="fab" id="nuevoBtn" style="display:none;">+ Nuevo</button>
 </div>
 
@@ -224,6 +234,7 @@
   var productos =[];
   var editando = null;
   var seleccionado = null;
+  var currentMode = null;
   
   var cats = [
     { id: 'anillos', label: '💍 Anillos' },
@@ -243,6 +254,9 @@
     document.getElementById('logoutBtn').onclick = logout;
     document.getElementById('buscarInput').oninput = filtrar;
     document.getElementById('nuevoBtn').onclick = abrirNuevo;
+    document.getElementById('btnNuevo').onclick = function() { abrirNuevo(); };
+    document.getElementById('btnEditar').onclick = function() { mostrarModoEditar(); };
+    document.getElementById('btnEliminar').onclick = function() { mostrarModoEliminar(); };
     document.getElementById('modalCloseBtn').onclick = cerrarModal;
     document.getElementById('cancelBtn').onclick = cerrarModal;
     document.getElementById('saveBtn').onclick = guardar;
@@ -335,35 +349,98 @@
   }
   
   function filtrar() {
-    var catActiva = document.querySelector('.filtro-btn.active').dataset.cat;
+    if (!currentMode) return;
     var busq = document.getElementById('buscarInput').value.toLowerCase();
     var filt = productos.filter(function(p) {
-      var ok = (!catActiva || (p.categoria || p.category) === catActiva);
       var nombreProd = (p.nombre || p.name || '').toLowerCase();
-      var ok2 = (!busq || nombreProd.includes(busq));
-      return ok && ok2;
+      return !busq || nombreProd.includes(busq);
     });
-    render(filt);
+    if (currentMode === 'editar') {
+      renderEditar(filt);
+    } else if (currentMode === 'eliminar') {
+      renderEliminar(filt);
+    }
   }
-  
-  function render(list) {
-    // Ordenar por precio de menor a mayor
-    list.sort(function(a, b) {
-      var precioA = parseInt(a.precio || a.price || 0);
-      var precioB = parseInt(b.precio || b.price || 0);
-      return precioA - precioB;
-    });
-    
-    document.getElementById('countDisplay').innerHTML = list.length + ' productos';
-    var html = '';
+
+  function mostrarModoEditar() {
+    currentMode = 'editar';
+    document.getElementById('editArea').style.display = 'block';
+    document.getElementById('buscarInput').value = '';
+    renderEditar(productos);
+  }
+
+  function mostrarModoEliminar() {
+    currentMode = 'eliminar';
+    document.getElementById('editArea').style.display = 'block';
+    document.getElementById('buscarInput').value = '';
+    renderEliminar(productos);
+  }
+
+  function getCatLabel(catId) {
+    var labels = { 'anillos': '💍 Anillos', 'pulseras': '💎 Pulseras', 'collares': '📿 Collares', 'aretes': '🎀 Aretes', 'earcuffs': '🎧 Earcuffs', 'sets': '✨ Sets' };
+    return labels[catId] || catId;
+  }
+
+  // Render para editar - agrupa por categoría y ordena por precio
+  function renderEditar(list) {
+    var porCategoria = {};
     list.forEach(function(p) {
-      var img = p.imagen || p.image || 'https://placehold.co/200x200/eee/999?text=📷';
-      var nombre = p.nombre || p.name || 'Sin nombre';
-      var precio = p.precio || p.price || 0;
-      var prodId = p.codigo || p.id;
-      html += '<div class="card" onclick="seleccionar(\'' + prodId + '\')"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div></div>';
+      var cat = p.categoria || p.category || 'otros';
+      if (!porCategoria[cat]) porCategoria[cat] = [];
+      porCategoria[cat].push(p);
     });
-    document.getElementById('gridDisplay').innerHTML = html;
+    Object.keys(porCategoria).forEach(function(cat) {
+      porCategoria[cat].sort(function(a, b) {
+        var precioA = parseInt(a.precio || a.price || 0);
+        var precioB = parseInt(b.precio || b.price || 0);
+        return precioA - precioB;
+      });
+    });
+    var html = '';
+    Object.keys(porCategoria).forEach(function(cat) {
+      var catLabel = getCatLabel(cat);
+      html += '<div style="grid-column:1/-1;padding:16px 0 8px;margin-top:8px;border-top:1px solid #ddd;"><strong style="color:#5C0F14;font-size:1rem;">' + catLabel + '</strong></div>';
+      porCategoria[cat].forEach(function(p) {
+        var img = p.imagen || p.image || 'https://placehold.co/200x200/eee/999?text=📷';
+        var nombre = p.nombre || p.name || 'Sin nombre';
+        var precio = p.precio || p.price || 0;
+        var prodId = p.codigo || p.id;
+        html += '<div class="card" onclick="seleccionar(\'' + prodId + '\')"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div></div>';
+      });
+    });
+    document.getElementById('gridDisplay').innerHTML = html || '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
+    document.getElementById('countDisplay').innerHTML = list.length + ' productos';
+  }
+
+  // Render para eliminar
+  function renderEliminar(list) {
+    var porCategoria = {};
+    list.forEach(function(p) {
+      var cat = p.categoria || p.category || 'otros';
+      if (!porCategoria[cat]) porCategoria[cat] = [];
+      porCategoria[cat].push(p);
+    });
+    Object.keys(porCategoria).forEach(function(cat) {
+      porCategoria[cat].sort(function(a, b) {
+        var precioA = parseInt(a.precio || a.price || 0);
+        var precioB = parseInt(b.precio || b.price || 0);
+        return precioA - precioB;
+      });
+    });
+    var html = '';
+    Object.keys(porCategoria).forEach(function(cat) {
+      var catLabel = getCatLabel(cat);
+      html += '<div style="grid-column:1/-1;padding:16px 0 8px;margin-top:8px;border-top:1px solid #dc2626;"><strong style="color:#dc2626;font-size:1rem;">' + catLabel + '</strong></div>';
+      porCategoria[cat].forEach(function(p) {
+        var img = p.imagen || p.image || 'https://placehold.co/200x200/eee/999?text=📷';
+        var nombre = p.nombre || p.name || 'Sin nombre';
+        var precio = p.precio || p.price || 0;
+        var prodId = p.codigo || p.id;
+        html += '<div class="card" onclick="seleccionar(\'' + prodId + '\')" style="border-color:#dc2626;"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio" style="color:#dc2626;">$' + precio + '</div></div></div>';
+      });
+    });
+    document.getElementById('gridDisplay').innerHTML = html || '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
+    document.getElementById('countDisplay').innerHTML = list.length + ' productos';
   }
   
   function seleccionar(id) {
