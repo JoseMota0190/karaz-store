@@ -92,8 +92,8 @@
     <h1>🔐 Karaz Admin</h1>
     <p>Ingresa tu contraseña</p>
     <div class="A-login-error" id="loginError">Datos incorrectos</div>
-    <input type="text" id="passInput" placeholder="Contraseña" onkeyup="if(event.key==='Enter')A.login()">
-    <button onclick="A.login()">Ingresar</button>
+    <input type="text" id="passInput" placeholder="Contraseña">
+    <button type="button" id="loginBtn">Ingresar</button>
   </div>
 </div>
 
@@ -183,7 +183,7 @@ var A = (function() {
     // Render filtros
     var html = '';
     cats.forEach(function(c, i) {
-      html += '<button class="A-filtro-btn' + (i === 0 ? ' active' : '') + '" data-cat="' + c.id + '" onclick="A.filtro(\'' + c.id + '\')">' + c.label + '</button>';
+      html += '<button class="A-filtro-btn' + (i === 0 ? ' active' : '') + '" data-cat="' + c.id + '" onclick="A.filtro(\'' + c.id + '\', this)">' + c.label + '</button>';
     });
     document.getElementById('filtros').innerHTML = html;
     
@@ -193,6 +193,10 @@ var A = (function() {
       catHtml += '<label class="A-cat" onclick="A.selCat(this)"><input type="radio" name="cat" value="' + c.id + '">' + c.label + '</label>';
     });
     document.getElementById('catsContainer').innerHTML = catHtml;
+    
+    // Event listeners
+    document.getElementById('loginBtn').onclick = login;
+    document.getElementById('passInput').onkeyup = function(e) { if(e.key==='Enter') login(); };
     
     // Verificar si ya logueado
     if (localStorage.getItem(STORE + '_logged')) {
@@ -283,7 +287,7 @@ var A = (function() {
     selected = null;
   }
   
-  functionopenNew() {
+  function openNew() {
     editingId = null;
     document.getElementById('modalTitle').innerHTML = 'Nuevo producto';
     document.getElementById('nameInput').value = '';
@@ -389,9 +393,9 @@ var A = (function() {
     init: init,
     login: login,
     logout: logout,
-    filtro: function(c) {
+    filtro: function(c, btn) {
       document.querySelectorAll('.A-filtros button').forEach(function(b) { b.classList.remove('active'); });
-      event.target.classList.add('active');
+      btn.classList.add('active');
       filtrar();
     },
     filtrar: filtrar,
