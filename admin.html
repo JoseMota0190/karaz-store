@@ -335,7 +335,6 @@
       alert('Producto no encontrado. ID: ' + prodId);
       return;
     }
-    alert('Producto encontrado: ' + (prod.nombre || prod.name) + '\nImagen: ' + (prod.imagen || prod.image || 'NO HAY'));
     document.getElementById('modalTitle').textContent = 'Editar';
     document.getElementById('productModal').classList.add('show');
     
@@ -361,26 +360,27 @@
       }
     });
     
-    var uploadBox = document.getElementById('uploadBox');
-    var uploadBox2 = document.getElementById('uploadBox2');
-    var uploadBox3 = document.getElementById('uploadBox3');
-    var previewImg = document.getElementById('previewImg');
-    var previewImg2 = document.getElementById('previewImg2');
-    var previewImg3 = document.getElementById('previewImg3');
-    
-    if (img1 && previewImg && uploadBox) {
-      previewImg.src = img1;
-      uploadBox.classList.add('show');
-      alert('Foto 1 establecida: ' + img1.substring(0, 50) + '...');
-    }
-    if (img2 && previewImg2 && uploadBox2) {
-      previewImg2.src = img2;
-      uploadBox2.classList.add('show');
-    }
-    if (img3 && previewImg3 && uploadBox3) {
-      previewImg3.src = img3;
-      uploadBox3.classList.add('show');
-    }
+    setTimeout(function() {
+      var uploadBox = document.getElementById('uploadBox');
+      var uploadBox2 = document.getElementById('uploadBox2');
+      var uploadBox3 = document.getElementById('uploadBox3');
+      var previewImg = document.getElementById('previewImg');
+      var previewImg2 = document.getElementById('previewImg2');
+      var previewImg3 = document.getElementById('previewImg3');
+      
+      if (img1 && previewImg && uploadBox) {
+        previewImg.src = img1;
+        uploadBox.classList.add('show');
+      }
+      if (img2 && previewImg2 && uploadBox2) {
+        previewImg2.src = img2;
+        uploadBox2.classList.add('show');
+      }
+      if (img3 && previewImg3 && uploadBox3) {
+        previewImg3.src = img3;
+        uploadBox3.classList.add('show');
+      }
+    }, 100);
     
     currentProductId = prodId;
   }
