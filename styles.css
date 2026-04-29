@@ -760,6 +760,18 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
    ══════════════════════════════════════════════ */
 .cart-page { padding: 20px 16px 140px; max-width: 640px; margin: 0 auto; }
 
+.cart-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.cart-header__logo {
+  width: 140px;
+  height: auto;
+  object-fit: contain;
+  display: inline-block;
+}
+
 .cart-page__title {
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 5vw, 2.2rem);
