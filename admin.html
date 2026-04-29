@@ -143,6 +143,14 @@
     <div class="buscar">
       <input type="text" id="buscarInput" placeholder="Buscar producto...">
     </div>
+    <div id="featuredPanel" style="background:#FFF5E6;padding:16px;margin:0 16px;border-radius:12px;display:none;">
+      <div style="font-weight:600;color:#5C0F14;margin-bottom:10px;font-size:0.95rem;">⭐ DESTACAR PRODUCTOS <span style="font-weight:400;color:#666;font-size:0.85rem;">(selecciona hasta 4)</span></div>
+      <div id="featuredList" style="max-height:200px;overflow-y:auto;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+        <span id="featuredCount" style="font-size:0.85rem;color:#666;">0 seleccionados de 4 permitidos</span>
+        <button id="saveFeaturedBtn" style="padding:10px 20px;background:#5C0F14;color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;">💾 Guardar Destacados</button>
+      </div>
+    </div>
     <div class="count" id="countDisplay"></div>
     <div class="grid" id="gridDisplay"></div>
   </div>
@@ -209,14 +217,6 @@
         <label>Categoría</label>
         <div class="cats" id="catsContainer"></div>
       </div>
-      <div class="form-group">
-        <label>Destacado</label>
-        <select id="destacadoInput" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:0.95rem;">
-          <option value="0">Ninguno</option>
-          <option value="1">1° Destacado 🔥</option>
-          <option value="2">2° Destacado 🔥</option>
-        </select>
-      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" id="cancelBtn">Cancelar</button>
@@ -266,6 +266,7 @@
     document.getElementById('modalCloseBtn').onclick = cerrarModal;
     document.getElementById('cancelBtn').onclick = cerrarModal;
     document.getElementById('saveBtn').onclick = guardar;
+    document.getElementById('saveFeaturedBtn').onclick = guardarDestacados;
     document.getElementById('menuEditBtn').onclick = abrirEditar;
     document.getElementById('menuDeleteBtn').onclick = eliminar;
     document.getElementById('menuCloseBtn').onclick = cerrarMenu;
@@ -312,6 +313,10 @@
   
   function renderProductosConAcciones(list) {
     var html = '';
+    var featuredHtml = '';
+    var selectedCount = 0;
+    var currentCategory = localStorage.getItem('adminActiveCategory') || '';
+    
     if (list.length === 0) {
       html = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
     } else {
@@ -320,11 +325,90 @@
         var nombre = p.nombre || p.name || 'Sin nombre';
         var precio = p.precio || p.price || 0;
         var prodId = p.codigo || p.id;
-        html += '<div class="card" style="position:relative;"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div><div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();abrirEditarCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">✏️</button><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div></div>';
+        var isFeatured = p.destacadoOrden > 0;
+        var fuegoIcon = isFeatured ? ' 🔥' : '';
+        var checked = isFeatured ? 'checked' : '';
+        if (isFeatured) selectedCount++;
+        
+        html += '<div class="card" style="position:relative;"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div><div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();abrirEditarCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">✏️</button><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div></div>';
+        
+        featuredHtml += '<label style="display:flex;align-items:center;gap:8px;padding:8px;background:white;margin-bottom:6px;border-radius:8px;cursor:pointer;border:1px solid ' + (isFeatured ? '#5C0F14' : '#eee') + ';"><input type="checkbox" class="featured-checkbox" value="' + prodId + '" ' + checked + ' style="width:18px;height:18px;"><span style="flex:1;font-size:0.9rem;">' + nombre + '</span><span style="color:#5C0F14;font-weight:600;">$' + precio + '</span>' + fuegoIcon + '</label>';
       });
     }
     document.getElementById('gridDisplay').innerHTML = html;
     document.getElementById('countDisplay').innerHTML = list.length + ' productos';
+    
+    // Update featured panel
+    var featuredPanel = document.getElementById('featuredPanel');
+    if (currentCategory) {
+      featuredPanel.style.display = 'block';
+      document.getElementById('featuredList').innerHTML = featuredHtml;
+      document.getElementById('featuredCount').textContent = selectedCount + ' seleccionados de 4 permitidos';
+      
+      document.querySelectorAll('.featured-checkbox').forEach(function(cb) {
+        cb.onchange = function() {
+          var checkedBoxes = document.querySelectorAll('.featured-checkbox:checked');
+          if (checkedBoxes.length > 4) {
+            this.checked = false;
+            alert('Máximo 4 productos destacados permitidos');
+          }
+          document.getElementById('featuredCount').textContent = checkedBoxes.length + ' seleccionados de 4 permitidos';
+        };
+      });
+    } else {
+      featuredPanel.style.display = 'none';
+    }
+  }
+  
+  function guardarDestacados() {
+    var checkedBoxes = document.querySelectorAll('.featured-checkbox:checked');
+    var selectedIds = Array.from(checkedBoxes).map(function(cb) { return cb.value; });
+    
+    if (selectedIds.length > 4) {
+      alert('Máximo 4 productos destacados permitidos');
+      return;
+    }
+    
+    var token = localStorage.getItem(STORE + '_logged');
+    var currentCat = localStorage.getItem('adminActiveCategory');
+    
+    var catProducts = productos.filter(function(p) { 
+      return (p.categoria || p.category) === currentCat; 
+    });
+    
+    var updates = [];
+    catProducts.forEach(function(p) {
+      var prodId = p.codigo || p.id;
+      var nuevoOrden = selectedIds.indexOf(prodId) + 1;
+      var ordenAnterior = p.destacadoOrden || 0;
+      
+      if (nuevoOrden > 0 && nuevoOrden !== ordenAnterior) {
+        updates.push({ id: prodId, destacadoOrden: nuevoOrden });
+      } else if (nuevoOrden === 0 && ordenAnterior > 0) {
+        updates.push({ id: prodId, destacadoOrden: 0 });
+      }
+    });
+    
+    if (updates.length === 0) {
+      showToast('No hay cambios que guardar');
+      return;
+    }
+    
+    var completed = 0;
+    updates.forEach(function(u) {
+      fetch(API + '/api/productos/' + u.id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': token },
+        body: JSON.stringify({ destacadoOrden: u.destacadoOrden })
+      })
+      .then(function() {
+        completed++;
+        if (completed === updates.length) {
+          showToast('Productos destacados actualizados');
+          cargarProductos();
+        }
+      });
+    });
   }
   
   function abrirEditarCard(prodId) {
@@ -337,6 +421,7 @@
     }
     document.getElementById('modalTitle').textContent = 'Editar';
     document.getElementById('productModal').classList.add('show');
+    editando = prodId;
     
     var nombre = prod.nombre || prod.name || '';
     var precio = prod.precio || prod.price || '';
@@ -349,7 +434,6 @@
     document.getElementById('priceInput').value = precio;
     document.getElementById('descInput').value = prod.descripcion || prod.description || '';
     document.getElementById('codigoInput').value = prod.codigo || prod.id || '';
-    document.getElementById('destacadoInput').value = String(prod.destacadoOrden || 0);
     
     // Foto 1
     document.getElementById('imageUrl').value = img1;
@@ -667,9 +751,6 @@
     document.getElementById('modalTitle').innerHTML = 'Editar producto';
     document.getElementById('nameInput').value = nombre;
     document.getElementById('priceInput').value = precio;
-    document.getElementById('destacadoInput').value = String(destacadoOrden);
-    // Destacado
-    document.getElementById('destacadoInput').value = String(seleccionado.destacadoOrden || 0);
     // Foto 1
     document.getElementById('imageUrl').value = imagen;
     if (imagen) {
@@ -749,15 +830,13 @@
     if (!cat) { alert('Selecciona una categoría'); return; }
     
     var pass = localStorage.getItem(STORE + '_logged');
-    var destacadoOrden = parseInt(document.getElementById('destacadoInput').value) || 0;
     var data = { 
       nombre: nombre, 
       precio: precio, 
       categoria: cat, 
       imagen: img,
       imagen2: document.getElementById('imageUrl2')?.value || '',
-      imagen3: document.getElementById('imageUrl3')?.value || '',
-      destacadoOrden: destacadoOrden
+      imagen3: document.getElementById('imageUrl3')?.value || ''
     };
     if (editando) data.codigo = editando;
     var url = editando ? API + '/api/productos/' + editando : API + '/api/productos';
