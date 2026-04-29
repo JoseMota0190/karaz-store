@@ -629,12 +629,27 @@
     let editingId = null;
 
     // Login
-    document.getElementById('login-pass').addEventListener('keyup', e => { if (e.key === 'Enter') doLogin(); });
-    document.getElementById('login-btn').addEventListener('click', doLogin);
-    document.getElementById('admin-logout').addEventListener('click', () => { localStorage.removeItem(STORE_ID + '_admin_logged'); location.reload(); });
+    const loginBtn = document.getElementById('login-btn');
+    const loginInput = document.getElementById('login-pass');
+    
+    if (loginBtn) {
+      loginBtn.onclick = function() {
+        console.log('Login clickeado!');
+        doLogin();
+      };
+    }
+    
+    if (loginInput) {
+      loginInput.onkeyup = function(e) {
+        console.log('Tecla:', e.key);
+        if (e.key === 'Enter') doLogin();
+      };
+    }
 
     async function doLogin() {
+      console.log('doLogin ejecutandose');
       const pass = document.getElementById('login-pass').value;
+      alert('Login: ' + pass); //Para depurar
       const errorEl = document.getElementById('login-error');
       errorEl.classList.remove('show');
       
