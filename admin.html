@@ -542,7 +542,7 @@
   
   function eliminarProductoCard(prodId) {
     if (!confirm('¿Eliminar este producto?')) return;
-    var token = localStorage.getItem('adminToken');
+    var token = localStorage.getItem(STORE + '_logged');
     fetch(API + '/api/productos/' + prodId, {
       method: 'DELETE',
       headers: { 'x-store-id': STORE, 'x-admin-password': token }
@@ -551,7 +551,7 @@
     .then(function(data) {
       if (data.success || data.message) {
         showToast('Producto eliminado');
-        location.reload();
+        setTimeout(function() { location.reload(); }, 1000);
       } else {
         showToast('Error: ' + (data.error || 'Error desconocido'));
       }
