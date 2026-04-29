@@ -310,6 +310,13 @@
   }
   
   function render(list) {
+    // Ordenar por precio de menor a mayor
+    list.sort(function(a, b) {
+      var precioA = parseInt(a.precio || a.price || 0);
+      var precioB = parseInt(b.precio || b.price || 0);
+      return precioA - precioB;
+    });
+    
     document.getElementById('countDisplay').innerHTML = list.length + ' productos';
     var html = '';
     list.forEach(function(p) {
