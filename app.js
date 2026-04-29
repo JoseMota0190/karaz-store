@@ -130,7 +130,7 @@ async function loadConfig() {
 function injectConfig() {
   // Title
   const titleEl = document.getElementById('page-title');
-  if (titleEl) titleEl.textContent = CONFIG.storeName || 'Catálogo Web';
+  if (titleEl) titleEl.textContent = CONFIG.storeName || 'Karaz - Accesorios de calidad';
 
   // Favicon
   if (CONFIG.faviconUrl) {
