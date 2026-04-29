@@ -331,9 +331,12 @@
     if (!prod) return;
     document.getElementById('modalTitle').textContent = 'Editar';
     document.getElementById('productModal').classList.add('show');
-    document.getElementById('imageUrl').value = prod.imagen || prod.image || '';
-    document.getElementById('imageUrl2').value = prod.imagen2 || '';
-    document.getElementById('imageUrl3').value = prod.imagen3 || '';
+    var img1 = prod.imagen || prod.image || '';
+    var img2 = prod.imagen2 || '';
+    var img3 = prod.imagen3 || '';
+    document.getElementById('imageUrl').value = img1;
+    document.getElementById('imageUrl2').value = img2;
+    document.getElementById('imageUrl3').value = img3;
     document.getElementById('nameInput').value = prod.nombre || prod.name || '';
     document.getElementById('priceInput').value = prod.precio || prod.price || '';
     document.getElementById('descInput').value = prod.descripcion || prod.description || '';
@@ -346,6 +349,18 @@
         c.classList.remove('active');
       }
     });
+    if (img1) {
+      document.getElementById('previewImg').src = img1;
+      document.getElementById('uploadBox').classList.add('show');
+    }
+    if (img2) {
+      document.getElementById('previewImg2').src = img2;
+      document.getElementById('uploadBox2').classList.add('show');
+    }
+    if (img3) {
+      document.getElementById('previewImg3').src = img3;
+      document.getElementById('uploadBox3').classList.add('show');
+    }
     currentProductId = prodId;
   }
   
