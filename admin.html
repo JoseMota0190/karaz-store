@@ -338,49 +338,51 @@
     document.getElementById('modalTitle').textContent = 'Editar';
     document.getElementById('productModal').classList.add('show');
     
+    var nombre = prod.nombre || prod.name || '';
+    var precio = prod.precio || prod.price || '';
     var img1 = prod.imagen || prod.image || '';
     var img2 = prod.imagen2 || '';
     var img3 = prod.imagen3 || '';
+    var categoria = prod.categoria || prod.category || '';
     
-    document.getElementById('imageUrl').value = img1;
-    document.getElementById('imageUrl2').value = img2;
-    document.getElementById('imageUrl3').value = img3;
-    document.getElementById('nameInput').value = prod.nombre || prod.name || '';
-    document.getElementById('priceInput').value = prod.precio || prod.price || '';
+    document.getElementById('nameInput').value = nombre;
+    document.getElementById('priceInput').value = precio;
     document.getElementById('descInput').value = prod.descripcion || prod.description || '';
     document.getElementById('codigoInput').value = prod.codigo || prod.id || '';
-    document.getElementById('destacadoInput').value = prod.destacadoOrden || 0;
+    document.getElementById('destacadoInput').value = String(prod.destacadoOrden || 0);
     
-    document.querySelectorAll('.cat').forEach(function(c) {
-      var input = c.querySelector('input');
-      if (input.value === (prod.categoria || prod.category)) {
-        c.classList.add('active');
-      } else {
-        c.classList.remove('active');
-      }
-    });
+    // Foto 1
+    document.getElementById('imageUrl').value = img1;
+    if (img1) {
+      document.getElementById('previewImg').src = img1;
+      document.getElementById('uploadBox').classList.add('show');
+    }
+    // Foto 2
+    document.getElementById('imageUrl2').value = img2;
+    if (img2) {
+      document.getElementById('previewImg2').src = img2;
+      document.getElementById('uploadBox2').classList.add('show');
+    }
+    // Foto 3
+    document.getElementById('imageUrl3').value = img3;
+    if (img3) {
+      document.getElementById('previewImg3').src = img3;
+      document.getElementById('uploadBox3').classList.add('show');
+    }
     
-    setTimeout(function() {
-      var uploadBox = document.getElementById('uploadBox');
-      var uploadBox2 = document.getElementById('uploadBox2');
-      var uploadBox3 = document.getElementById('uploadBox3');
-      var previewImg = document.getElementById('previewImg');
-      var previewImg2 = document.getElementById('previewImg2');
-      var previewImg3 = document.getElementById('previewImg3');
-      
-      if (img1 && previewImg && uploadBox) {
-        previewImg.src = img1;
-        uploadBox.classList.add('show');
-      }
-      if (img2 && previewImg2 && uploadBox2) {
-        previewImg2.src = img2;
-        uploadBox2.classList.add('show');
-      }
-      if (img3 && previewImg3 && uploadBox3) {
-        previewImg3.src = img3;
-        uploadBox3.classList.add('show');
-      }
-    }, 100);
+    // Categoría
+    var catInputs = document.querySelectorAll('.cats input[name="cat"]');
+    catInputs.forEach(function(input) { input.checked = false; });
+    document.querySelectorAll('.cat').forEach(function(c) { c.classList.remove('active'); });
+    if (categoria) {
+      catInputs.forEach(function(input) {
+        if (input.value === categoria) {
+          input.checked = true;
+          var parent = input.closest('.cat');
+          if (parent) parent.classList.add('active');
+        }
+      });
+    }
     
     currentProductId = prodId;
   }
