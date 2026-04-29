@@ -130,7 +130,7 @@
   <!-- Categorías -->
   <div class="filtros" id="filtros"></div>
   <!-- Logo Body con botones -->
-  <div style="background:#F5EDE4;padding:40px 20px;text-align:center;">
+  <div id="logoArea" style="background:#F5EDE4;padding:40px 20px;text-align:center;">
     <img src="imagenes/K-karaz.png" alt="Karaz" style="width:160px;height:auto;margin-bottom:24px;">
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
       <button id="btnNuevo" style="flex:1;min-width:100px;max-width:150px;padding:14px 20px;background:#5C0F14;color:white;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;">+ Nuevo</button>
@@ -255,7 +255,12 @@
     document.getElementById('logoutBtn').onclick = logout;
     document.getElementById('buscarInput').oninput = filtrar;
     document.getElementById('nuevoBtn').onclick = abrirNuevo;
-    document.getElementById('btnNuevo').onclick = function() { abrirNuevo(); };
+    document.getElementById('btnNuevo').onclick = function() { 
+      document.getElementById('logoArea').style.display = 'none';
+      document.getElementById('editArea').style.display = 'block';
+      document.getElementById('nuevoBtn').style.display = 'block';
+      abrirNuevo(); 
+    };
     document.getElementById('btnEditar').onclick = function() { mostrarModoEditar(); };
     document.getElementById('btnEliminar').onclick = function() { mostrarModoEliminar(); };
     document.getElementById('modalCloseBtn').onclick = cerrarModal;
@@ -278,7 +283,7 @@
   function renderFiltros() {
     var html = '';
     cats.forEach(function(c,i) {
-      var active = ''; // Sin ninguno preseleccionado
+      var active = '';
       html += '<button class="filtro-btn' + active + '" data-cat="' + c.id + '">' + c.label + '</button>';
     });
     document.getElementById('filtros').innerHTML = html;
@@ -287,13 +292,80 @@
       btn.onclick = function() {
         btns.forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
-        // Mostrar el grid cuando se selecciona una categoría
-        document.querySelector('.grid').style.display = 'grid';
-        document.querySelector('.count').style.display = 'block';
-        document.querySelector('.fab').style.display = 'block';
-        filtrar();
+        document.getElementById('logoArea').style.display = 'none';
+        document.getElementById('editArea').style.display = 'block';
+        document.getElementById('nuevoBtn').style.display = 'block';
+        var cat = btn.getAttribute('data-cat');
+        var filtered = productos.filter(function(p) {
+          return (p.categoria || p.category) === cat;
+        });
+        filtered.sort(function(a, b) {
+          var precioA = parseInt(a.precio || a.price || 0);
+          var precioB = parseInt(b.precio || b.price || 0);
+          return precioA - precioB;
+        });
+        renderProductosConAcciones(filtered);
       };
     });
+  }
+  
+  function renderProductosConAcciones(list) {
+    var html = '';
+    if (list.length === 0) {
+      html = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
+    } else {
+      list.forEach(function(p) {
+        var img = p.imagen || p.image || 'https://placehold.co/200x200/eee/999?text=📷';
+        var nombre = p.nombre || p.name || 'Sin nombre';
+        var precio = p.precio || p.price || 0;
+        var prodId = p.codigo || p.id;
+        html += '<div class="card" style="position:relative;"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div><div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();abrirEditar(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">✏️</button><button onclick="event.stopPropagation();eliminarProducto(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div></div>';
+      });
+    }
+    document.getElementById('gridDisplay').innerHTML = html;
+    document.getElementById('countDisplay').innerHTML = list.length + ' productos';
+  }
+  
+  function abrirEditar(prodId) {
+    var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
+    if (!prod) return;
+    document.getElementById('modalTitle').textContent = 'Editar';
+    document.getElementById('productModal').classList.add('show');
+    document.getElementById('imageUrl').value = prod.imagen || prod.image || '';
+    document.getElementById('imageUrl2').value = prod.imagen2 || '';
+    document.getElementById('imageUrl3').value = prod.imagen3 || '';
+    document.getElementById('nameInput').value = prod.nombre || prod.name || '';
+    document.getElementById('priceInput').value = prod.precio || prod.price || '';
+    document.getElementById('descInput').value = prod.descripcion || prod.description || '';
+    document.getElementById('codigoInput').value = prod.codigo || prod.id || '';
+    document.querySelectorAll('.cat').forEach(function(c) {
+      var input = c.querySelector('input');
+      if (input.value === (prod.categoria || prod.category)) {
+        c.classList.add('active');
+      } else {
+        c.classList.remove('active');
+      }
+    });
+    currentProductId = prodId;
+  }
+  
+  function eliminarProducto(prodId) {
+    if (!confirm('¿Eliminar este producto?')) return;
+    var token = localStorage.getItem('adminToken');
+    fetch(API + '/api/productos/' + prodId, {
+      method: 'DELETE',
+      headers: { 'x-store-id': STORE, 'x-admin-password': token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success || data.message) {
+        showToast('Producto eliminado');
+        cargarProductos();
+      } else {
+        showToast('Error: ' + (data.error || 'Error desconocido'));
+      }
+    })
+    .catch(function() { showToast('Error de conexión'); });
   }
   
   function renderCats() {
@@ -365,6 +437,7 @@
 
   function mostrarModoEditar() {
     currentMode = 'editar';
+    document.getElementById('logoArea').style.display = 'none';
     document.getElementById('editArea').style.display = 'block';
     document.getElementById('buscarInput').value = '';
     renderEditar(productos);
@@ -372,6 +445,7 @@
 
   function mostrarModoEliminar() {
     currentMode = 'eliminar';
+    document.getElementById('logoArea').style.display = 'none';
     document.getElementById('editArea').style.display = 'block';
     document.getElementById('buscarInput').value = '';
     renderEliminar(productos);
