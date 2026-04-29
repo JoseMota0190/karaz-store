@@ -241,11 +241,20 @@ var A = (function() {
   }
   
   function loadProducts() {
+    console.log('Cargando productos...');
     fetch(API + '/api/productos', { headers: { 'x-store-id': STORE } })
-    .then(function(res) { return res.json(); })
+    .then(function(res) { 
+      console.log('Response:', res.status);
+      return res.json(); 
+    })
     .then(function(data) {
+      console.log('Productos recibidos:', data);
       products = data;
+      console.log('Total products:', products.length);
       filtrar();
+    })
+    .catch(function(err) {
+      console.error('Error:', err);
     });
   }
   
