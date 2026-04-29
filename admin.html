@@ -459,16 +459,24 @@
   }
   
   function eliminar() {
-    if (!seleccionado || !confirm('¿Eliminar?')) return;
+    if (!seleccionado) { alert('No hay producto seleccionado'); return; }
+    if (!confirm('¿Eliminar el producto "' + (seleccionado.nombre || seleccionado.name) + '"?')) return;
     cerrarMenu();
     var pass = localStorage.getItem(STORE + '_logged');
     var prodId = seleccionado.codigo || seleccionado.id;
+    console.log('Eliminando producto con ID:', prodId);
     fetch(API + '/api/productos/' + prodId, {
       method: 'DELETE',
       headers: { 'x-store-id': STORE, 'x-admin-password': pass }
     })
-    .then(function() { cargarProductos(); })
-    .catch(function() { alert('Error'); });
+    .then(function(res) { 
+      console.log('Response:', res.status);
+      cargarProductos(); 
+    })
+    .catch(function(err) { 
+      console.error('Error:', err); 
+      alert('Error al eliminar: ' + err.message); 
+    });
   }
   
   // INICIAR
