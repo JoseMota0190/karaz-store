@@ -3,314 +3,877 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2BB5A0">
-  <title id="page-title">Admin</title>
-  <link rel="icon" id="favicon" href="">
+  <meta name="theme-color" content="#5C0F14">
+  <title>Admin Karaz</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilos específicos del Admin Ultra-Intuitivo */
+    :root {
+      --admin-bg: #FDF8F3;
+      --admin-card-bg: #FFFFFF;
+      --admin-primary: #5C0F14;
+      --admin-teal: #2BB5A0;
+      --admin-gold: #D9BCA3;
+      --admin-text: #333;
+      --admin-gray: #666;
+    }
+    
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--admin-bg); margin: 0; }
+    
+    /* LOGIN */
+    .login-page-simple {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--admin-bg);
+      padding: 20px;
+    }
+    
+    .login-card-simple {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    
+    .login-card-simple h1 {
+      color: var(--admin-primary);
+      font-size: 1.8rem;
+      margin: 0 0 8px;
+      font-family: 'Times New Roman', serif;
+    }
+    
+    .login-card-simple .subtitle {
+      color: var(--admin-gray);
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+    }
+    
+    .login-card-simple input {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    
+    .login-card-simple input:focus {
+      outline: none;
+      border-color: var(--admin-teal);
+    }
+    
+    .login-card-simple .btn-ingresar {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      background: var(--admin-primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .login-card-simple .btn-ingresar:active {
+      opacity: 0.9;
+    }
+    
+    .login-card-simple .error {
+      color: #e74c3c;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    
+    .login-card-simple .error.show {
+      display: block;
+    }
+    
+    .login-card-simple .btn-volver {
+      display: block;
+      margin-top: 20px;
+      color: var(--admin-gray);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    
+    /* ADMIN MAIN */
+    .admin-main {
+      display: none;
+      min-height: 100vh;
+      background: var(--admin-bg);
+    }
+    
+    .admin-main.show { display: block; }
+    
+    /* Topbar */
+    .admin-topbar-simple {
+      background: var(--admin-primary);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .admin-topbar-simple .brand {
+      font-family: 'Times New Roman', serif;
+      font-size: 1.3rem;
+    }
+    
+    .admin-topbar-simple .actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .admin-topbar-simple .actions a,
+    .admin-topbar-simple .actions button {
+      color: white;
+      text-decoration: none;
+      font-size: 0.85rem;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    /* FILTROS */
+    .admin-filtros {
+      padding: 16px 20px;
+      background: white;
+      border-bottom: 1px solid #eee;
+      overflow-x: auto;
+    }
+    
+    .admin-filtros::-webkit-scrollbar { display: none; }
+    
+    .filtro-btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    
+    .filtro-btn.active {
+      background: var(--admin-primary);
+      color: white;
+    }
+    
+    /* BUSQUEDA */
+    .admin-busqueda {
+      padding: 16px 20px;
+    }
+    
+    .admin-busqueda input {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      box-sizing: border-box;
+    }
+    
+    .admin-busqueda input:focus {
+      outline: none;
+      border-color: var(--admin-teal);
+    }
+    
+    /* GRID */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 16px 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    @media (max-width: 480px) {
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+    
+    .product-card-admin {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .product-card-admin:active {
+      transform: scale(0.98);
+    }
+    
+    .product-card-admin img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+    
+    .product-card-admin .info {
+      padding: 12px;
+    }
+    
+    .product-card-admin .nombre {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .product-card-admin .precio {
+      color: var(--admin-primary);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    /* BOTON NUEVO */
+    .admin-nuevo-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--admin-teal);
+      color: white;
+      border: none;
+      padding: 18px 28px;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      box-shadow: 0 4px 20px rgba(43,181,160,0.4);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .admin-nuevo-btn:active {
+      transform: scale(0.95);
+    }
+    
+    /* MODAL */
+    .modal-overlay-simple {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-overlay-simple.show { display: flex; }
+    
+    .modal-simple {
+      background: white;
+      width: 90%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 20px;
+    }
+    
+    .modal-header-simple {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header-simple h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    .modal-body-simple { padding: 20px; }
+    
+    .form-group-simple {
+      margin-bottom: 20px;
+    }
+    
+    .form-group-simple label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    
+    .form-group-simple input,
+    .form-group-simple select {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      box-sizing: border-box;
+    }
+    
+    .form-group-simple input:focus,
+    .form-group-simple select:focus {
+      outline: none;
+      border-color: var(--admin-teal);
+    }
+    
+    /* UPLOAD FOTO */
+    .upload-simple {
+      border: 2px dashed #ddd;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+    }
+    
+    .upload-simple:active { background: #f9f9f9; }
+    
+    .upload-simple .icono {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+    
+    .upload-simple .text {
+      color: #666;
+      font-size: 0.95rem;
+    }
+    
+    .upload-preview-simple {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .upload-preview-simple img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+    
+    .upload-preview-simple .change-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #f5f5f5;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    /* CATEGORIAS RADIO */
+    .categoria-opciones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .categoria-opcion {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    
+    .categoria-opcion.active {
+      border-color: var(--admin-primary);
+      background: #fdf8f5;
+    }
+    
+    .categoria-opcion input { display: none; }
+    
+    /* BOTONES FOOTER */
+    .modal-footer-simple {
+      padding: 16px 20px;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-simple {
+      flex: 1;
+      padding: 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .btn-guardar {
+      background: var(--admin-primary);
+      color: white;
+    }
+    
+    .btn-cancelar {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    /* OTROS BOTONES */
+    .btn-foto-adicional {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: none;
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      color: #666;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    
+    /* MENU TARJETA */
+    .tarjeta-menu {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      display: none;
+      z-index: 1001;
+    }
+    
+    .tarjeta-menu.show { display: block; }
+    
+    .tarjeta-menu .opcion {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      font-size: 1.1rem;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .tarjeta-menu .opcion.editar { color: var(--admin-primary); }
+    .tarjeta-menu .opcion.eliminar { color: #e74c3c; }
+    
+    .tarjeta-menu .cerrar {
+      width: 100%;
+      padding: 16px;
+      background: #f0f0f0;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    /* PRODUCT COUNT */
+    .admin-count {
+      padding: 0 20px 16px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ══════════════════════════════════════════
-       LOGIN
-  ══════════════════════════════════════════ -->
-  <div id="login-page" class="login-screen">
-    <div class="login-card">
-      <h1 class="login-card__title">Panel de administración</h1>
-      <p class="login-card__sub" id="admin-login-store"></p>
-
-      <div class="login-error" id="login-error"></div>
-
-      <input
-        type="password"
-        id="login-pass"
-        class="form-input"
-        placeholder="Contraseña..."
-        autocomplete="current-password"
-        autofocus>
-
-      <button class="login-btn" id="login-btn">Ingresar</button>
-      <a href="index.html" class="login-back">← Volver a la tienda</a>
+  <!-- LOGIN SIMPLE -->
+  <div class="login-page-simple" id="login-page">
+    <div class="login-card-simple">
+      <h1>🔐 Karaz Admin</h1>
+      <p class="subtitle">Ingresa tu contraseña</p>
+      <div class="error" id="login-error">Datos incorrectos</div>
+      <input type="text" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
+      <button class="btn-ingresar" id="login-btn">Ingresar</button>
+      <a href="index.html" class="btn-volver">← Volver a la tienda</a>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       ADMIN PANEL
-  ══════════════════════════════════════════ -->
-  <div id="admin-panel" class="hidden">
-    <div class="admin-layout">
-
-      <!-- Top bar -->
-      <div class="admin-topbar">
-        <div class="admin-topbar__left">
-          <div class="admin-topbar__brand">
-            <div class="admin-topbar__title">Panel de administración</div>
-            <div class="admin-topbar__sub" id="admin-topbar-store"></div>
-          </div>
-        </div>
-        <div class="admin-topbar__actions">
-          <a href="index.html" class="btn-admin-ghost" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-            </svg>
-            Ver tienda
-          </a>
-          <button class="btn-admin-ghost" id="admin-logout">
-            Salir
-          </button>
-        </div>
+  <!-- ADMIN PRINCIPAL -->
+  <div class="admin-main" id="admin-main">
+    <!-- Topbar -->
+    <div class="admin-topbar-simple">
+      <span class="brand">Karaz Admin</span>
+      <div class="actions">
+        <a href="index.html" target="_blank">Ver tienda</a>
+        <button id="admin-logout">Salir</button>
       </div>
-
-      <!-- Acciones principales -->
-      <div class="admin-actions-bar">
-        <button class="action-btn action-btn--add" id="add-product-btn">
-          <span class="action-btn__icon">+</span>
-          <span>Agregar producto</span>
-        </button>
-        <input type="text" id="search-products" class="form-input action-search" placeholder="Buscar producto por nombre...">
-        <select id="filter-category" class="form-input action-filter">
-          <option value="">Todas las categorías</option>
-          <option value="pulseras">🧵 Pulseras</option>
-          <option value="collares">📿 Collares</option>
-          <option value="mayoristas">📦 Mayoristas</option>
-        </select>
-      </div>
-
-      <!-- Tabla -->
-      <div class="admin-table-wrap">
-        <div class="admin-table-head">
-          <h2>Productos <span id="product-count" class="badge-count">0</span></h2>
-        </div>
-        <div class="table-scroll">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th style="width:56px">Foto</th>
-                <th>Nombre</th>
-                <th>Categoría</th>
-                <th>Precio</th>
-                <th style="width:160px">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="admin-tbody">
-              <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--light-text)">Cargando...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
     </div>
+
+    <!-- Filtros -->
+    <div class="admin-filtros" id="filtros">
+      <button class="filtro-btn active" data-cat="">📷 Todos</button>
+      <button class="filtro-btn" data-cat="anillos">💍 Anillos</button>
+      <button class="filtro-btn" data-cat="pulseras">💎 Pulseras</button>
+      <button class="filtro-btn" data-cat="collares">📿 Collares</button>
+      <button class="filtro-btn" data-cat="aretes">🎀 Aretes</button>
+      <button class="filtro-btn" data-cat="earcuffs">🎧 Earcuffs</button>
+      <button class="filtro-btn" data-cat="sets">✨ Sets</button>
+    </div>
+
+    <!-- Busqueda -->
+    <div class="admin-busqueda">
+      <input type="text" id="search-products" placeholder="🔍 Buscar producto...">
+    </div>
+
+    <!-- Cantidad -->
+    <div class="admin-count" id="product-count"></div>
+
+    <!-- Grid -->
+    <div class="admin-grid" id="admin-grid"></div>
+
+    <!-- Boton Nuevo -->
+    <button class="admin-nuevo-btn" id="add-product-btn">+ Nuevo producto</button>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       MODAL PRODUCTO
-  ══════════════════════════════════════════ -->
-  <div class="modal-overlay" id="product-modal" role="dialog" aria-modal="true">
-    <div class="modal-box">
+  <!-- MENU TARJETA (al tocar producto) -->
+  <div class="tarjeta-menu" id="tarjeta-menu">
+    <button class="opcion editar" id="menu-editar">✏️ Editar producto</button>
+    <button class="opcion eliminar" id="menu-eliminar">🗑️ Eliminar producto</button>
+    <button class="cerrar" id="menu-cerrar">Cancelar</button>
+  </div>
 
-      <div class="modal-header">
-        <h3 id="modal-title">Nuevo Producto</h3>
-        <button class="modal-close-btn" id="modal-close" aria-label="Cerrar">✕</button>
+  <!-- MODAL FORMULARIO -->
+  <div class="modal-overlay-simple" id="product-modal">
+    <div class="modal-simple">
+      <div class="modal-header-simple">
+        <h2 id="modal-title">Nuevo producto</h2>
+        <button class="modal-close" id="modal-close">✕</button>
       </div>
-
-      <div class="modal-body">
-
-        <div class="form-group">
-          <label for="f-name">Nombre del producto *</label>
-          <input type="text" id="f-name" class="form-input" placeholder="Ej: Pulsera Tibetana Roja" maxlength="100" style="margin:0">
-        </div>
-
-        <div class="form-group">
-          <label for="f-price">Precio *</label>
-          <input type="number" id="f-price" class="form-input" placeholder="5" min="0" step="1" style="margin:0">
-          <p class="form-hint">Solo números. Se mostrará como: Ref. X$</p>
-        </div>
-
-        <div class="form-group">
-          <label for="f-category">Categoría</label>
-          <select id="f-category" class="form-input" style="margin:0">
-            <option value="pulseras">🧵 Pulseras</option>
-            <option value="collares">📿 Collares</option>
-            <option value="mayoristas">📦 Mayoristas</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Imagen principal del producto</label>
-          <div class="upload-area" id="upload-area">
-            <input type="file" id="f-image-file" accept="image/*">
-            <div class="upload-area__icon">📷</div>
-            <div class="upload-area__text">
-              <strong>Toca para subir una foto</strong><br>
-              Desde la cámara o galería
-            </div>
+      
+      <div class="modal-body-simple">
+        <!-- Foto principal -->
+        <div class="form-group-simple">
+          <label>Foto del producto</label>
+          <div class="upload-simple" id="upload-area">
+            <div class="icono">📷</div>
+            <div class="text">Toca para agregar foto</div>
           </div>
-          <div class="img-preview" id="img-preview" style="display:none">
-            <img id="img-preview-img" src="" alt="Vista previa">
-            <button type="button" class="btn-change-img" id="btn-change-img">📷 Cambiar foto</button>
+          <div class="upload-preview-simple" id="img-preview" style="display:none">
+            <img id="img-preview-img" src="">
+            <button class="change-btn" id="btn-change-img">Cambiar foto</button>
           </div>
+          <input type="file" id="f-image-file" accept="image/*" style="display:none">
           <input type="hidden" id="f-image-url">
         </div>
 
-        <div class="form-group">
-          <label>Imagen 2 (opcional)</label>
-          <div class="upload-area" id="upload-area2">
-            <input type="file" id="f-image-file2" accept="image/*">
-            <div class="upload-area__icon">📷</div>
-            <div class="upload-area__text">
-              <strong>Segunda foto</strong><br>
-              Opcional
-            </div>
-          </div>
-          <div class="img-preview" id="img-preview2" style="display:none">
-            <img id="img-preview-img2" src="" alt="Vista previa 2">
-            <button type="button" class="btn-change-img" id="btn-change-img2">📷 Cambiar</button>
-          </div>
-          <input type="hidden" id="f-image-url2">
+        <!-- Nombre -->
+        <div class="form-group-simple">
+          <label>Nombre</label>
+          <input type="text" id="f-name" placeholder="Ej: Pulsera Tibetana">
         </div>
 
-        <div class="form-group">
-          <label>Imagen 3 (opcional)</label>
-          <div class="upload-area" id="upload-area3">
-            <input type="file" id="f-image-file3" accept="image/*">
-            <div class="upload-area__icon">📷</div>
-            <div class="upload-area__text">
-              <strong>Tercera foto</strong><br>
-              Opcional
-            </div>
-          </div>
-          <div class="img-preview" id="img-preview3" style="display:none">
-            <img id="img-preview-img3" src="" alt="Vista previa 3">
-            <button type="button" class="btn-change-img" id="btn-change-img3">📷 Cambiar</button>
-          </div>
-          <input type="hidden" id="f-image-url3">
+        <!-- Precio -->
+        <div class="form-group-simple">
+          <label>Precio ($)</label>
+          <input type="number" id="f-price" placeholder="25" min="0">
         </div>
 
+        <!-- Categoria -->
+        <div class="form-group-simple">
+          <label>Categoría</label>
+          <div class="categoria-opciones" id="categoria-opciones">
+            <label class="categoria-opcion"><input type="radio" name="cat" value="anillos"> 💍 Anillos</label>
+            <label class="categoria-opcion"><input type="radio" name="cat" value="pulseras"> 💎 Pulseras</label>
+            <label class="categoria-opcion"><input type="radio" name="cat" value="collares"> 📿 Collares</label>
+            <label class="categoria-opcion"><input type="radio" name="cat" value="aretes"> 🎀 Aretes</label>
+            <label class="categoria-opcion"><input type="radio" name="cat" value="earcuffs"> 🎧 Earcuffs</label>
+            <label class="categoria-opcion"><input type="radio" name="cat" value="sets"> ✨ Sets</label>
+          </div>
+        </div>
+
+        <!-- Fotos adicionales botones -->
+        <button class="btn-foto-adicional" id="add-foto2" style="display:none">+ Agregar otra foto</button>
+        <button class="btn-foto-adicional" id="add-foto3" style="display:none">+ Agregar otra foto</button>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn-cancel" id="modal-cancel">Cancelar</button>
-        <button class="btn-save" id="save-product-btn">Guardar producto</button>
+      <div class="modal-footer-simple">
+        <button class="btn-simple btn-cancelar" id="modal-cancel">Cancelar</button>
+        <button class="btn-simple btn-guardar" id="save-product-btn">Guardar</button>
       </div>
-
     </div>
-  </div>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast" role="status" aria-live="polite">
-    <span>✓</span>
-    <span id="toast-msg"></span>
   </div>
 
   <script src="app.js"></script>
   <script>
-    // Imagen 1
-    const uploadArea = document.getElementById('upload-area');
-    const fileInput = document.getElementById('f-image-file');
-    const preview = document.getElementById('img-preview');
-    const previewImg = document.getElementById('img-preview-img');
-    const imageUrlInput = document.getElementById('f-image-url');
-    const btnChangeImg = document.getElementById('btn-change-img');
+    // Admin SIMPLE - Ultra intuitivo
+    const API_URL = 'https://aguamarina-backend-q7gd.onrender.com';
+    const STORE_ID = 'karaz';
+    let allProducts = [];
+    let filteredProducts = [];
+    let selectedProduct = null;
+    let editingId = null;
 
-    // Imagen 2
-    const uploadArea2 = document.getElementById('upload-area2');
-    const fileInput2 = document.getElementById('f-image-file2');
-    const preview2 = document.getElementById('img-preview2');
-    const previewImg2 = document.getElementById('img-preview-img2');
-    const imageUrlInput2 = document.getElementById('f-image-url2');
-    const btnChangeImg2 = document.getElementById('btn-change-img2');
+    // Login
+    document.getElementById('login-pass').addEventListener('keyup', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('login-btn').addEventListener('click', doLogin);
+    document.getElementById('admin-logout').addEventListener('click', () => { localStorage.removeItem(STORE_ID + '_admin_logged'); location.reload(); });
 
-    // Imagen 3
-    const uploadArea3 = document.getElementById('upload-area3');
-    const fileInput3 = document.getElementById('f-image-file3');
-    const preview3 = document.getElementById('img-preview3');
-    const previewImg3 = document.getElementById('img-preview-img3');
-    const imageUrlInput3 = document.getElementById('f-image-url3');
-    const btnChangeImg3 = document.getElementById('btn-change-img3');
-
-    const saveBtn = document.getElementById('save-product-btn');
-
-    // Imagen 1 handlers
-    uploadArea.addEventListener('click', () => { fileInput.value = ''; fileInput.click(); });
-    btnChangeImg.addEventListener('click', () => { fileInput.value = ''; fileInput.click(); });
-    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
-    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
-    uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('drag-over'); const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) handleImageUpload(file, 1); });
-    fileInput.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleImageUpload(file, 1); });
-
-    // Imagen 2 handlers
-    uploadArea2.addEventListener('click', () => { fileInput2.value = ''; fileInput2.click(); });
-    btnChangeImg2.addEventListener('click', () => { fileInput2.value = ''; fileInput2.click(); });
-    uploadArea2.addEventListener('dragover', e => { e.preventDefault(); uploadArea2.classList.add('drag-over'); });
-    uploadArea2.addEventListener('dragleave', () => uploadArea2.classList.remove('drag-over'));
-    uploadArea2.addEventListener('drop', e => { e.preventDefault(); uploadArea2.classList.remove('drag-over'); const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) handleImageUpload(file, 2); });
-    fileInput2.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleImageUpload(file, 2); });
-
-    // Imagen 3 handlers
-    uploadArea3.addEventListener('click', () => { fileInput3.value = ''; fileInput3.click(); });
-    btnChangeImg3.addEventListener('click', () => { fileInput3.value = ''; fileInput3.click(); });
-    uploadArea3.addEventListener('dragover', e => { e.preventDefault(); uploadArea3.classList.add('drag-over'); });
-    uploadArea3.addEventListener('dragleave', () => uploadArea3.classList.remove('drag-over'));
-    uploadArea3.addEventListener('drop', e => { e.preventDefault(); uploadArea3.classList.remove('drag-over'); const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) handleImageUpload(file, 3); });
-    fileInput3.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleImageUpload(file, 3); });
-
-    function handleImageUpload(file, num) {
-      if (!file || !file.type.startsWith('image/')) {
-        showToast('⚠️ Selecciona una imagen válida');
-        return;
+    async function doLogin() {
+      const pass = document.getElementById('login-pass').value;
+      const errorEl = document.getElementById('login-error');
+      errorEl.classList.remove('show');
+      
+      try {
+        const res = await fetch(API_URL + '/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-store-id': STORE_ID },
+          body: JSON.stringify({ password: pass })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem(STORE_ID + '_admin_logged', pass);
+          showAdminPanel();
+        } else {
+          errorEl.classList.add('show');
+        }
+      } catch {
+        errorEl.textContent = 'Sin conexión';
+        errorEl.classList.add('show');
       }
-
-      const uploadAreaN = num === 1 ? uploadArea : num === 2 ? uploadArea2 : uploadArea3;
-      const previewN = num === 1 ? preview : num === 2 ? preview2 : preview3;
-      const previewImgN = num === 1 ? previewImg : num === 2 ? previewImg2 : previewImg3;
-      const imageUrlInputN = num === 1 ? imageUrlInput : num === 2 ? imageUrlInput2 : imageUrlInput3;
-
-      uploadAreaN.style.display = 'none';
-      previewN.style.display = 'block';
-
-      const reader = new FileReader();
-      reader.onload = e => { previewImgN.src = e.target.result; };
-      reader.readAsDataURL(file);
-
-      uploadToCloudinary(file, imageUrlInputN, previewImgN, num);
     }
 
-    function uploadToCloudinary(file, imageUrlInputN, previewImgN, num) {
-      showToast(`Subiendo imagen ${num}...`);
-      saveBtn.disabled = true;
-      saveBtn.style.opacity = '0.5';
-      saveBtn.style.cursor = 'not-allowed';
+    // Verificar si ya está logueado
+    if (localStorage.getItem(STORE_ID + '_admin_logged')) {
+      showAdminPanel();
+    }
 
+    function showAdminPanel() {
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('admin-main').classList.add('show');
+      loadProducts();
+      setupEventos();
+    }
+
+    async function loadProducts() {
+      try {
+        const res = await fetch(API_URL + '/api/productos', { headers: { 'x-store-id': STORE_ID } });
+        allProducts = await res.json();
+        filtrarYrender();
+      } catch (e) { console.error(e); }
+    }
+
+    function setupEventos() {
+      // Filtros
+      document.querySelectorAll('.filtro-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          filtrarYrender();
+        });
+      });
+
+      // Busqueda
+      document.getElementById('search-products').addEventListener('input', filtrarYrender);
+
+      // Nuevo producto
+      document.getElementById('add-product-btn').addEventListener('click', () => openModal(null));
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+      document.getElementById('modal-cancel').addEventListener('click', closeModal);
+      document.getElementById('save-product-btn').addEventListener('click', saveProduct);
+      document.getElementById('btn-change-img').addEventListener('click', () => document.getElementById('f-image-file').click());
+
+      // Upload foto
+      document.getElementById('upload-area').addEventListener('click', () => document.getElementById('f-image-file').click());
+      document.getElementById('f-image-file').addEventListener('change', handleImageUpload);
+
+      // Menu tarjeta
+      document.getElementById('menu-editar').addEventListener('click', () => { hideMenu(); openModal(selectedProduct); });
+      document.getElementById('menu-eliminar').addEventListener('click', () => { hideMenu(); deleteProduct(selectedProduct.id); });
+      document.getElementById('menu-cerrar').addEventListener('click', hideMenu);
+
+      // Categorias radio
+      document.querySelectorAll('.categoria-opcion').forEach(op => {
+        op.addEventListener('click', () => {
+          document.querySelectorAll('.categoria-opcion').forEach(o => o.classList.remove('active'));
+          op.classList.add('active');
+        });
+      });
+    }
+
+    function filtrarYrender() {
+      const catActive = document.querySelector('.filtro-btn.active').dataset.cat;
+      const search = document.getElementById('search-products').value.toLowerCase();
+
+      filteredProducts = allProducts.filter(p => {
+        const matchCat = !catActive || p.category === catActive;
+        const matchSearch = !search || (p.name && p.name.toLowerCase().includes(search));
+        return matchCat && matchSearch;
+      });
+
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('admin-grid');
+      document.getElementById('product-count').textContent = filteredProducts.length + ' productos';
+      
+      grid.innerHTML = filteredProducts.map(p => `
+        <div class="product-card-admin" onclick="seleccionarProducto('${p.id}')">
+          <img src="${p.image || 'https://placehold.co/300x300/f5f5f5/999?text=📷'}" alt="${p.name}">
+          <div class="info">
+            <div class="nombre">${p.name || 'Sin nombre'}</div>
+            <div class="precio">$${p.price || 0}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function seleccionarProducto(producto) {
+      selectedProduct = allProducts.find(p => p.id === producto);
+      if (selectedProduct) {
+        document.getElementById('tarjeta-menu').classList.add('show');
+      }
+    }
+
+    function hideMenu() {
+      document.getElementById('tarjeta-menu').classList.remove('show');
+    }
+
+    function openModal(producto) {
+      editingId = producto ? producto.id : null;
+      document.getElementById('modal-title').textContent = producto ? 'Editar producto' : 'Nuevo producto';
+      
+      document.getElementById('f-name').value = producto?.name || '';
+      document.getElementById('f-price').value = producto?.price || '';
+      
+      // Categoria
+      document.querySelectorAll('.categoria-opcion').forEach(o => {
+        o.classList.remove('active');
+        if (o.querySelector('input').value === producto?.category) o.classList.add('active');
+      });
+      
+      // Foto
+      if (producto?.image) {
+        document.getElementById('upload-area').style.display = 'none';
+        document.getElementById('img-preview').style.display = 'block';
+        document.getElementById('img-preview-img').src = producto.image;
+        document.getElementById('f-image-url').value = producto.image;
+      } else {
+        document.getElementById('upload-area').style.display = 'block';
+        document.getElementById('img-preview').style.display = 'none';
+        document.getElementById('img-preview-img').src = '';
+        document.getElementById('f-image-url').value = '';
+      }
+
+      document.getElementById('product-modal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('product-modal').classList.remove('show');
+    }
+
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('upload-area').style.display = 'none';
+        document.getElementById('img-preview').style.display = 'block';
+        document.getElementById('img-preview-img').src = e.target.result;
+        uploadToCloudinary(file);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function uploadToCloudinary(file) {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', CONFIG.cloudinary?.uploadPreset || 'aguamarina');
-
-      const cloudName = CONFIG.cloudinary?.cloudName || 'dh6kkq9w7';
-      fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      formData.append('upload_preset', 'aguamarina');
+      
+      fetch('https://api.cloudinary.com/v1_1/dh6kkq9w7/image/upload', {
         method: 'POST',
         body: formData
       })
       .then(res => res.json())
       .then(data => {
         if (data.secure_url) {
-          imageUrlInputN.value = data.secure_url;
-          previewImgN.src = data.secure_url;
-          showToast(`✓ Imagen ${num} subida`);
-        } else {
-          showToast(`⚠️ Error al subir imagen ${num}`);
+          document.getElementById('f-image-url').value = data.secure_url;
         }
       })
-      .catch(() => {
-        showToast('⚠️ Error de conexión');
-      })
-      .finally(() => {
-        saveBtn.disabled = false;
-        saveBtn.style.opacity = '';
-        saveBtn.style.cursor = '';
-      });
+      .catch(console.error);
     }
 
-    initAdmin();
+    async function saveProduct() {
+      const name = document.getElementById('f-name').value.trim();
+      const price = parseInt(document.getElementById('f-price').value);
+      
+      if (!name || isNaN(price)) {
+        alert('Completa nombre y precio');
+        return;
+      }
+
+      const categoria = document.querySelector('.categoria-opcion.active input')?.value || 'anillos';
+      const password = localStorage.getItem(STORE_ID + '_admin_logged');
+      const data = {
+        nombre: name,
+        precio: price,
+        categoria: categoria,
+        imagen: document.getElementById('f-image-url').value
+      };
+
+      try {
+        if (editingId) {
+          await fetch(API_URL + '/api/productos/' + editingId, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'x-store-id': STORE_ID, 'x-admin-password': password },
+            body: JSON.stringify(data)
+          });
+        } else {
+          data.codigo = 'NEW-' + Date.now();
+          await fetch(API_URL + '/api/productos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-store-id': STORE_ID, 'x-admin-password': password },
+            body: JSON.stringify(data)
+          });
+        }
+        closeModal();
+        await loadProducts();
+      } catch (e) {
+        alert('Error al guardar');
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('¿Eliminar este producto?')) return;
+      
+      const password = localStorage.getItem(STORE_ID + '_admin_logged');
+      
+      try {
+        await fetch(API_URL + '/api/productos/' + id, {
+          method: 'DELETE',
+          headers: { 'x-store-id': STORE_ID, 'x-admin-password': password }
+        });
+        await loadProducts();
+      } catch (e) {
+        alert('Error al eliminar');
+      }
+    }
   </script>
 </body>
 </html>

@@ -105,7 +105,7 @@ async function loadConfig() {
   const defaults = {
     storeId: STORE_ID,
     whatsappNumber: '584242422452',
-    currencySymbol: 'Bs',
+    currencySymbol: '$',
     currency: 'VES'
   };
   CONFIG = defaults;
