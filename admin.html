@@ -262,7 +262,7 @@
     var catActiva = document.querySelector('.filtro-btn.active').dataset.cat;
     var busq = document.getElementById('buscarInput').value.toLowerCase();
     var filt = productos.filter(function(p) {
-      var ok = (!catActiva || p.category === catActiva);
+      var ok = (!catActiva || (p.categoria || p.category) === catActiva);
       var ok2 = (!busq || (p.name && p.name.toLowerCase().includes(busq)));
       return ok && ok2;
     });
@@ -273,7 +273,7 @@
     document.getElementById('countDisplay').innerHTML = list.length + ' productos';
     var html = '';
     list.forEach(function(p) {
-      var img = p.image || 'https://placehold.co/200x200/eee/999?text=📷';
+      var img = p.imagen || p.image || 'https://placehold.co/200x200/eee/999?text=📷';
       var nombre = p.nombre || p.name || 'Sin nombre';
       var precio = p.precio || p.price || 0;
       html += '<div class="card" onclick="seleccionar(\'' + p.id + '\')"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div></div>';
