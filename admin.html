@@ -360,8 +360,15 @@
   }
   
   function abrirEditar() {
-    var prodId = document.getElementById('menuEditBtn').dataset.prodId;
-    if (!prodId) { alert('No hay producto seleccionado'); return; }
+    var editBtn = document.getElementById('menuEditBtn');
+    if (!editBtn) { alert('Error: botón no encontrado'); return; }
+    var prodId = editBtn.dataset.prodId;
+    if (!prodId) {
+      if (productos.length > 0) {
+        prodId = productos[0].codigo || productos[0].id;
+      }
+      if (!prodId) { alert('No hay producto seleccionado'); return; }
+    }
     seleccionado = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
     if (!seleccionado) return;
     cerrarMenu();
@@ -464,8 +471,16 @@
   }
   
   function eliminar() {
-    var prodId = document.getElementById('menuDeleteBtn').dataset.prodId;
-    if (!prodId) { alert('No hay producto seleccionado'); return; }
+    var deleteBtn = document.getElementById('menuDeleteBtn');
+    if (!deleteBtn) { alert('Error: botón no encontrado'); return; }
+    var prodId = deleteBtn.dataset.prodId;
+    if (!prodId) { 
+      // Buscar en productos locales como respaldo
+      if (productos.length > 0) {
+        prodId = productos[0].codigo || productos[0].id;
+      }
+      if (!prodId) { alert('No hay producto seleccionado'); return; }
+    }
     var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
     var prodNombre = prod ? (prod.nombre || prod.name || 'este producto') : 'este producto';
     if (!confirm('¿Eliminar el producto "' + prodNombre + '"?')) return;
