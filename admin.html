@@ -274,8 +274,8 @@
     var html = '';
     list.forEach(function(p) {
       var img = p.image || 'https://placehold.co/200x200/eee/999?text=📷';
-      var nombre = p.name || 'Sin nombre';
-      var precio = p.price || 0;
+      var nombre = p.nombre || p.name || 'Sin nombre';
+      var precio = p.precio || p.price || 0;
       html += '<div class="card" onclick="seleccionar(\'' + p.id + '\')"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div></div>';
     });
     document.getElementById('gridDisplay').innerHTML = html;
