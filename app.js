@@ -567,10 +567,23 @@ async function initProductDetail() {
 }
 
 function renderProductDetail(p) {
-  const imgSrc = cloudinaryThumb(p.image, 800) || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
   const cat = CONFIG.categories?.find(c => c.id === p.category);
   const backUrl = `index.html?cat=${encodeURIComponent(p.category)}`;
   document.title = `${p.name} · ${CONFIG.storeName || 'Catálogo Web'}`;
+  
+  const images = [p.image, p.imagen2, p.imagen3].filter(Boolean);
+  const mainImg = cloudinaryThumb(images[0], 800) || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
+  
+  const thumbnails = images.map((img, idx) => {
+    const thumbSrc = cloudinaryThumb(img, 200) || `https://placehold.co/100x100/D6F2EE/1A8A78?text=${idx+1}`;
+    return `<img class="product-detail__thumb ${idx === 0 ? 'active' : ''}" 
+      src="${sanitize(thumbSrc)}" 
+      onclick="openLightbox(${idx})" 
+      alt="${sanitize(p.name)} ${idx + 1}">`;
+  }).join('');
+  
+  const lightboxImages = images.map(img => cloudinaryThumb(img, 1200) || '').join('|||');
+  
   $('product-detail').innerHTML = `
     <div class="product-detail__gallery">
       <a href="${backUrl}" class="back-btn">
@@ -580,8 +593,11 @@ function renderProductDetail(p) {
         </svg>
         <span>Volver</span>
       </a>
-      <img src="${sanitize(imgSrc)}" alt="${sanitize(p.name)}"
+      <img src="${sanitize(mainImg)}" alt="${sanitize(p.name)}"
+        class="product-detail__main-img"
+        onclick="openLightbox(0)"
         onerror="this.src='https://placehold.co/600x600/D6F2EE/1A8A78?text=✨'">
+      ${images.length > 1 ? `<div class="product-detail__thumbs">${thumbnails}</div>` : ''}
     </div>
     <div class="product-detail__info">
       <p class="product-detail__cat">${sanitize(cat ? cat.label : p.category)}</p>
@@ -595,7 +611,8 @@ function renderProductDetail(p) {
         </button>
         <a href="cart.html" class="btn-outline">Ver carrito</a>
       </div>
-    </div>`;
+    </div>
+    <script>window.__lightboxImages = "${sanitize(lightboxImages)}".split('|||').filter(Boolean);</script>`;
 }
 
 // ══════════════════════════════════════════════
@@ -887,4 +904,42 @@ async function deleteProduct(id) {
   } catch (e) {
     showToast('⚠️ Error: ' + e.message);
   }
+}
+
+// ══════════════════════════════════════════════
+// LIGHTBOX for product images
+// ══════════════════════════════════════════════
+
+let currentLightboxIndex = 0;
+
+function openLightbox(index) {
+  const images = window.__lightboxImages || [];
+  if (!images.length) return;
+  currentLightboxIndex = index;
+  const lightbox = $('lightbox');
+  const img = $('lightbox-img');
+  if (lightbox && img) {
+    img.src = images[currentLightboxIndex] || images[0];
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeLightbox(event) {
+  if (event && event.target !== event.currentTarget && event.target.tagName === 'IMG') return;
+  const lightbox = $('lightbox');
+  if (lightbox) {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function changeLightboxImage(delta) {
+  const images = window.__lightboxImages || [];
+  if (!images.length) return;
+  currentLightboxIndex += delta;
+  if (currentLightboxIndex < 0) currentLightboxIndex = images.length - 1;
+  if (currentLightboxIndex >= images.length) currentLightboxIndex = 0;
+  const img = $('lightbox-img');
+  if (img) img.src = images[currentLightboxIndex];
 }

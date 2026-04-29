@@ -3,40 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2BB5A0">
-  <title id="page-title">Producto</title>
+  <meta name="theme-color" content="#C9A962">
+  <title id="page-title">Producto - Karaz</title>
   <link rel="icon" id="favicon" href="">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <header class="header">
-    <a href="index.html" class="header__logo">
-      <div class="header__mark">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" stroke-width="1"/>
-          <path d="M12 6c0 3.3-2.7 6-6 6 3.3 0 6 2.7 6 6 0-3.3 2.7-6 6-6-3.3 0-6-2.7-6-6z" stroke-width="1"/>
-        </svg>
-      </div>
-      <span class="header__name" id="store-name"></span>
-    </a>
-    <nav class="header__actions">
-      <a href="cart.html" class="header__icon-btn" aria-label="Carrito">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
-        <span class="cart-badge" id="cart-badge">0</span>
+  <!-- ── NAVBAR (igual que index.html) ────────────────────────────── -->
+  <header class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__brand">
+        <img src="imagenes/logo_granate.png" alt="Karaz" class="navbar__logo-img">
       </a>
-    </nav>
+
+      <div class="navbar__actions">
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/karazvzla/"
+           id="ig-link" class="navbar__social"
+           target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+            <defs>
+              <radialGradient id="ig" cx="30%" cy="107%" r="130%">
+                <stop offset="0%"  stop-color="#fdf497"/>
+                <stop offset="30%" stop-color="#fd5949"/>
+                <stop offset="60%" stop-color="#d6249f"/>
+                <stop offset="90%" stop-color="#285AEB"/>
+              </radialGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#ig)"/>
+            <circle cx="12" cy="12" r="4.2" fill="none" stroke="white" stroke-width="1.8"/>
+            <circle cx="17.3" cy="6.7" r="1.1" fill="white"/>
+          </svg>
+        </a>
+        <!-- TikTok -->
+        <a href="https://www.tiktok.com/@karazvzla"
+           id="tt-link" class="navbar__social"
+           target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.77 0 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-6.13 6.3 6.34 6.34 0 0 0 12.67 0V8.69a8.17 8.17 0 0 0 4.78 1.52V6.77a4.85 4.85 0 0 1-1.01-.08z" fill="#69C9D0" transform="translate(1,0)"/>
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.77 0 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-6.13 6.3 6.34 6.34 0 0 0 12.67 0V8.69a8.17 8.17 0 0 0 4.78 1.52V6.77a4.85 4.85 0 0 1-1.01-.08z" fill="#EE1D52" transform="translate(-1,0)"/>
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.77 0 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-6.13 6.3 6.34 6.34 0 0 0 12.67 0V8.69a8.17 8.17 0 0 0 4.78 1.52V6.77a4.85 4.85 0 0 1-1.01-.08z" fill="#010101"/>
+          </svg>
+        </a>
+        <!-- Carrito -->
+        <a href="cart.html" class="navbar__cart" aria-label="Ver carrito">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="navbar__cart-badge" id="cart-badge">0</span>
+        </a>
+      </div>
+    </div>
   </header>
 
+  <!-- ── PRODUCT DETAIL ────────────────────────────── -->
   <div class="product-detail-page" id="product-detail">
     <div style="grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--mid);">
       <div style="font-size:2rem; margin-bottom:12px; opacity:.3">🌊</div>
       <p style="font-family:var(--font-display);">Cargando producto...</p>
     </div>
+  </div>
+
+  <!-- ── LIGHTBOX (modal para ver imágenes) ─────────────── -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <button class="lightbox__close" onclick="closeLightbox(event)">&times;</button>
+    <button class="lightbox__prev" onclick="changeLightboxImage(-1)">&#10094;</button>
+    <img class="lightbox__img" id="lightbox-img" src="" alt="">
+    <button class="lightbox__next" onclick="changeLightboxImage(1)">&#10095;</button>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite">
