@@ -360,63 +360,58 @@
   }
   
   function abrirEditar() {
-    console.log('abrireditar - start');
     var editBtn = document.getElementById('menuEditBtn');
-    console.log('editBtn:', editBtn);
     if (!editBtn) { alert('Error: botón no encontrado'); return; }
     var prodId = editBtn.dataset.prodId;
-    console.log('prodId from dataset:', prodId);
-    if (!prodId) {
-      console.log('no prodId in dataset, checking productos');
-      if (productos.length > 0) {
-        prodId = productos[0].codigo || productos[0].id;
-      }
-      console.log('fallback prodId:', prodId);
-      if (!prodId) { alert('No hay producto seleccionado'); return; }
-    }
-    console.log('buscando producto con id:', prodId);
-    console.log('productos[0]:', productos[0]);
-    seleccionado = productos.find(function(p) { 
-      console.log('comparando', p.codigo, p.id, 'con', prodId);
-      return (p.codigo || p.id) === prodId; 
-    });
-    console.log('seleccionado:', seleccionado);
-    if (!seleccionado || typeof seleccionado !== 'object') { 
+    if (!prodId) { alert('No hay producto seleccionado'); return; }
+    
+    var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
+    if (!prod || typeof prod !== 'object') { 
       alert('Producto no encontrado'); 
       return; 
     }
-    console.log('continuando con editar');
-    cerrarMenu();
+    
+    // Extraer TODOS los datos ANTES de cerrar el menú
+    var nombre = (prod.nombre || prod.name || '');
+    var precio = (prod.precio || prod.price || '');
+    var destacadoOrden = prod.destacadoOrden || 0;
+    var imagen = prod.imagen || prod.image || '';
+    var imagen2 = prod.imagen2 || '';
+    var imagen3 = prod.imagen3 || '';
+    var categoria = prod.categoria || prod.category || '';
+    
+    // Cerrar menú y establecer editando DESPUÉS de extraer datos
+    document.getElementById('productMenu').classList.remove('show');
     editando = prodId;
+    
     document.getElementById('modalTitle').innerHTML = 'Editar producto';
-    var nombre = (seleccionado.nombre || seleccionado.name || '');
-    var precio = (seleccionado.precio || seleccionado.price || '');
     document.getElementById('nameInput').value = nombre;
     document.getElementById('priceInput').value = precio;
+    document.getElementById('destacadoInput').value = String(destacadoOrden);
     // Destacado
     document.getElementById('destacadoInput').value = String(seleccionado.destacadoOrden || 0);
     // Foto 1
-    document.getElementById('imageUrl').value = seleccionado.imagen || seleccionado.image || '';
-    if (seleccionado.imagen || seleccionado.image) {
-      document.getElementById('previewImg').src = seleccionado.imagen || seleccionado.image;
+    document.getElementById('imageUrl').value = imagen;
+    if (imagen) {
+      document.getElementById('previewImg').src = imagen;
       document.getElementById('uploadBox').classList.add('show');
     }
     // Foto 2
-    document.getElementById('imageUrl2').value = seleccionado.imagen2 || '';
-    if (seleccionado.imagen2) {
-      document.getElementById('previewImg2').src = seleccionado.imagen2;
+    document.getElementById('imageUrl2').value = imagen2;
+    if (imagen2) {
+      document.getElementById('previewImg2').src = imagen2;
       document.getElementById('uploadBox2').classList.add('show');
     }
     // Foto 3
-    document.getElementById('imageUrl3').value = seleccionado.imagen3 || '';
-    if (seleccionado.imagen3) {
-      document.getElementById('previewImg3').src = seleccionado.imagen3;
+    document.getElementById('imageUrl3').value = imagen3;
+    if (imagen3) {
+      document.getElementById('previewImg3').src = imagen3;
       document.getElementById('uploadBox3').classList.add('show');
     }
-    var cat = seleccionado.categoria || seleccionado.category;
+    // Categoría
     document.querySelectorAll('.cat').forEach(function(c) {
       c.classList.remove('active');
-      if (c.querySelector('input').value === cat) c.classList.add('active');
+      if (c.querySelector('input').value === categoria) c.classList.add('active');
     });
     document.getElementById('productModal').classList.add('show');
   }
