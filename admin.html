@@ -571,6 +571,7 @@
     var pass = document.getElementById('passInput').value;
     var errorEl = document.getElementById('loginError');
     errorEl.classList.remove('show');
+    errorEl.textContent = 'Datos incorrectos';
     
     fetch(API + '/api/login', {
       method: 'POST',
@@ -579,15 +580,18 @@
     })
     .then(function(r) { return r.json(); })
     .then(function(d) {
+      console.log('Login response:', d);
       if (d.success) {
         localStorage.setItem(STORE + '_logged', pass);
         mostrarAdmin();
       } else {
+        errorEl.textContent = d.message || 'Contraseña incorrecta';
         errorEl.classList.add('show');
       }
     })
-    .catch(function() {
-      errorEl.textContent = 'Sin conexión';
+    .catch(function(err) {
+      console.log('Login error:', err);
+      errorEl.textContent = 'Sin conexión al servidor';
       errorEl.classList.add('show');
     });
   }
