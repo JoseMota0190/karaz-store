@@ -708,12 +708,18 @@
       headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': pass },
       body: JSON.stringify(data)
     })
-    .then(function() { 
-        alert('✓ Producto guardado con éxito!');
-        cargarProductos();
-        cerrarModal();
+.then(function() { 
+        if (confirm('✓ Producto guardado con éxito!\n\n¿Desea guardar otro producto?')) {
+          cargarProductos();
+          cerrarModal();
+          abrirNuevo();
+        } else {
+          cargarProductos();
+          cerrarModal();
+          location.reload();
+        }
       })
-    .catch(function() { alert('Error al guardar'); });
+      .catch(function() { alert('Error al guardar'); });
   }
   
   function eliminar() {
