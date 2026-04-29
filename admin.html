@@ -554,17 +554,27 @@
       document.getElementById('uploadBox3').classList.add('show');
     }
     // Categoría - asegurar que se seleccione
+    // Primero quitar active de todos
+    var catInputs = document.querySelectorAll('.cats input[name="cat"]');
+    catInputs.forEach(function(input) { input.checked = false; });
+    document.querySelectorAll('.cat').forEach(function(c) { c.classList.remove('active'); });
+    
+    // Buscar y seleccionar la categoría del producto
     var catEncontrada = false;
-    document.querySelectorAll('.cat').forEach(function(c) {
-      c.classList.remove('active');
-      if (c.querySelector('input').value === categoria) {
-        c.classList.add('active');
-        catEncontrada = true;
-      }
-    });
+    if (categoria) {
+      catInputs.forEach(function(input) {
+        if (input.value === categoria) {
+          input.checked = true;
+          input.closest('.cat').classList.add('active');
+          catEncontrada = true;
+        }
+      });
+    }
+    
     // Si no encuentra la categoría, seleccionar la primera
-    if (!catEncontrada && document.querySelector('.cat')) {
-      document.querySelector('.cat').classList.add('active');
+    if (!catEncontrada && catInputs.length > 0) {
+      catInputs[0].checked = true;
+      catInputs[0].closest('.cat').classList.add('active');
     }
     document.getElementById('productModal').classList.add('show');
   }
