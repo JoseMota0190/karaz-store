@@ -319,14 +319,14 @@
         var nombre = p.nombre || p.name || 'Sin nombre';
         var precio = p.precio || p.price || 0;
         var prodId = p.codigo || p.id;
-        html += '<div class="card" style="position:relative;"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div><div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();abrirEditar(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">✏️</button><button onclick="event.stopPropagation();eliminarProducto(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div></div>';
+        html += '<div class="card" style="position:relative;"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + '</div><div class="card-precio">$' + precio + '</div></div><div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();abrirEditarCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">✏️</button><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div></div>';
       });
     }
     document.getElementById('gridDisplay').innerHTML = html;
     document.getElementById('countDisplay').innerHTML = list.length + ' productos';
   }
   
-  function abrirEditar(prodId) {
+  function abrirEditarCard(prodId) {
     var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
     if (!prod) return;
     document.getElementById('modalTitle').textContent = 'Editar';
@@ -349,7 +349,7 @@
     currentProductId = prodId;
   }
   
-  function eliminarProducto(prodId) {
+  function eliminarProductoCard(prodId) {
     if (!confirm('¿Eliminar este producto?')) return;
     var token = localStorage.getItem('adminToken');
     fetch(API + '/api/productos/' + prodId, {
@@ -759,6 +759,8 @@
   window.eliminar = eliminar;
   window.cerrarModal = cerrarModal;
   window.subirFoto = subirFoto;
+  window.abrirEditarCard = abrirEditarCard;
+  window.eliminarProductoCard = eliminarProductoCard;
 })();
 </script>
 </body>
