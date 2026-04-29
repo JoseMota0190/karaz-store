@@ -567,6 +567,17 @@ async function initProductDetail() {
     return;
   }
   renderProductDetail(product);
+  
+  // Lightbox: soporte para desktop y móvil
+  setTimeout(() => {
+    const mainImg = document.querySelector('.product-detail__main-img');
+    const openFn = () => openLightbox(0);
+    mainImg?.addEventListener('click', openFn);
+    mainImg?.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      openFn();
+    }, { passive: false });
+  }, 100);
 }
 
 function renderProductDetail(p) {

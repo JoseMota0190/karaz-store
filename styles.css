@@ -2764,6 +2764,8 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   height: 100%;
   background: rgba(0,0,0,.95);
   z-index: 9999;
+  align-items: center;
+  justify-content: center;
 }
 
 .lightbox.active {
