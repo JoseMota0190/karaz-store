@@ -297,7 +297,7 @@
   
   function renderCats() {
     var html = '';
-    cats.slice(1).forEach(function(c) {
+    cats.forEach(function(c) {
       html += '<label class="cat" onclick="selCat(this)"><input type="radio" name="cat" value="' + c.id + '">' + c.label + '</label>';
     });
     document.getElementById('catsContainer').innerHTML = html;
