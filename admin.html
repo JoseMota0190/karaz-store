@@ -471,13 +471,9 @@
       body: JSON.stringify(data)
     })
     .then(function() { 
-        var confirmado = confirm('✓ Producto guardado con éxito!\n\n¿Querés agregar otro producto?');
+        alert('✓ Producto guardado con éxito!');
         cargarProductos();
-        if (confirmado) {
-          abrirNuevo();
-        } else {
-          cerrarModal();
-        }
+        cerrarModal();
       })
     .catch(function() { alert('Error al guardar'); });
   }
