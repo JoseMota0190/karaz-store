@@ -120,7 +120,7 @@
     <div class="modal-body">
       <input type="file" id="fileInput" accept="image/*" style="display:none">
       <div class="form-group">
-        <label>Foto</label>
+        <label>Foto principal (obligatoria)</label>
         <div class="upload" id="uploadBox">
           <div class="icon">📷</div>
           <div class="text">Toca para agregar</div>
@@ -128,6 +128,31 @@
         </div>
         <input type="hidden" id="imageUrl">
       </div>
+      
+      <!-- Foto 2 opcional -->
+      <div class="form-group">
+        <label>Foto 2 (opcional)</label>
+        <div class="upload" id="uploadBox2">
+          <div class="icon">📷</div>
+          <div class="text">Agregar segunda foto</div>
+          <img id="previewImg2" src="">
+        </div>
+        <input type="file" id="fileInput2" accept="image/*" style="display:none">
+        <input type="hidden" id="imageUrl2">
+      </div>
+      
+      <!-- Foto 3 opcional -->
+      <div class="form-group">
+        <label>Foto 3 (opcional)</label>
+        <div class="upload" id="uploadBox3">
+          <div class="icon">📷</div>
+          <div class="text">Agregar tercera foto</div>
+          <img id="previewImg3" src="">
+        </div>
+        <input type="file" id="fileInput3" accept="image/*" style="display:none">
+        <input type="hidden" id="imageUrl3">
+      </div>
+
       <div class="form-group">
         <label>Nombre</label>
         <input type="text" id="nameInput">
@@ -185,7 +210,14 @@
     document.getElementById('menuDeleteBtn').onclick = eliminar;
     document.getElementById('menuCloseBtn').onclick = cerrarMenu;
     document.getElementById('uploadBox').onclick = function() { document.getElementById('fileInput').click(); };
-    document.getElementById('fileInput').onchange = subirFoto;
+    document.getElementById('fileInput').onchange = function() { subirFoto('fileInput', 'imageUrl', 'previewImg', 'uploadBox'); };
+    document.getElementById('fileInput2').onchange = function() { subirFoto('fileInput2', 'imageUrl2', 'previewImg2', 'uploadBox2'); };
+    document.getElementById('fileInput3').onchange = function() { subirFoto('fileInput3', 'imageUrl3', 'previewImg3', 'uploadBox3'); };
+    
+    // Setup click handlers for upload boxes
+    document.getElementById('uploadBox').onclick = function() { document.getElementById('fileInput').click(); };
+    document.getElementById('uploadBox2').onclick = function() { document.getElementById('fileInput2').click(); };
+    document.getElementById('uploadBox3').onclick = function() { document.getElementById('fileInput3').click(); };
   }
   
   function renderFiltros() {
@@ -301,9 +333,16 @@
     document.getElementById('modalTitle').innerHTML = 'Nuevo producto';
     document.getElementById('nameInput').value = '';
     document.getElementById('priceInput').value = '';
+    // Limpiar fotos
     document.getElementById('imageUrl').value = '';
+    document.getElementById('imageUrl2').value = '';
+    document.getElementById('imageUrl3').value = '';
     document.getElementById('previewImg').src = '';
+    document.getElementById('previewImg2').src = '';
+    document.getElementById('previewImg3').src = '';
     document.getElementById('uploadBox').classList.remove('show');
+    document.getElementById('uploadBox2').classList.remove('show');
+    document.getElementById('uploadBox3').classList.remove('show');
     document.querySelectorAll('.cat').forEach(function(c) { c.classList.remove('active'); });
     document.getElementById('productModal').classList.add('show');
   }
@@ -315,10 +354,23 @@
     document.getElementById('modalTitle').innerHTML = 'Editar producto';
     document.getElementById('nameInput').value = seleccionado.name || '';
     document.getElementById('priceInput').value = seleccionado.price || '';
+    // Foto 1
     document.getElementById('imageUrl').value = seleccionado.image || '';
     if (seleccionado.image) {
       document.getElementById('previewImg').src = seleccionado.image;
       document.getElementById('uploadBox').classList.add('show');
+    }
+    // Foto 2
+    document.getElementById('imageUrl2').value = seleccionado.imagen2 || '';
+    if (seleccionado.imagen2) {
+      document.getElementById('previewImg2').src = seleccionado.imagen2;
+      document.getElementById('uploadBox2').classList.add('show');
+    }
+    // Foto 3
+    document.getElementById('imageUrl3').value = seleccionado.imagen3 || '';
+    if (seleccionado.imagen3) {
+      document.getElementById('previewImg3').src = seleccionado.imagen3;
+      document.getElementById('uploadBox3').classList.add('show');
     }
     document.querySelectorAll('.cat').forEach(function(c) {
       c.classList.remove('active');
@@ -331,35 +383,46 @@
     document.getElementById('productModal').classList.remove('show');
   }
   
-  function subirFoto() {
-    var file = document.getElementById('fileInput').files[0];
+  function subirFoto(fileInputId, imageUrlId, previewImgId, uploadBoxId) {
+    var file = document.getElementById(fileInputId).files[0];
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function(e) {
-      document.getElementById('previewImg').src = e.target.result;
-      document.getElementById('uploadBox').classList.add('show');
+      document.getElementById(previewImgId).src = e.target.result;
+      document.getElementById(uploadBoxId).classList.add('show');
       var fd = new FormData();
       fd.append('file', file);
       fd.append('upload_preset', 'aguamarina');
       fetch('https://api.cloudinary.com/v1_1/dh6kkq9w7/image/upload', { method: 'POST', body: fd })
       .then(function(r) { return r.json(); })
       .then(function(d) {
-        if (d.secure_url) document.getElementById('imageUrl').value = d.secure_url;
+        if (d.secure_url) document.getElementById(imageUrlId).value = d.secure_url;
       });
     };
     reader.readAsDataURL(file);
   }
   
   function guardar() {
-    var nombre = document.getElementById('nameInput').value.trim();
-    var precio = parseInt(document.getElementById('priceInput').value);
-    if (!nombre || isNaN(precio)) { alert('Completa nombre y precio'); return; }
-    var cat = document.querySelector('.cat.active input')?.value || 'anillos';
+    // Validación obligatoria
     var img = document.getElementById('imageUrl').value;
+    if (!img) { alert('Sube al menos una foto'); return; }
+    var nombre = document.getElementById('nameInput').value.trim();
+    if (!nombre) { alert('Ingresa el nombre'); return; }
+    var precio = parseInt(document.getElementById('priceInput').value);
+    if (!precio || isNaN(precio)) { alert('Ingresa el precio'); return; }
+    var cat = document.querySelector('.cat.active input')?.value;
+    if (!cat) { alert('Selecciona una categoría'); return; }
+    
     var pass = localStorage.getItem(STORE + '_logged');
-    var data = { nombre: nombre, precio: precio, categoria: cat };
+    var data = { 
+      nombre: nombre, 
+      precio: precio, 
+      categoria: cat, 
+      imagen: img,
+      imagen2: document.getElementById('imageUrl2')?.value || '',
+      imagen3: document.getElementById('imageUrl3')?.value || ''
+    };
     if (editando) data.codigo = editando;
-    if (img) data.imagen = img;
     var url = editando ? API + '/api/productos/' + editando : API + '/api/productos';
     var metodo = editando ? 'PUT' : 'POST';
     if (!editando) data.codigo = 'NEW-' + Date.now();
@@ -386,6 +449,15 @@
   
   // INICIAR
   init();
+  
+  // Exponer funciones al global para que funcionen los onclick
+  window.selCat = selCat;
+  window.seleccionar = seleccionar;
+  window.cerrarMenu = cerrarMenu;
+  window.abrirEditar = abrirEditar;
+  window.eliminar = eliminar;
+  window.cerrarModal = cerrarModal;
+  window.subirFoto = subirFoto;
 })();
 </script>
 </body>
