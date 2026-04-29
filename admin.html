@@ -445,10 +445,29 @@
   
   function seleccionar(id) {
     seleccionado = productos.find(function(p) { return (p.codigo || p.id) === id; });
-    // Guardar ID también en el botón de eliminar para evitar problemas
     document.getElementById('menuDeleteBtn').dataset.prodId = id;
     document.getElementById('menuEditBtn').dataset.prodId = id;
-    if (seleccionado) document.getElementById('productMenu').classList.add('show');
+    
+    if (currentMode === 'eliminar') {
+      //直接删除，不显示菜单
+      var prodNombre = seleccionado ? (seleccionado.nombre || seleccionado.name || 'este producto') : 'este producto';
+      if (confirm('¿Eliminar el producto "' + prodNombre + '"?')) {
+        var pass = localStorage.getItem(STORE + '_logged');
+        fetch(API + '/api/productos/' + id, {
+          method: 'DELETE',
+          headers: { 'x-store-id': STORE, 'x-admin-password': pass }
+        })
+        .then(function() {
+          alert('✓ Producto eliminado con éxito');
+          cargarProductos();
+          renderEliminar(productos);
+        })
+        .catch(function() { alert('Error al eliminar'); });
+      }
+    } else if (currentMode === 'editar') {
+      //打开编辑菜单
+      if (seleccionado) document.getElementById('productMenu').classList.add('show');
+    }
   }
   
   function cerrarMenu() {
