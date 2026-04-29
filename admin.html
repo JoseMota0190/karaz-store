@@ -437,22 +437,10 @@
     
     // Foto 1
     document.getElementById('imageUrl').value = img1;
-    if (img1) {
-      document.getElementById('previewImg').src = img1;
-      document.getElementById('uploadBox').classList.add('show');
-    }
     // Foto 2
     document.getElementById('imageUrl2').value = img2;
-    if (img2) {
-      document.getElementById('previewImg2').src = img2;
-      document.getElementById('uploadBox2').classList.add('show');
-    }
     // Foto 3
     document.getElementById('imageUrl3').value = img3;
-    if (img3) {
-      document.getElementById('previewImg3').src = img3;
-      document.getElementById('uploadBox3').classList.add('show');
-    }
     
     // Categoría
     var catInputs = document.querySelectorAll('.cats input[name="cat"]');
@@ -467,6 +455,31 @@
         }
       });
     }
+    
+    // Delay para asegurar que el modal esté renderizado
+    setTimeout(function() {
+      if (img1) {
+        var preview = document.getElementById('previewImg');
+        var box = document.getElementById('uploadBox');
+        preview.src = img1;
+        preview.style.display = 'block';
+        box.classList.add('show');
+      }
+      if (img2) {
+        var preview2 = document.getElementById('previewImg2');
+        var box2 = document.getElementById('uploadBox2');
+        preview2.src = img2;
+        preview2.style.display = 'block';
+        box2.classList.add('show');
+      }
+      if (img3) {
+        var preview3 = document.getElementById('previewImg3');
+        var box3 = document.getElementById('uploadBox3');
+        preview3.src = img3;
+        preview3.style.display = 'block';
+        box3.classList.add('show');
+      }
+    }, 150);
     
     currentProductId = prodId;
   }
