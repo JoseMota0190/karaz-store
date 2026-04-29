@@ -573,6 +573,7 @@ function renderProductDetail(p) {
   
   const images = [p.image, p.imagen2, p.imagen3].filter(Boolean);
   const mainImg = cloudinaryThumb(images[0], 800) || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
+  const lightboxImgs = images.map(img => cloudinaryThumb(img, 1200) || '').filter(Boolean).join(',');
   
   const thumbnails = images.map((img, idx) => {
     const thumbSrc = cloudinaryThumb(img, 200) || `https://placehold.co/100x100/D6F2EE/1A8A78?text=${idx+1}`;
@@ -581,8 +582,6 @@ function renderProductDetail(p) {
       onclick="openLightbox(${idx})" 
       alt="${sanitize(p.name)} ${idx + 1}">`;
   }).join('');
-  
-  const lightboxImages = images.map(img => cloudinaryThumb(img, 1200) || '').join('|||');
   
   $('product-detail').innerHTML = `
     <div class="product-detail__gallery">
@@ -595,6 +594,7 @@ function renderProductDetail(p) {
       </a>
       <img src="${sanitize(mainImg)}" alt="${sanitize(p.name)}"
         class="product-detail__main-img"
+        data-lightbox-images="${sanitize(lightboxImgs)}"
         onclick="openLightbox(0)"
         onerror="this.src='https://placehold.co/600x600/D6F2EE/1A8A78?text=✨'">
       ${images.length > 1 ? `<div class="product-detail__thumbs">${thumbnails}</div>` : ''}
@@ -611,8 +611,7 @@ function renderProductDetail(p) {
         </button>
         <a href="cart.html" class="btn-outline">Ver carrito</a>
       </div>
-    </div>
-    <script>window.__lightboxImages = "${sanitize(lightboxImages)}".split('|||').filter(Boolean);</script>`;
+    </div>`;
 }
 
 // ══════════════════════════════════════════════
@@ -913,7 +912,9 @@ async function deleteProduct(id) {
 let currentLightboxIndex = 0;
 
 function openLightbox(index) {
-  const images = window.__lightboxImages || [];
+  const mainImg = document.querySelector('.product-detail__main-img');
+  const imageData = mainImg?.dataset?.lightboxImages;
+  const images = imageData ? imageData.split(',').filter(Boolean) : [];
   if (!images.length) return;
   currentLightboxIndex = index;
   const lightbox = $('lightbox');
@@ -935,7 +936,9 @@ function closeLightbox(event) {
 }
 
 function changeLightboxImage(delta) {
-  const images = window.__lightboxImages || [];
+  const mainImg = document.querySelector('.product-detail__main-img');
+  const imageData = mainImg?.dataset?.lightboxImages;
+  const images = imageData ? imageData.split(',').filter(Boolean) : [];
   if (!images.length) return;
   currentLightboxIndex += delta;
   if (currentLightboxIndex < 0) currentLightboxIndex = images.length - 1;
