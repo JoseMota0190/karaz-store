@@ -501,6 +501,7 @@
     })
     .then(function(res) { 
       console.log('Response:', res.status);
+      alert('✓ Producto eliminado con éxito');
       cargarProductos(); 
     })
     .catch(function(err) { 
