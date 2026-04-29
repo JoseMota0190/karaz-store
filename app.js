@@ -635,6 +635,7 @@ function renderProductDetail(p) {
 async function initCart() {
   await loadConfig();
   injectConfig();
+  document.title = 'Karaz - Accesorios de calidad';
   updateCartUI();
   renderCartPage();
 }
