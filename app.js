@@ -911,8 +911,6 @@ async function deleteProduct(id) {
 // LIGHTBOX for product images
 // ══════════════════════════════════════════════
 
-let lightboxStore = [];
-
 function openLightbox(index) {
   if (!lightboxStore.length) {
     const mainImg = document.querySelector('.product-detail__main-img');
