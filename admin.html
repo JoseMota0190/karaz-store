@@ -431,7 +431,15 @@
       headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': pass },
       body: JSON.stringify(data)
     })
-    .then(function() { cerrarModal(); cargarProductos(); })
+    .then(function() { 
+        var confirmado = confirm('✓ Producto guardado con éxito!\n\n¿Querés agregar otro producto?');
+        cargarProductos();
+        if (confirmado) {
+          abrirNuevo();
+        } else {
+          cerrarModal();
+        }
+      })
     .catch(function() { alert('Error al guardar'); });
   }
   
