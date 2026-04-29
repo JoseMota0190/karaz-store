@@ -62,7 +62,9 @@
     .card-precio { color: var(--c); font-size: 1.1rem; font-weight: 700; }
     .count { padding: 0 16px 10px; color: #666; font-size: 0.85rem; }
     
-    .fab { position: fixed; bottom: 20px; right: 20px; background: #2BB5A0; color: white; border: none; padding: 16px 24px; border-radius: 30px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 20px rgba(43,181,160,0.4); cursor: pointer; }
+    .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+    .fab { background: #2BB5A0; color: white; border: none; padding: 16px 24px; border-radius: 30px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 20px rgba(43,181,160,0.4); cursor: pointer; }
+    .fab-edit { background: #5C0F14; box-shadow: 0 4px 20px rgba(92,15,20,0.4); }
     
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
     .modal.show { display: flex; }
@@ -151,7 +153,10 @@
     <div class="count" id="countDisplay"></div>
     <div class="grid" id="gridDisplay"></div>
   </div>
-  <button class="fab" id="nuevoBtn" style="display:none;">+ Nuevo</button>
+  <div class="fab-container" style="display:none;">
+    <button class="fab fab-edit" id="editModeBtn">✏️ EDITAR</button>
+    <button class="fab" id="nuevoBtn">+ Nuevo</button>
+  </div>
 </div>
 
 <div class="menu" id="productMenu">
@@ -266,10 +271,11 @@
     document.getElementById('logoutBtn').onclick = logout;
     document.getElementById('buscarInput').oninput = filtrar;
     document.getElementById('nuevoBtn').onclick = abrirNuevo;
+    document.getElementById('editModeBtn').onclick = activarModoEdicion;
     document.getElementById('btnNuevo').onclick = function() { 
       document.getElementById('logoArea').style.display = 'none';
       document.getElementById('editArea').style.display = 'block';
-      document.getElementById('nuevoBtn').style.display = 'block';
+      document.querySelector('.fab-container').style.display = 'flex';
       abrirNuevo(); 
     };
     document.getElementById('btnEditar').onclick = function() { mostrarModoEditar(); };
@@ -308,7 +314,7 @@
         btn.classList.add('active');
         document.getElementById('logoArea').style.display = 'none';
         document.getElementById('editArea').style.display = 'block';
-        document.getElementById('nuevoBtn').style.display = 'block';
+        document.querySelector('.fab-container').style.display = 'flex';
         var cat = btn.getAttribute('data-cat');
         localStorage.setItem('adminActiveCategory', cat);
         var filtered = productos.filter(function(p) {
@@ -324,9 +330,27 @@
     });
   }
   
+  function activarModoEdicion() {
+    window.currentEditMode = true;
+    var currentCat = localStorage.getItem('adminActiveCategory');
+    if (!currentCat) return;
+    
+    var filtered = productos.filter(function(p) {
+      return (p.categoria || p.category) === currentCat;
+    });
+    filtered.sort(function(a, b) {
+      var precioA = parseInt(a.precio || a.price || 0);
+      var precioB = parseInt(b.precio || b.price || 0);
+      return precioA - precioB;
+    });
+    renderProductosConAcciones(filtered);
+  }
+  
   function renderProductosConAcciones(list) {
     var html = '';
     var currentCategory = localStorage.getItem('adminActiveCategory') || '';
+    var isEditMode = window.currentEditMode === true;
+    var editCursor = isEditMode ? 'cursor:pointer;' : '';
     
     if (list.length === 0) {
       html = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
@@ -338,8 +362,9 @@
         var prodId = p.codigo || p.id;
         var isFeatured = p.destacadoOrden > 0;
         var fuegoIcon = isFeatured ? ' 🔥' : '';
+        var clickHandler = isEditMode ? 'onclick="seleccionar(\'' + prodId + '\')"' : '';
         
-        html += '<div class="card" style="position:relative;"><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div><div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();abrirEditarCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">✏️</button><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div></div>';
+        html += '<div class="card" style="position:relative;' + editCursor + '" ' + clickHandler + '><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div>' + (isEditMode ? '' : '<div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div>') + '</div>';
       });
     }
     document.getElementById('gridDisplay').innerHTML = html;
@@ -531,7 +556,7 @@
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success || data.message) {
-        showToast('Producto eliminado');
+        alert('Producto eliminado con éxito');
         setTimeout(function() { location.reload(); }, 1000);
       } else {
         showToast('Error: ' + (data.error || 'Error desconocido'));
@@ -604,7 +629,7 @@
           btn.classList.add('active');
           document.getElementById('logoArea').style.display = 'none';
           document.getElementById('editArea').style.display = 'block';
-          document.getElementById('nuevoBtn').style.display = 'block';
+          document.querySelector('.fab-container').style.display = 'flex';
           var filtered = productos.filter(function(p) {
             return (p.categoria || p.category) === savedCat;
           });
