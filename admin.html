@@ -360,20 +360,32 @@
   }
   
   function abrirEditar() {
+    console.log('abrireditar - start');
     var editBtn = document.getElementById('menuEditBtn');
+    console.log('editBtn:', editBtn);
     if (!editBtn) { alert('Error: botón no encontrado'); return; }
     var prodId = editBtn.dataset.prodId;
+    console.log('prodId from dataset:', prodId);
     if (!prodId) {
+      console.log('no prodId in dataset, checking productos');
       if (productos.length > 0) {
         prodId = productos[0].codigo || productos[0].id;
       }
+      console.log('fallback prodId:', prodId);
       if (!prodId) { alert('No hay producto seleccionado'); return; }
     }
-    seleccionado = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
+    console.log('buscando producto con id:', prodId);
+    console.log('productos[0]:', productos[0]);
+    seleccionado = productos.find(function(p) { 
+      console.log('comparando', p.codigo, p.id, 'con', prodId);
+      return (p.codigo || p.id) === prodId; 
+    });
+    console.log('seleccionado:', seleccionado);
     if (!seleccionado || typeof seleccionado !== 'object') { 
       alert('Producto no encontrado'); 
       return; 
     }
+    console.log('continuando con editar');
     cerrarMenu();
     editando = prodId;
     document.getElementById('modalTitle').innerHTML = 'Editar producto';
