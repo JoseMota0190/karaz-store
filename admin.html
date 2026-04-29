@@ -507,8 +507,8 @@
       <h1>🔐 Karaz Admin</h1>
       <p class="subtitle">Ingresa tu contraseña</p>
       <div class="error" id="login-error">Datos incorrectos</div>
-      <input type="text" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
-      <button class="btn-ingresar" id="login-btn">Ingresar</button>
+      <input type="text" id="login-pass" placeholder="Contraseña" autocomplete="current-password" onkeyup="if(event.key==='Enter') doLogin()">
+      <button class="btn-ingresar" id="login-btn" onclick="doLogin()">Ingresar</button>
       <a href="index.html" class="btn-volver">← Volver a la tienda</a>
     </div>
   </div>
