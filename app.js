@@ -583,7 +583,7 @@ async function initProductDetail() {
 function renderProductDetail(p) {
   const cat = CONFIG.categories?.find(c => c.id === p.category);
   const backUrl = `index.html?cat=${encodeURIComponent(p.category)}`;
-  document.title = `${p.name} · Karaz - Accesorios de calidad`;
+  document.title = `${p.name} · Karaz`;
   
   const images = [p.image, p.imagen2, p.imagen3].filter(Boolean);
   const mainImg = images[0] || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
