@@ -9,6 +9,8 @@ let CONFIG   = {};
 let PRODUCTS = [];
 let lightboxStore = [];
 let currentLightboxIndex = 0;
+let currentSort = 'relevantes';
+let categoryImages = {};
 
 // ══════════════════════════════════════════════
 // API — backend multi-tenant
@@ -277,6 +279,71 @@ function getCategories() {
   return cats.map(id => DEFAULT_CATEGORIES.find(d => d.id === id) || { id, label: id, imageUrl: '', ctaText: 'Ver →' });
 }
 
+function buildCategoryImages() {
+  categoryImages = {};
+  const cats = getCategories();
+  cats.forEach(cat => {
+    const prods = PRODUCTS.filter(p => p.category === cat.id);
+    if (prods.length > 0 && prods[0].image) {
+      categoryImages[cat.id] = prods[0].image;
+    }
+  });
+}
+
+function sortProducts(products, sortType = currentSort) {
+  const productsCopy = [...products];
+  
+  if (sortType === 'menor-mayor') {
+    return productsCopy.sort((a, b) => parseInt(a.price) - parseInt(b.price));
+  }
+  if (sortType === 'mayor-menor') {
+    return productsCopy.sort((a, b) => parseInt(b.price) - parseInt(a.price));
+  }
+  
+  // Por defecto: relevantes (destacados > recientes > visitas)
+  return productsCopy.sort((a, b) => {
+    // Primero destacados (destacadoOrden 1 o 2)
+    if (a.destacadoOrden > 0 && b.destacadoOrden === 0) return -1;
+    if (b.destacadoOrden > 0 && a.destacadoOrden === 0) return 1;
+    if (a.destacadoOrden > 0 && b.destacadoOrden > 0) {
+      return a.destacadoOrden - b.destacadoOrden;
+    }
+    
+    // Luego recientes (4 más recientes sin destacado)
+    const aReciente = !a.destacadoOrden && a.creadoAt;
+    const bReciente = !b.destacadoOrden && b.creadoAt;
+    if (aReciente && !bReciente) return -1;
+    if (!aReciente && bReciente) return 1;
+    if (aReciente && bReciente) {
+      return new Date(b.creadoAt) - new Date(a.creadoAt);
+    }
+    
+    // Finalmente por visitas
+    return (b.visitas || 0) - (a.visitas || 0);
+  });
+}
+
+function isRecentProduct(product, allProducts) {
+  const categoryProducts = allProducts.filter(p => 
+    p.category === product.category && !p.destacadoOrden
+  );
+  const sorted = categoryProducts.sort((a, b) => 
+    new Date(b.creadoAt || 0) - new Date(a.creadoAt || 0)
+  );
+  return sorted.slice(0, 4).some(p => p.id === product.id);
+}
+
+function changeSort(value) {
+  currentSort = value;
+  const activeCat = document.querySelector('.cat-card.active')?.dataset?.cat || 
+                   new URLSearchParams(window.location.search).get('cat');
+  if (activeCat) {
+    const products = PRODUCTS.filter(p => p.category === activeCat);
+    const sortedProducts = sortProducts(products);
+    renderGrid(sortedProducts);
+  }
+}
+
 function renderCategories() {
   const container = $('cat-cards');
   if (!container) return;
@@ -422,6 +489,7 @@ async function initCatalog() {
   await loadConfig();
   injectConfig();
   await loadProducts();
+  buildCategoryImages();
   updateCartUI();
   initCatCards();
 
@@ -462,8 +530,21 @@ function openCategory(cat) {
     const titleEl = $('catalog-active-title');
     if (titleEl) titleEl.textContent = getCatLabel(cat) || cat;
 
+    // Imagen de encabezado de categoría
+    const headerImg = categoryImages[cat];
+    const headerEl = $('category-header-img');
+    if (headerEl) {
+      if (headerImg) {
+        headerEl.src = headerImg;
+        headerEl.style.display = 'block';
+      } else {
+        headerEl.style.display = 'none';
+      }
+    }
+
     const products = PRODUCTS.filter(p => p.category === cat);
-    renderGrid(products);
+    const sortedProducts = sortProducts(products);
+    renderGrid(sortedProducts);
 
     gridWrap.classList.add('visible');
     const navH = $('navbar').offsetHeight;
@@ -501,6 +582,17 @@ function cloudinaryThumb(url, size = 400) {
 
 function renderCard(p) {
   const imgSrc = cloudinaryThumb(p.image) || `https://placehold.co/400x400/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
+  
+  // Iconos de destacado y reciente
+  let badges = '';
+  if (p.destacadoOrden > 0) {
+    badges += '<span class="product-badge product-badge--fire">🔥</span>';
+  }
+  const esReciente = isRecentProduct(p, PRODUCTS);
+  if (esReciente) {
+    badges += '<span class="product-badge product-badge--new">✨ New</span>';
+  }
+  
   return `
     <article class="product-card" onclick="goToProduct('${p.id}')">
       <div class="product-card__media">
@@ -509,6 +601,7 @@ function renderCard(p) {
           alt="${sanitize(p.name)}"
           loading="lazy"
           onerror="this.src='https://placehold.co/400x400/D6F2EE/1A8A78?text=✨'">
+        ${badges ? `<div class="product-card__badges">${badges}</div>` : ''}
       </div>
       <div class="product-card__body">
         <div class="product-card__name">${sanitize(p.name)}</div>
@@ -567,6 +660,12 @@ async function initProductDetail() {
     return;
   }
   renderProductDetail(product);
+  
+  // Incrementar visitas (sin esperar respuesta)
+  fetch(`${API_URL}/api/productos/${product.id}/visita`, {
+    method: 'PUT',
+    headers: apiHeaders()
+  }).catch(() => {});
   
   // Lightbox: soporte para desktop y móvil
   setTimeout(() => {

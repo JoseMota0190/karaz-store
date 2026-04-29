@@ -221,6 +221,14 @@
         <button class="catalog-back-btn" id="catalog-back">← Volver</button>
         <h3 class="catalog-active-title" id="catalog-active-title"></h3>
       </div>
+      <img id="category-header-img" class="category-header-img" style="width:100%;max-height:200px;object-fit:cover;display:none;margin-bottom:16px;border-radius:12px;" alt="">
+      <div class="catalog-sort-bar">
+        <select id="product-sort" class="product-sort-select" onchange="changeSort(this.value)">
+          <option value="relevantes">🔥 Más relevantes</option>
+          <option value="menor-mayor">↗ Menor a Mayor precio</option>
+          <option value="mayor-menor">↙ Mayor a Menor precio</option>
+        </select>
+      </div>
       <div class="products-grid" id="products-grid" role="list" aria-label="Productos"></div>
     </div>
 

@@ -90,6 +90,9 @@ const productoSchema = new mongoose.Schema({
   imagen3: String,
   descripcion: String,
   destacado: { type: Boolean, default: false },
+  destacadoOrden: { type: Number, default: 0 },
+  visitas: { type: Number, default: 0 },
+  creadoAt: { type: Date, default: Date.now },
   activo: { type: Boolean, default: true }
 }, { strict: false });
 
@@ -274,12 +277,26 @@ app.get('/api/productos/:categoria', requireStore, async (req, res) => {
   }
 });
 
+app.put('/api/productos/:id/visita', requireStore, async (req, res) => {
+  try {
+    const actualizado = await Producto.findOneAndUpdate(
+      { codigo: req.params.id, storeId: req.storeId },
+      { $inc: { visitas: 1 } },
+      { new: true }
+    );
+    if (!actualizado) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ success: true, visitas: actualizado.visitas });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/productos', requireStore, upload.single('imagen'), async (req, res) => {
   try {
-    const { codigo, nombre, precio, categoria, descripcion, destacado, imagen2, imagen3 } = req.body;
+    const { codigo, nombre, precio, categoria, descripcion, destacado, destacadoOrden, imagen2, imagen3 } = req.body;
     const imagen = req.file ? req.file.path : req.body.imagen;
     const nuevo = new Producto({
-      storeId: req.storeId, codigo, nombre, precio, categoria, imagen, imagen2, imagen3, descripcion, destacado
+      storeId: req.storeId, codigo, nombre, precio, categoria, imagen, imagen2, imagen3, descripcion, destacado, destacadoOrden: destacadoOrden || 0
     });
     await nuevo.save();
     res.status(201).json(nuevo);
@@ -290,8 +307,8 @@ app.post('/api/productos', requireStore, upload.single('imagen'), async (req, re
 
 app.put('/api/productos/:id', requireStore, upload.single('imagen'), async (req, res) => {
   try {
-    const { codigo, nombre, precio, categoria, descripcion, destacado, imagen2, imagen3 } = req.body;
-    const updateData = { codigo, nombre, precio, categoria, descripcion, destacado, imagen2, imagen3 };
+    const { codigo, nombre, precio, categoria, descripcion, destacado, destacadoOrden, imagen2, imagen3 } = req.body;
+    const updateData = { codigo, nombre, precio, categoria, descripcion, destacado, destacadoOrden, imagen2, imagen3 };
     if (req.file) updateData.imagen = req.file.path;
     const actualizado = await Producto.findOneAndUpdate(
       { codigo: req.params.id, storeId: req.storeId },
