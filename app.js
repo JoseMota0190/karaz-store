@@ -829,23 +829,45 @@ function openProductModal(product) {
   $('f-price').value           = product?.price    || '';
   $('f-category').value        = product?.category || 'pulseras';
   $('f-image-url').value       = product?.image    || '';
+  $('f-image-url2').value      = product?.imagen2  || '';
+  $('f-image-url3').value      = product?.imagen3  || '';
 
-  const fileInput = $('f-image-file');
-  if (fileInput) fileInput.value = '';
+  // Reset image inputs
+  [$('f-image-file'), $('f-image-file2'), $('f-image-file3')].forEach(el => { if (el) el.value = ''; });
 
-  const uploadArea = $('upload-area');
-  const preview    = $('img-preview');
-  const previewImg = $('img-preview-img');
-
+  // Imagen 1
   if (product?.image) {
-    uploadArea.style.display = 'none';
-    previewImg.src = product.image;
-    preview.style.display = 'block';
+    $('upload-area').style.display = 'none';
+    $('img-preview-img').src = product.image;
+    $('img-preview').style.display = 'block';
   } else {
-    uploadArea.style.display = 'flex';
-    previewImg.src = '';
-    preview.style.display = 'none';
+    $('upload-area').style.display = 'flex';
+    $('img-preview-img').src = '';
+    $('img-preview').style.display = 'none';
   }
+
+  // Imagen 2
+  if (product?.imagen2) {
+    $('upload-area2').style.display = 'none';
+    $('img-preview-img2').src = product.imagen2;
+    $('img-preview2').style.display = 'block';
+  } else {
+    $('upload-area2').style.display = 'flex';
+    $('img-preview-img2').src = '';
+    $('img-preview2').style.display = 'none';
+  }
+
+  // Imagen 3
+  if (product?.imagen3) {
+    $('upload-area3').style.display = 'none';
+    $('img-preview-img3').src = product.imagen3;
+    $('img-preview3').style.display = 'block';
+  } else {
+    $('upload-area3').style.display = 'flex';
+    $('img-preview-img3').src = '';
+    $('img-preview3').style.display = 'none';
+  }
+
   $('product-modal').classList.add('open');
 }
 
@@ -868,6 +890,11 @@ async function saveProduct() {
 
   try {
     if (_editingId) {
+      // Actualizar producto existente
+      if ($('f-image-url').value.trim()) data.imagen = $('f-image-url').value.trim();
+      if ($('f-image-url2').value.trim()) data.imagen2 = $('f-image-url2').value.trim();
+      if ($('f-image-url3').value.trim()) data.imagen3 = $('f-image-url3').value.trim();
+      
       const res = await fetch(`${API_URL}/api/productos/${_editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...apiHeaders({ 'x-admin-password': password }) },
@@ -880,8 +907,11 @@ async function saveProduct() {
       closeProductModal();
       showToast('✓ Producto actualizado');
     } else {
+      // Crear nuevo producto
       data.codigo = 'NEW-' + Date.now();
       data.imagen = $('f-image-url').value.trim() || '';
+      data.imagen2 = $('f-image-url2').value.trim() || '';
+      data.imagen3 = $('f-image-url3').value.trim() || '';
       const res = await fetch(`${API_URL}/api/productos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...apiHeaders({ 'x-admin-password': password }) },

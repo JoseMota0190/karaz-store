@@ -136,7 +136,7 @@
         </div>
 
         <div class="form-group">
-          <label>Imagen del producto</label>
+          <label>Imagen principal del producto</label>
           <div class="upload-area" id="upload-area">
             <input type="file" id="f-image-file" accept="image/*">
             <div class="upload-area__icon">📷</div>
@@ -150,6 +150,40 @@
             <button type="button" class="btn-change-img" id="btn-change-img">📷 Cambiar foto</button>
           </div>
           <input type="hidden" id="f-image-url">
+        </div>
+
+        <div class="form-group">
+          <label>Imagen 2 (opcional)</label>
+          <div class="upload-area" id="upload-area2">
+            <input type="file" id="f-image-file2" accept="image/*">
+            <div class="upload-area__icon">📷</div>
+            <div class="upload-area__text">
+              <strong>Segunda foto</strong><br>
+              Opcional
+            </div>
+          </div>
+          <div class="img-preview" id="img-preview2" style="display:none">
+            <img id="img-preview-img2" src="" alt="Vista previa 2">
+            <button type="button" class="btn-change-img" id="btn-change-img2">📷 Cambiar</button>
+          </div>
+          <input type="hidden" id="f-image-url2">
+        </div>
+
+        <div class="form-group">
+          <label>Imagen 3 (opcional)</label>
+          <div class="upload-area" id="upload-area3">
+            <input type="file" id="f-image-file3" accept="image/*">
+            <div class="upload-area__icon">📷</div>
+            <div class="upload-area__text">
+              <strong>Tercera foto</strong><br>
+              Opcional
+            </div>
+          </div>
+          <div class="img-preview" id="img-preview3" style="display:none">
+            <img id="img-preview-img3" src="" alt="Vista previa 3">
+            <button type="button" class="btn-change-img" id="btn-change-img3">📷 Cambiar</button>
+          </div>
+          <input type="hidden" id="f-image-url3">
         </div>
 
       </div>
@@ -170,57 +204,79 @@
 
   <script src="app.js"></script>
   <script>
+    // Imagen 1
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('f-image-file');
     const preview = document.getElementById('img-preview');
     const previewImg = document.getElementById('img-preview-img');
     const imageUrlInput = document.getElementById('f-image-url');
     const btnChangeImg = document.getElementById('btn-change-img');
+
+    // Imagen 2
+    const uploadArea2 = document.getElementById('upload-area2');
+    const fileInput2 = document.getElementById('f-image-file2');
+    const preview2 = document.getElementById('img-preview2');
+    const previewImg2 = document.getElementById('img-preview-img2');
+    const imageUrlInput2 = document.getElementById('f-image-url2');
+    const btnChangeImg2 = document.getElementById('btn-change-img2');
+
+    // Imagen 3
+    const uploadArea3 = document.getElementById('upload-area3');
+    const fileInput3 = document.getElementById('f-image-file3');
+    const preview3 = document.getElementById('img-preview3');
+    const previewImg3 = document.getElementById('img-preview-img3');
+    const imageUrlInput3 = document.getElementById('f-image-url3');
+    const btnChangeImg3 = document.getElementById('btn-change-img3');
+
     const saveBtn = document.getElementById('save-product-btn');
 
-    uploadArea.addEventListener('click', () => {
-      fileInput.value = '';
-      fileInput.click();
-    });
-    btnChangeImg.addEventListener('click', () => {
-      fileInput.value = '';
-      fileInput.click();
-    });
-
+    // Imagen 1 handlers
+    uploadArea.addEventListener('click', () => { fileInput.value = ''; fileInput.click(); });
+    btnChangeImg.addEventListener('click', () => { fileInput.value = ''; fileInput.click(); });
     uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
-    uploadArea.addEventListener('drop', e => {
-      e.preventDefault();
-      uploadArea.classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) handleImageUpload(file);
-    });
+    uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('drag-over'); const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) handleImageUpload(file, 1); });
+    fileInput.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleImageUpload(file, 1); });
 
-    fileInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (file) handleImageUpload(file);
-    });
+    // Imagen 2 handlers
+    uploadArea2.addEventListener('click', () => { fileInput2.value = ''; fileInput2.click(); });
+    btnChangeImg2.addEventListener('click', () => { fileInput2.value = ''; fileInput2.click(); });
+    uploadArea2.addEventListener('dragover', e => { e.preventDefault(); uploadArea2.classList.add('drag-over'); });
+    uploadArea2.addEventListener('dragleave', () => uploadArea2.classList.remove('drag-over'));
+    uploadArea2.addEventListener('drop', e => { e.preventDefault(); uploadArea2.classList.remove('drag-over'); const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) handleImageUpload(file, 2); });
+    fileInput2.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleImageUpload(file, 2); });
 
-    function handleImageUpload(file) {
+    // Imagen 3 handlers
+    uploadArea3.addEventListener('click', () => { fileInput3.value = ''; fileInput3.click(); });
+    btnChangeImg3.addEventListener('click', () => { fileInput3.value = ''; fileInput3.click(); });
+    uploadArea3.addEventListener('dragover', e => { e.preventDefault(); uploadArea3.classList.add('drag-over'); });
+    uploadArea3.addEventListener('dragleave', () => uploadArea3.classList.remove('drag-over'));
+    uploadArea3.addEventListener('drop', e => { e.preventDefault(); uploadArea3.classList.remove('drag-over'); const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) handleImageUpload(file, 3); });
+    fileInput3.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleImageUpload(file, 3); });
+
+    function handleImageUpload(file, num) {
       if (!file || !file.type.startsWith('image/')) {
         showToast('⚠️ Selecciona una imagen válida');
         return;
       }
 
-      uploadArea.style.display = 'none';
-      preview.style.display = 'block';
+      const uploadAreaN = num === 1 ? uploadArea : num === 2 ? uploadArea2 : uploadArea3;
+      const previewN = num === 1 ? preview : num === 2 ? preview2 : preview3;
+      const previewImgN = num === 1 ? previewImg : num === 2 ? previewImg2 : previewImg3;
+      const imageUrlInputN = num === 1 ? imageUrlInput : num === 2 ? imageUrlInput2 : imageUrlInput3;
+
+      uploadAreaN.style.display = 'none';
+      previewN.style.display = 'block';
 
       const reader = new FileReader();
-      reader.onload = e => {
-        previewImg.src = e.target.result;
-      };
+      reader.onload = e => { previewImgN.src = e.target.result; };
       reader.readAsDataURL(file);
 
-      uploadToCloudinary(file);
+      uploadToCloudinary(file, imageUrlInputN, previewImgN, num);
     }
 
-    function uploadToCloudinary(file) {
-      showToast('Subiendo imagen...');
+    function uploadToCloudinary(file, imageUrlInputN, previewImgN, num) {
+      showToast(`Subiendo imagen ${num}...`);
       saveBtn.disabled = true;
       saveBtn.style.opacity = '0.5';
       saveBtn.style.cursor = 'not-allowed';
@@ -237,11 +293,11 @@
       .then(res => res.json())
       .then(data => {
         if (data.secure_url) {
-          imageUrlInput.value = data.secure_url;
-          previewImg.src = data.secure_url;
-          showToast('✓ Imagen subida');
+          imageUrlInputN.value = data.secure_url;
+          previewImgN.src = data.secure_url;
+          showToast(`✓ Imagen ${num} subida`);
         } else {
-          showToast('⚠️ Error al subir imagen');
+          showToast(`⚠️ Error al subir imagen ${num}`);
         }
       })
       .catch(() => {
