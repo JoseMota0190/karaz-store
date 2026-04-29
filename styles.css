@@ -128,6 +128,13 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   flex-shrink: 0;
 }
 
+.navbar__logo-img {
+  height: 40px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
 .navbar__brand-text {
   display: flex;
   flex-direction: column;
@@ -1838,12 +1845,9 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 .site-footer__logo-img {
   height: 48px;
   width: auto;
-  max-width: 110px;
+  max-width: 180px;
   object-fit: contain;
   flex-shrink: 0;
-  /* logo fondo blanco sobre footer oscuro: invertimos */
-  filter: brightness(0) invert(1);
-  opacity: .7;
 }
 
 
