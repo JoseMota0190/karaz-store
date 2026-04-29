@@ -324,6 +324,9 @@
   
   function seleccionar(id) {
     seleccionado = productos.find(function(p) { return (p.codigo || p.id) === id; });
+    // Guardar ID también en el botón de eliminar para evitar problemas
+    document.getElementById('menuDeleteBtn').dataset.prodId = id;
+    document.getElementById('menuEditBtn').dataset.prodId = id;
     if (seleccionado) document.getElementById('productMenu').classList.add('show');
   }
   
@@ -357,9 +360,11 @@
   }
   
   function abrirEditar() {
+    var prodId = document.getElementById('menuEditBtn').dataset.prodId;
+    if (!prodId) { alert('No hay producto seleccionado'); return; }
+    seleccionado = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
     if (!seleccionado) return;
     cerrarMenu();
-    var prodId = seleccionado.codigo || seleccionado.id;
     editando = prodId;
     document.getElementById('modalTitle').innerHTML = 'Editar producto';
     document.getElementById('nameInput').value = seleccionado.nombre || seleccionado.name || '';
@@ -459,11 +464,13 @@
   }
   
   function eliminar() {
-    if (!seleccionado) { alert('No hay producto seleccionado'); return; }
-    if (!confirm('¿Eliminar el producto "' + (seleccionado.nombre || seleccionado.name) + '"?')) return;
+    var prodId = document.getElementById('menuDeleteBtn').dataset.prodId;
+    if (!prodId) { alert('No hay producto seleccionado'); return; }
+    var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
+    var prodNombre = prod ? (prod.nombre || prod.name || 'este producto') : 'este producto';
+    if (!confirm('¿Eliminar el producto "' + prodNombre + '"?')) return;
     cerrarMenu();
     var pass = localStorage.getItem(STORE + '_logged');
-    var prodId = seleccionado.codigo || seleccionado.id;
     console.log('Eliminando producto con ID:', prodId);
     fetch(API + '/api/productos/' + prodId, {
       method: 'DELETE',
