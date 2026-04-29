@@ -327,13 +327,26 @@
   }
   
   function abrirEditarCard(prodId) {
-    var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
-    if (!prod) return;
+    console.log('abrirEditarCard called with id:', prodId);
+    var prod = productos.find(function(p) { 
+      var pid = p.codigo || p.id;
+      console.log('comparing:', pid, '===', prodId);
+      return pid === prodId; 
+    });
+    if (!prod) {
+      alert('Producto no encontrado');
+      return;
+    }
+    console.log('Producto encontrado:', prod);
     document.getElementById('modalTitle').textContent = 'Editar';
     document.getElementById('productModal').classList.add('show');
+    
     var img1 = prod.imagen || prod.image || '';
     var img2 = prod.imagen2 || '';
     var img3 = prod.imagen3 || '';
+    
+    console.log('Imagenes:', img1, img2, img3);
+    
     document.getElementById('imageUrl').value = img1;
     document.getElementById('imageUrl2').value = img2;
     document.getElementById('imageUrl3').value = img3;
@@ -341,6 +354,8 @@
     document.getElementById('priceInput').value = prod.precio || prod.price || '';
     document.getElementById('descInput').value = prod.descripcion || prod.description || '';
     document.getElementById('codigoInput').value = prod.codigo || prod.id || '';
+    document.getElementById('destacadoInput').value = prod.destacadoOrden || 0;
+    
     document.querySelectorAll('.cat').forEach(function(c) {
       var input = c.querySelector('input');
       if (input.value === (prod.categoria || prod.category)) {
@@ -349,18 +364,27 @@
         c.classList.remove('active');
       }
     });
-    if (img1) {
-      document.getElementById('previewImg').src = img1;
-      document.getElementById('uploadBox').classList.add('show');
+    
+    var uploadBox = document.getElementById('uploadBox');
+    var uploadBox2 = document.getElementById('uploadBox2');
+    var uploadBox3 = document.getElementById('uploadBox3');
+    var previewImg = document.getElementById('previewImg');
+    var previewImg2 = document.getElementById('previewImg2');
+    var previewImg3 = document.getElementById('previewImg3');
+    
+    if (img1 && previewImg && uploadBox) {
+      previewImg.src = img1;
+      uploadBox.classList.add('show');
     }
-    if (img2) {
-      document.getElementById('previewImg2').src = img2;
-      document.getElementById('uploadBox2').classList.add('show');
+    if (img2 && previewImg2 && uploadBox2) {
+      previewImg2.src = img2;
+      uploadBox2.classList.add('show');
     }
-    if (img3) {
-      document.getElementById('previewImg3').src = img3;
-      document.getElementById('uploadBox3').classList.add('show');
+    if (img3 && previewImg3 && uploadBox3) {
+      previewImg3.src = img3;
+      uploadBox3.classList.add('show');
     }
+    
     currentProductId = prodId;
   }
   
