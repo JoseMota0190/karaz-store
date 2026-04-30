@@ -73,9 +73,9 @@
   <!-- ── LIGHTBOX (modal para ver imágenes) ─────────────── -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
     <button class="lightbox__close" onclick="closeLightbox(event)">&times;</button>
-    <button class="lightbox__prev" onclick="changeLightboxImage(-1)">&#10094;</button>
+    <button class="lightbox__prev" onclick="event.stopPropagation(); changeLightboxImage(-1)">&#10094;</button>
     <img class="lightbox__img" id="lightbox-img" src="" alt="">
-    <button class="lightbox__next" onclick="changeLightboxImage(1)">&#10095;</button>
+    <button class="lightbox__next" onclick="event.stopPropagation(); changeLightboxImage(1)">&#10095;</button>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite">
