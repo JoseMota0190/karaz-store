@@ -12,6 +12,14 @@ let currentLightboxIndex = 0;
 let currentSort = 'relevantes';
 let categoryImages = {};
 
+document.addEventListener('keydown', (e) => {
+  const lightbox = document.getElementById('lightbox');
+  if (!lightbox || !lightbox.classList.contains('active')) return;
+  if (e.key === 'ArrowLeft') changeLightboxImage(-1);
+  if (e.key === 'ArrowRight') changeLightboxImage(1);
+  if (e.key === 'Escape') closeLightbox(e);
+});
+
 // ══════════════════════════════════════════════
 // API — backend multi-tenant
 // ══════════════════════════════════════════════
@@ -682,11 +690,14 @@ async function initProductDetail() {
 }
 
 function renderProductDetail(p) {
-  const cat = CONFIG.categories?.find(c => c.id === p.category);
+const cat = CONFIG.categories?.find(c => c.id === p.category);
   const backUrl = `index.html?cat=${encodeURIComponent(p.category)}`;
   document.title = `${p.name} · Karaz`;
   
   const images = [p.image, p.imagen2, p.imagen3].filter(Boolean);
+  window.currentProductImages = images;
+  window.currentImageIndex = 0;
+  
   const mainImg = images[0] || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
   
   lightboxStore = images.length ? images : [mainImg];
@@ -696,9 +707,9 @@ function renderProductDetail(p) {
     return `<img class="product-detail__thumb ${idx === 0 ? 'active' : ''}" 
       src="${sanitize(thumbSrc)}" 
       onclick="openLightbox(${idx})" 
-      alt="${sanitize(p.name)} ${idx + 1}">`;
+      alt="Foto ${idx + 1}">`;
   }).join('');
-  
+
   $('product-detail').innerHTML = `
     <div class="product-detail__gallery">
       <a href="${backUrl}" class="back-btn">
@@ -708,10 +719,14 @@ function renderProductDetail(p) {
         </svg>
         <span>Volver</span>
       </a>
-      <img src="${sanitize(mainImg)}" alt="${sanitize(p.name)}"
-        class="product-detail__main-img"
-        onclick="openLightbox(0)"
-        onerror="this.src='https://placehold.co/600x600/D6F2EE/1A8A78?text=✨'">
+      <div class="product-detail__main-wrapper">
+        ${images.length > 1 ? `<button class="gallery-nav gallery-nav--prev" onclick="changeGalleryImage(-1)">&#10094;</button>` : ''}
+        <img src="${sanitize(mainImg)}" alt="${sanitize(p.name)}"
+          class="product-detail__main-img"
+          onclick="openLightbox(0)"
+          onerror="this.src='https://placehold.co/600x600/D6F2EE/1A8A78?text=✨'">
+        ${images.length > 1 ? `<button class="gallery-nav gallery-nav--next" onclick="changeGalleryImage(1)">&#10095;</button>` : ''}
+      </div>
       ${images.length > 1 ? `<div class="product-detail__thumbs">${thumbnails}</div>` : ''}
     </div>
     <div class="product-detail__info">
@@ -1090,4 +1105,19 @@ function changeLightboxImage(delta) {
   if (currentLightboxIndex >= lightboxStore.length) currentLightboxIndex = 0;
   const img = $('lightbox-img');
   if (img) img.src = lightboxStore[currentLightboxIndex];
+}
+
+function changeGalleryImage(delta) {
+  const images = window.currentProductImages;
+  if (!images || images.length <= 1) return;
+  
+  window.currentImageIndex = (window.currentImageIndex + delta + images.length) % images.length;
+  const newSrc = images[window.currentImageIndex];
+  
+  const mainImg = document.querySelector('.product-detail__main-img');
+  if (mainImg) mainImg.src = newSrc;
+  
+  document.querySelectorAll('.product-detail__thumb').forEach((thumb, idx) => {
+    thumb.classList.toggle('active', idx === window.currentImageIndex);
+  });
 }
