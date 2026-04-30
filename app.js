@@ -289,11 +289,25 @@ function getCategories() {
 
 function buildCategoryImages() {
   categoryImages = {};
+  // Primero revisar localStorage del admin para portadas guardadas
+  let portadasAdmin = {};
+  try {
+    portadasAdmin = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
+  } catch (e) {
+    portadasAdmin = {};
+  }
+  
   const cats = getCategories();
   cats.forEach(cat => {
-    const prods = PRODUCTS.filter(p => p.category === cat.id);
-    if (prods.length > 0 && prods[0].image) {
-      categoryImages[cat.id] = prods[0].image;
+    // Usar imagen guardada del admin si existe
+    if (portadasAdmin[cat.id]) {
+      categoryImages[cat.id] = portadasAdmin[cat.id];
+    } else {
+      // Fallback: primer producto de la categoría
+      const prods = PRODUCTS.filter(p => p.category === cat.id);
+      if (prods.length > 0 && prods[0].image) {
+        categoryImages[cat.id] = prods[0].image;
+      }
     }
   });
 }
@@ -516,12 +530,26 @@ function getCatLabel(id) {
 }
 
 function initCatCards() {
+  // Actualizar imágenes de las tarjetas con las portadas del admin
+  let portadasAdmin = {};
+  try {
+    portadasAdmin = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
+  } catch (e) {
+    portadasAdmin = {};
+  }
+  
   document.querySelectorAll('.cat-card').forEach(card => {
+    const catId = card.dataset.cat;
+    // Si hay portada guardada, actualizar la imagen
+    if (portadasAdmin[catId]) {
+      const imgEl = card.querySelector('.cat-card__img');
+      if (imgEl) imgEl.src = portadasAdmin[catId];
+    }
     card.addEventListener('click', () => {
-      openCategory(card.dataset.cat);
+      openCategory(catId);
     });
   });
-
+  
   $('catalog-back')?.addEventListener('click', () => {
     closeCategory();
   });
