@@ -344,6 +344,20 @@ function mostrarDeleteSuccessModal() {
       var precioB = parseInt(b.precio || b.price || 0);
       return precioA - precioB;
     });
+    
+    // Inicializar pendingDestacados al entrar en modo destacados
+    if (mode === 'destacados') {
+      window.pendingDestacados = filtered
+        .filter(function(p) { return p.destacadoOrden > 0; })
+        .map(function(p) { return p.codigo || p.id; })
+        .sort(function(a, b) {
+          var prodA = productos.find(function(p) { return (p.codigo || p.id) === a; });
+          var prodB = productos.find(function(p) { return (p.codigo || p.id) === b; });
+          return (prodA ? prodA.destacadoOrden : 0) - (prodB ? prodB.destacadoOrden : 0);
+        });
+      actualizarBotonesDestacados();
+    }
+    
     renderProductosConAcciones(filtered);
   }
 
@@ -386,6 +400,11 @@ function renderProductosConAcciones(list) {
     if (mode === 'nuevo') {
       html += '<div style="grid-column:1/-1;padding:12px;"><button onclick="abrirNuevoDesdeCategoria()" style="padding:12px 20px;background:#5C0F14;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;">+ Agregar nuevo producto</button></div>';
     }
+    
+    // Mostrar instrucciones en modo destacados
+    if (mode === 'destacados') {
+      html += '<div style="grid-column:1/-1;padding:12px;background:#FFF5E6;border-radius:10px;margin-bottom:12px;text-align:center;"><span style="color:#5C0F14;font-size:0.9rem;">🔥 Tocá los productos para agregarlos o quitarlos de destacados</span></div>';
+    }
 
     if (list.length === 0) {
       html += '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
@@ -396,6 +415,12 @@ function renderProductosConAcciones(list) {
         var precio = p.precio || p.price || 0;
         var prodId = p.codigo || p.id;
         var isFeatured = p.destacadoOrden > 0;
+        
+        // En modo destacados, usar pendingDestacados para el estado visual
+        if (mode === 'destacados' && window.pendingDestacados) {
+          isFeatured = window.pendingDestacados.indexOf(prodId) >= 0;
+        }
+        
         var fuegoIcon = isFeatured ? ' 🔥' : '';
 
         var clickAction = '';
@@ -417,10 +442,14 @@ function renderProductosConAcciones(list) {
         } else if (mode === 'portada') {
           actionHtml = '<div style="position:absolute;bottom:8px;right:8px;background:#5C0F14;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">🖼️ Portada</div>';
         } else if (mode === 'destacados') {
-          actionHtml = isFeatured ? '<div style="position:absolute;top:8px;left:8px;font-size:16px;">🔥</div>' : '<div style="position:absolute;bottom:8px;right:8px;background:#5C0F14;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">+ Agregar</div>';
+          if (isFeatured) {
+            actionHtml = '<div style="position:absolute;top:8px;left:8px;background:#5C0F14;color:white;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">🔥 DESTACADO</div>';
+          } else {
+            actionHtml = '<div style="position:absolute;bottom:8px;right:8px;background:white;color:#5C0F14;border:2px solid #5C0F14;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">+ Tocar para agregar</div>';
+          }
         }
 
-        html += '<div class="card" style="position:relative;' + cursorStyle + '" ' + clickAction + '><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div>' + actionHtml + '</div>';
+        html += '<div class="card" style="position:relative;' + cursorStyle + (isFeatured && mode === 'destacados' ? 'border:3px solid #D9BCA3;' : '') + '" ' + clickAction + '><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div>' + actionHtml + '</div>';
       });
     }
     document.getElementById('gridDisplay').innerHTML = html;
@@ -905,27 +934,166 @@ function renderProductosConAcciones(list) {
   }
 
   function seleccionarDestacado(id) {
-    var prod = productos.find(function(p) { return (p.codigo || p.id) === id; });
-    if (!prod) return;
-    var cat = localStorage.getItem('karaz_admin_category');
-    var catProducts = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
-    var currentFeatured = catProducts.filter(function(p) { return p.destacadoOrden > 0; });
-
-    if (prod.destacadoOrden > 0) {
-      // Quitar de destacados
-      prod.destacadoOrden = 0;
+    if (!window.pendingDestacados) {
+      window.pendingDestacados = [];
+    }
+    
+    var index = window.pendingDestacados.indexOf(id);
+    if (index >= 0) {
+      // Quitar de la lista pendiente
+      window.pendingDestacados.splice(index, 1);
     } else {
-      // Agregar a destacados (si hay espacio)
-      if (currentFeatured.length >= 4) {
-        showAlert('Ya tienes 4 productos destacados. Quita uno primero.');
+      // Agregar (si hay espacio)
+      if (window.pendingDestacados.length >= 4) {
+        showAlert('🔥 Máximo alcanzado', 'Ya tenés 4 productos destacados. Quitá uno primero.');
         return;
       }
-      prod.destacadoOrden = currentFeatured.length + 1;
+      window.pendingDestacados.push(id);
     }
-
-    // Guardar cambios en backend
-    guardarDestacadosEnBackend(catProducts);
-    // Actualizar la vista
+    
+    // Re-renderizar para mostrar cambios visuales
+    var cat = localStorage.getItem('karaz_admin_category');
+    var filtered = cat 
+      ? productos.filter(function(p) { return (p.categoria || p.category) === cat; })
+      : productos;
+    filtered.sort(function(a, b) {
+      return parseInt(a.precio || a.price || 0) - parseInt(b.precio || b.price || 0);
+    });
+    renderProductosConAcciones(filtered);
+    
+    // Actualizar botones flotantes
+    actualizarBotonesDestacados();
+  }
+  
+  function actualizarBotonesDestacados() {
+    var cat = localStorage.getItem('karaz_admin_category');
+    var hayCambios = false;
+    
+    if (window.pendingDestacados && cat) {
+      var catProducts = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+      var actuales = catProducts
+        .filter(function(p) { return p.destacadoOrden > 0; })
+        .map(function(p) { return p.codigo || p.id; })
+        .sort();
+      var pendientes = window.pendingDestacados.slice().sort();
+      hayCambios = JSON.stringify(actuales) !== JSON.stringify(pendientes);
+    }
+    
+    // Crear botones si no existen
+    var guardarBtn = document.getElementById('guardarDestacadosBtn');
+    if (!guardarBtn) {
+      guardarBtn = document.createElement('button');
+      guardarBtn.id = 'guardarDestacadosBtn';
+      guardarBtn.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:14px 28px;background:#5C0F14;color:white;border:none;border-radius:30px;font-size:1rem;font-weight:600;cursor:pointer;z-index:1000;box-shadow:0 4px 20px rgba(92,15,20,0.4);display:none;font-family:inherit;';
+      guardarBtn.innerHTML = '💾 GUARDAR DESTACADOS';
+      guardarBtn.onclick = guardarDestacadosCambios;
+      document.body.appendChild(guardarBtn);
+    }
+    
+    var cancelarBtn = document.getElementById('cancelarDestacadosBtn');
+    if (!cancelarBtn) {
+      cancelarBtn = document.createElement('button');
+      cancelarBtn.id = 'cancelarDestacadosBtn';
+      cancelarBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;width:48px;height:48px;background:white;color:#dc2626;border:2px solid #dc2626;border-radius:50%;font-size:1.2rem;font-weight:600;cursor:pointer;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.1);display:none;font-family:inherit;';
+      cancelarBtn.innerHTML = '✕';
+      cancelarBtn.title = 'Cancelar cambios';
+      cancelarBtn.onclick = cancelarDestacadosCambios;
+      document.body.appendChild(cancelarBtn);
+    }
+    
+    guardarBtn.style.display = hayCambios ? 'block' : 'none';
+    cancelarBtn.style.display = hayCambios ? 'block' : 'none';
+  }
+  
+  function guardarDestacadosCambios() {
+    var pass = localStorage.getItem(STORE + '_admin_auth');
+    var cat = localStorage.getItem('karaz_admin_category');
+    var updates = [];
+    
+    // Asignar orden 1, 2, 3, 4 a los seleccionados
+    window.pendingDestacados.forEach(function(id, index) {
+      updates.push({ id: id, destacadoOrden: index + 1 });
+    });
+    
+    // Quitar los que ya no están seleccionados pero tenían orden > 0
+    var catProducts = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+    catProducts.forEach(function(p) {
+      var prodId = p.codigo || p.id;
+      if (p.destacadoOrden > 0 && window.pendingDestacados.indexOf(prodId) < 0) {
+        updates.push({ id: prodId, destacadoOrden: 0 });
+      }
+    });
+    
+    if (updates.length === 0) {
+      showToast('No hay cambios que guardar');
+      return;
+    }
+    
+    // Mostrar loading
+    var guardarBtn = document.getElementById('guardarDestacadosBtn');
+    if (guardarBtn) guardarBtn.innerHTML = '⏳ Guardando...';
+    
+    var completed = 0;
+    var errores = 0;
+    
+    updates.forEach(function(u) {
+      fetch(API + '/api/productos/' + u.id + '/destacado', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': pass },
+        body: JSON.stringify({ destacadoOrden: u.destacadoOrden })
+      })
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        completed++;
+        console.log('✅ Guardado:', u.id, '→ destacadoOrden:', u.destacadoOrden, data);
+        if (completed === updates.length) {
+          finalizarGuardadoDestacados(errores);
+        }
+      })
+      .catch(function(err) {
+        completed++;
+        errores++;
+        console.error('❌ Error guardando', u.id, err);
+        if (completed === updates.length) {
+          finalizarGuardadoDestacados(errores);
+        }
+      });
+    });
+  }
+  
+  function finalizarGuardadoDestacados(errores) {
+    var guardarBtn = document.getElementById('guardarDestacadosBtn');
+    var cancelarBtn = document.getElementById('cancelarDestacadosBtn');
+    var cat = localStorage.getItem('karaz_admin_category');
+    
+    if (guardarBtn) {
+      guardarBtn.innerHTML = '💾 GUARDAR DESTACADOS';
+      guardarBtn.style.display = 'none';
+    }
+    if (cancelarBtn) cancelarBtn.style.display = 'none';
+    
+    if (errores > 0) {
+      showAlert('⚠️ Error parcial', errores + ' producto(s) no se pudieron guardar. Intentá de nuevo.');
+    } else {
+      showToast('✅ Destacados guardados correctamente');
+      window.pendingDestacados = null;
+      cargarProductos().then(function() {
+        showCategoryPreview(cat);
+      });
+    }
+  }
+  
+  function cancelarDestacadosCambios() {
+    window.pendingDestacados = null;
+    var guardarBtn = document.getElementById('guardarDestacadosBtn');
+    var cancelarBtn = document.getElementById('cancelarDestacadosBtn');
+    if (guardarBtn) guardarBtn.style.display = 'none';
+    if (cancelarBtn) cancelarBtn.style.display = 'none';
+    
+    var cat = localStorage.getItem('karaz_admin_category');
     showCategoryPreview(cat);
   }
 
@@ -1303,6 +1471,8 @@ var uploadingCount = 0;
   window.quitarPortada = quitarPortada;
   window.seleccionarPortada = seleccionarPortada;
   window.seleccionarDestacado = seleccionarDestacado;
+  window.guardarDestacadosCambios = guardarDestacadosCambios;
+  window.cancelarDestacadosCambios = cancelarDestacadosCambios;
   window.abrirNuevoDesdeCategoria = abrirNuevoDesdeCategoria;
   window.showAlert = showAlert;
   window.showConfirm = showConfirm;
