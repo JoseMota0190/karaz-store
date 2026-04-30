@@ -624,8 +624,9 @@ function renderCard(p) {
     badges += '<span class="product-badge product-badge--new">✨ New</span>';
   }
   
+  const featuredClass = p.destacadoOrden > 0 ? 'product-card--featured' : '';
   return `
-    <article class="product-card" onclick="goToProduct('${p.id}')">
+    <article class="product-card ${featuredClass}" onclick="goToProduct('${p.id}')">
       <div class="product-card__media">
         <img class="product-card__img"
           src="${sanitize(imgSrc)}"
