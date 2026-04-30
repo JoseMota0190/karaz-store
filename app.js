@@ -540,16 +540,10 @@ function openCategory(cat) {
     const titleEl = $('catalog-active-title');
     if (titleEl) titleEl.textContent = getCatLabel(cat) || cat;
 
-    // Imagen de encabezado de categoría
-    const headerImg = categoryImages[cat];
+    // Imagen de encabezado de categoría - ya no se muestra
     const headerEl = $('category-header-img');
     if (headerEl) {
-      if (headerImg) {
-        headerEl.src = headerImg;
-        headerEl.style.display = 'block';
-      } else {
-        headerEl.style.display = 'none';
-      }
+      headerEl.style.display = 'none';
     }
 
     const products = PRODUCTS.filter(p => p.category === cat);
