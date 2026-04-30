@@ -425,7 +425,6 @@
     document.getElementById('logoArea').style.display = 'none';
     document.getElementById('editArea').style.display = 'none';
     document.getElementById('categoryPreview').style.display = 'block';
-    document.getElementById('categoryTitle').textContent = catLabel;
     
     // Renderizar portada
     renderPortadaPreview(cat);
@@ -1342,6 +1341,13 @@ var uploadingCount = 0;
   window.subirFoto = subirFoto;
   window.abrirEditarCard = abrirEditarCard;
   window.eliminarProductoCard = eliminarProductoCard;
+  window.showCategoryPreview = showCategoryPreview;
+  window.showPortadaProducts = showPortadaProducts;
+  window.showDestacadosProducts = showDestacadosProducts;
+  window.showProductList = showProductList;
+  window.volverACategorias = volverACategorias;
+  window.seleccionarPortada = seleccionarPortada;
+  window.seleccionarDestacado = seleccionarDestacado;
   
   function showToast(msg) {
     var existing = document.getElementById('toast');
