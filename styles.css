@@ -2981,13 +2981,22 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 
 .product-detail__main-img {
   cursor: zoom-in;
+  max-width: 100%;
+  max-height: 50vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  display: block;
 }
 
 .product-detail__main-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  text-align: center;
+  background: #fff;
+  padding: 16px;
+  min-height: 350px;
 }
 
 .gallery-nav {
