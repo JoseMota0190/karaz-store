@@ -550,17 +550,6 @@
     var isEditMode = window.currentEditMode === true;
     console.log('renderProductosConAcciones - mode:', mode, 'isEditMode:', isEditMode);
     
-    var clickAction = '';
-    if (mode === 'editar' || isEditMode) {
-      clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
-    } else if (mode === 'eliminar') {
-      clickAction = '';
-    } else if (mode === 'portada') {
-      clickAction = 'onclick="seleccionarPortada(\'' + prodId + '\')"';
-    } else if (mode === 'destacados') {
-      clickAction = 'onclick="seleccionarDestacado(\'' + prodId + '\')"';
-    }
-    
     if (list.length === 0) {
       html = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
     } else {
@@ -571,6 +560,18 @@
         var prodId = p.codigo || p.id;
         var isFeatured = p.destacadoOrden > 0;
         var fuegoIcon = isFeatured ? ' 🔥' : '';
+        
+        var clickAction = '';
+        if (mode === 'editar' || isEditMode) {
+          clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
+        } else if (mode === 'eliminar') {
+          clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
+        } else if (mode === 'portada') {
+          clickAction = 'onclick="seleccionarPortada(\'' + prodId + '\')"';
+        } else if (mode === 'destacados') {
+          clickAction = 'onclick="seleccionarDestacado(\'' + prodId + '\')"';
+        }
+        
         var cursorStyle = clickAction ? 'cursor:pointer;' : '';
         
         var actionHtml = '';
