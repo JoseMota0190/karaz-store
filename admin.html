@@ -501,6 +501,8 @@
   
   function showProductList(cat, mode) {
     window.currentAdminMode = mode;
+    currentMode = mode; // Sincronizar con la variable global para que funcione seleccionar()
+    
     // Ocultar la página de inicio y mostrar el área de edición
     document.getElementById('logoArea').style.display = 'none';
     document.getElementById('categoryPreview').style.display = 'none';
@@ -551,15 +553,20 @@
     renderProductosConAcciones(filtered);
   }
   
-  function renderProductosConAcciones(list) {
+function renderProductosConAcciones(list) {
     var html = '';
     var currentCategory = localStorage.getItem('adminActiveCategory') || '';
     var mode = window.currentAdminMode;
     var isEditMode = window.currentEditMode === true;
     console.log('renderProductosConAcciones - mode:', mode, 'isEditMode:', isEditMode);
     
+    // Agregar botón para nuevo producto si es modo nuevo
+    if (mode === 'nuevo') {
+      html += '<div style="grid-column:1/-1;padding:12px;"><button onclick="abrirNuevoDesdeCategoria()" style="padding:12px 20px;background:#5C0F14;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;">+ Agregar nuevo producto</button></div>';
+    }
+    
     if (list.length === 0) {
-      html = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
+      html += '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
     } else {
       list.forEach(function(p) {
         var img = p.imagen || p.image || 'https://placehold.co/200x200/eee/999?text=📷';
@@ -570,9 +577,9 @@
         var fuegoIcon = isFeatured ? ' 🔥' : '';
         
         var clickAction = '';
-        if (mode === 'editar' || isEditMode) {
+        if (mode === 'editar' || mode === 'nuevo' || isEditMode) {
           clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
-        } else if (mode === 'eliminar' || mode === 'nuevo' || mode === 'editar') {
+        } else if (mode === 'eliminar') {
           clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
         } else if (mode === 'portada') {
           clickAction = 'onclick="seleccionarPortada(\'' + prodId + '\')"';
@@ -583,7 +590,7 @@
         var cursorStyle = clickAction ? 'cursor:pointer;' : '';
         
         var actionHtml = '';
-        if (mode === 'eliminar' || mode === 'nuevo' || mode === 'editar') {
+        if (mode === 'eliminar') {
           actionHtml = '<div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div>';
         } else if (mode === 'portada') {
           actionHtml = '<div style="position:absolute;bottom:8px;right:8px;background:#5C0F14;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">🖼️ Portada</div>';
@@ -1392,11 +1399,30 @@ var uploadingCount = 0;
   // INICIAR
   init();
   
+  function abrirNuevoDesdeCategoria() {
+    // Si hay una categoría activa, pre-seleccionarla
+    var cat = localStorage.getItem('adminActiveCategory');
+    if (cat) {
+      // Buscar el input de la categoría y seleccionarlo
+      var catInputs = document.querySelectorAll('.cats input[name="cat"]');
+      catInputs.forEach(function(input) {
+        if (input.value === cat) {
+          input.checked = true;
+          var parent = input.closest('.cat');
+          if (parent) parent.classList.add('active');
+        }
+      });
+    }
+    // Abrir el modal de nuevo producto
+    abrirNuevo();
+  }
+  
   // Exponer funciones al global para que funcionen los onclick
   window.selCat = selCat;
   window.seleccionar = seleccionar;
   window.cerrarMenu = cerrarMenu;
   window.abrirEditar = abrirEditar;
+  window.abrirNuevo = abrirNuevo;
   window.eliminar = eliminar;
   window.cerrarModal = cerrarModal;
   window.cerrarSuccessModal = cerrarSuccessModal;
@@ -1413,6 +1439,7 @@ var uploadingCount = 0;
   window.volverACategorias = volverACategorias;
   window.seleccionarPortada = seleccionarPortada;
   window.seleccionarDestacado = seleccionarDestacado;
+  window.abrirNuevoDesdeCategoria = abrirNuevoDesdeCategoria;
   
   function showToast(msg) {
     var existing = document.getElementById('toast');
