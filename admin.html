@@ -1062,6 +1062,8 @@ function renderProductosConAcciones(list) {
     
     // Si el modo es editar o nuevo, mostrar alert de confirmación
     if (currentMode === 'editar' || window.currentAdminMode === 'editar') {
+      // Guardar el prodId en el dataset del botón para que abrirEditar funcione
+      document.getElementById('menuEditBtn').dataset.prodId = id;
       showConfirm('✏️ Editar producto', '¿Desea editar este producto?', function() {
         abrirEditar();
       }, function() {
