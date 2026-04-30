@@ -1010,7 +1010,7 @@
     var configData = { storeId: STORE };
     
     // Obtener categorías actuales del config (si existen)
-    fetch(API_URL + '/api/config?store=' + STORE)
+    fetch(API + '/api/config?store=' + STORE)
       .then(function(res) { return res.json(); })
       .then(function(config) {
         var categories = config.categories || [];
@@ -1032,7 +1032,7 @@
         configData.categories = categories;
         
         // Guardar en backend
-        return fetch(API_URL + '/api/config', {
+        return fetch(API + '/api/config', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': localStorage.getItem(STORE + '_adminPass') || '' },
           body: JSON.stringify(configData)
@@ -1079,7 +1079,7 @@
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
       if (p.destacadoOrden !== undefined) {
-        await fetch(API_URL + '/api/productos/' + (p.codigo || p.id), {
+        await fetch(API + '/api/productos/' + (p.codigo || p.id), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'x-store-id': STORE },
           body: JSON.stringify({ destacadoOrden: p.destacadoOrden })
