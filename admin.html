@@ -149,8 +149,49 @@
       <button id="btnEliminar" style="flex:1;min-width:100px;max-width:150px;padding:14px 20px;background:white;color:#dc2626;border:2px solid #dc2626;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;">🗑️ Eliminar</button>
     </div>
   </div>
+  <!-- Vista previa de categoría (portada + destacados + botones) -->
+  <div id="categoryPreview" style="display:none;padding:20px;">
+    <!-- Volver -->
+    <button id="backToCatsBtn" style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:white;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:16px;" onclick="volverACategorias()">
+      ← Volver a categorías
+    </button>
+    <!-- Título de categoría -->
+    <h2 id="categoryTitle" style="text-align:center;margin-bottom:20px;color:#5C0F14;font-size:1.5rem;font-family:'Limelight',serif;"></h2>
+    <!-- Portada -->
+    <div id="portadaSection" style="background:#FDF8F3;border-radius:16px;padding:20px;margin-bottom:20px;cursor:pointer;" onclick="showPortadaProducts()">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:1.2rem;">🖼️</span>
+        <span style="font-weight:600;color:#5C0F14;">PORTADA</span>
+        <span style="font-size:0.8rem;color:#888;margin-left:auto;">Click para cambiar</span>
+      </div>
+      <div id="portadaPreview" style="background:white;border-radius:12px;padding:10px;min-height:120px;display:flex;align-items:center;justify-content:center;">
+        <img id="portadaImg" src="" style="max-height:100px;max-width:100%;border-radius:8px;display:none;">
+        <span id="portadaPlaceholder" style="color:#aaa;font-size:0.9rem;">Sin imagen de portada</span>
+      </div>
+    </div>
+    <!-- Destacados -->
+    <div id="destacadosSection" style="background:#FDF8F3;border-radius:16px;padding:20px;margin-bottom:20px;cursor:pointer;" onclick="showDestacadosProducts()">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:1.2rem;">🔥</span>
+        <span style="font-weight:600;color:#5C0F14;">DESTACADOS</span>
+        <span id="destacadosCount" style="font-size:0.8rem;color:#888;margin-left:auto;">0/4</span>
+      </div>
+      <div id="destacadosPreview" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <!-- Los 4 slots de destacados se renderizan con JS -->
+      </div>
+    </div>
+    <!-- Botones de acción -->
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button id="previewBtnNuevo" style="flex:1;min-width:90px;max-width:140px;padding:12px 16px;background:#5C0F14;color:white;border:none;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;">+ Nuevo</button>
+      <button id="previewBtnEditar" style="flex:1;min-width:90px;max-width:140px;padding:12px 16px;background:white;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;">✏️ Editar</button>
+      <button id="previewBtnEliminar" style="flex:1;min-width:90px;max-width:140px;padding:12px 16px;background:white;color:#dc2626;border:2px solid #dc2626;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;">🗑️ Eliminar</button>
+    </div>
+  </div>
   <!-- Área de edición/eliminación (oculta) -->
   <div id="editArea" style="display:none;">
+    <button id="editAreaBackBtn" style="display:none;align-items:center;gap:8px;padding:10px 16px;background:white;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;margin:12px;" onclick="volverACategorias()">
+      ← Volver
+    </button>
     <div class="buscar">
       <input type="text" id="buscarInput" placeholder="Buscar producto...">
     </div>
@@ -335,8 +376,16 @@
       document.querySelector('.fab-container').style.display = 'flex';
       abrirNuevo(); 
     };
-    el = document.getElementById('btnEditar'); if (el) el.onclick = function() { mostrarModoEditar(); };
-    el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { mostrarModoEliminar(); };
+    el = document.getElementById('btnEditar'); if (el) el.onclick = function() { 
+      var cat = localStorage.getItem('adminActiveCategory');
+      if (!cat) { alert('Por favor selecciona una categoría primero'); return; }
+      showProductList(cat, 'editar');
+    };
+    el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { 
+      var cat = localStorage.getItem('adminActiveCategory');
+      if (!cat) { alert('Por favor selecciona una categoría primero'); return; }
+      showProductList(cat, 'eliminar');
+    };
     el = document.getElementById('modalCloseBtn'); if (el) el.onclick = cerrarModal;
     el = document.getElementById('cancelBtn'); if (el) el.onclick = cerrarModal;
     el = document.getElementById('saveBtn'); if (el) el.onclick = guardar;
@@ -368,24 +417,113 @@
       btn.onclick = function() {
         btns.forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
-        document.getElementById('logoArea').style.display = 'none';
-        document.getElementById('editArea').style.display = 'block';
-        document.getElementById('editIntegratedPanel').style.display = 'block';
-        document.getElementById('featuredPanel').style.display = 'block';
-        document.querySelector('.fab-container').style.display = 'flex';
         var cat = btn.getAttribute('data-cat');
         localStorage.setItem('adminActiveCategory', cat);
-        var filtered = productos.filter(function(p) {
-          return (p.categoria || p.category) === cat;
-        });
-        filtered.sort(function(a, b) {
-          var precioA = parseInt(a.precio || a.price || 0);
-          var precioB = parseInt(b.precio || b.price || 0);
-          return precioA - precioB;
-        });
-        renderProductosConAcciones(filtered);
+        // Mostrar vista previa de categoría
+        showCategoryPreview(cat);
       };
     });
+  }
+  
+  function showCategoryPreview(cat) {
+    var catLabel = '';
+    cats.forEach(function(c) { if (c.id === cat) catLabel = c.label; });
+    
+    document.getElementById('logoArea').style.display = 'none';
+    document.getElementById('editArea').style.display = 'none';
+    document.getElementById('categoryPreview').style.display = 'block';
+    document.getElementById('categoryTitle').textContent = catLabel;
+    
+    // Renderizar portada
+    renderPortadaPreview(cat);
+    
+    // Renderizar destacados
+    renderDestacadosPreview(cat);
+    
+    // Asignar eventos a los botones
+    var btnNuevo = document.getElementById('previewBtnNuevo');
+    var btnEditar = document.getElementById('previewBtnEditar');
+    var btnEliminar = document.getElementById('previewBtnEliminar');
+    
+    btnNuevo.onclick = function() { showProductList(cat, 'nuevo'); };
+    btnEditar.onclick = function() { showProductList(cat, 'editar'); };
+    btnEliminar.onclick = function() { showProductList(cat, 'eliminar'); };
+  }
+  
+  function renderPortadaPreview(cat) {
+    var portadas = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
+    var portadaImg = portadas[cat];
+    var imgEl = document.getElementById('portadaImg');
+    var placeholder = document.getElementById('portadaPlaceholder');
+    if (portadaImg) {
+      imgEl.src = portadaImg;
+      imgEl.style.display = 'block';
+      placeholder.style.display = 'none';
+    } else {
+      // Si no hay portada guardada, usar el primer producto destacado o el primero
+      var filtered = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+      var portadaProd = filtered.find(function(p) { return p.destacadoOrden > 0; }) || filtered[0];
+      if (portadaProd && portadaProd.imagen) {
+        imgEl.src = portadaProd.imagen;
+        imgEl.style.display = 'block';
+        placeholder.style.display = 'none';
+      } else {
+        imgEl.style.display = 'none';
+        placeholder.style.display = 'block';
+      }
+    }
+  }
+  
+  function renderDestacadosPreview(cat) {
+    var filtered = productos.filter(function(p) { return (p.categoria || p.category) === cat && p.destacadoOrden > 0; });
+    var count = filtered.length;
+    document.getElementById('destacadosCount').textContent = count + '/4';
+    
+    var container = document.getElementById('destacadosPreview');
+    var html = '';
+    for (var i = 1; i <= 4; i++) {
+      var prod = filtered.find(function(p) { return p.destacadoOrden === i; });
+      if (prod && prod.imagen) {
+        html += '<div style="width:70px;height:70px;position:relative;"><img src="' + prod.imagen + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"><span style="position:absolute;top:-5px;right:-5px;font-size:1rem;">🔥</span></div>';
+      } else {
+        html += '<div style="width:70px;height:70px;background:#eee;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:1.5rem;">+</div>';
+      }
+    }
+    container.innerHTML = html;
+  }
+  
+  function showPortadaProducts() {
+    var cat = localStorage.getItem('adminActiveCategory');
+    showProductList(cat, 'portada');
+  }
+  
+  function showDestacadosProducts() {
+    var cat = localStorage.getItem('adminActiveCategory');
+    showProductList(cat, 'destacados');
+  }
+  
+  function showProductList(cat, mode) {
+    window.currentAdminMode = mode;
+    document.getElementById('categoryPreview').style.display = 'none';
+    document.getElementById('editArea').style.display = 'block';
+    document.getElementById('editAreaBackBtn').style.display = 'flex';
+    document.getElementById('editIntegratedPanel').style.display = 'block';
+    document.getElementById('featuredPanel').style.display = 'block';
+    document.querySelector('.fab-container').style.display = 'flex';
+    
+    var filtered = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+    filtered.sort(function(a, b) {
+      var precioA = parseInt(a.precio || a.price || 0);
+      var precioB = parseInt(b.precio || b.price || 0);
+      return precioA - precioB;
+    });
+    renderProductosConAcciones(filtered);
+  }
+  
+  function volverACategorias() {
+    document.getElementById('editAreaBackBtn').style.display = 'none';
+    var cat = localStorage.getItem('adminActiveCategory');
+    if (cat) showCategoryPreview(cat);
   }
   
   function activarModoEdicion() {
@@ -407,9 +545,20 @@
   function renderProductosConAcciones(list) {
     var html = '';
     var currentCategory = localStorage.getItem('adminActiveCategory') || '';
+    var mode = window.currentAdminMode;
     var isEditMode = window.currentEditMode === true;
-    console.log('renderProductosConAcciones - isEditMode:', isEditMode);
-    var editCursor = isEditMode ? 'cursor:pointer;' : '';
+    console.log('renderProductosConAcciones - mode:', mode, 'isEditMode:', isEditMode);
+    
+    var clickAction = '';
+    if (mode === 'editar' || isEditMode) {
+      clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
+    } else if (mode === 'eliminar') {
+      clickAction = '';
+    } else if (mode === 'portada') {
+      clickAction = 'onclick="seleccionarPortada(\'' + prodId + '\')"';
+    } else if (mode === 'destacados') {
+      clickAction = 'onclick="seleccionarDestacado(\'' + prodId + '\')"';
+    }
     
     if (list.length === 0) {
       html = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
@@ -421,9 +570,18 @@
         var prodId = p.codigo || p.id;
         var isFeatured = p.destacadoOrden > 0;
         var fuegoIcon = isFeatured ? ' 🔥' : '';
-        var clickHandler = isEditMode ? 'onclick="seleccionar(\'' + prodId + '\')"' : '';
+        var cursorStyle = clickAction ? 'cursor:pointer;' : '';
         
-        html += '<div class="card" style="position:relative;' + editCursor + '" ' + clickHandler + '><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div>' + (isEditMode ? '' : '<div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div>') + '</div>';
+        var actionHtml = '';
+        if (mode === 'eliminar') {
+          actionHtml = '<div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div>';
+        } else if (mode === 'portada') {
+          actionHtml = '<div style="position:absolute;bottom:8px;right:8px;background:#5C0F14;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">🖼️ Portada</div>';
+        } else if (mode === 'destacados') {
+          actionHtml = isFeatured ? '<div style="position:absolute;top:8px;left:8px;font-size:16px;">🔥</div>' : '<div style="position:absolute;bottom:8px;right:8px;background:#5C0F14;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">+ Agregar</div>';
+        }
+        
+        html += '<div class="card" style="position:relative;' + cursorStyle + '" ' + clickAction + '><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div>' + actionHtml + '</div>';
       });
     }
     document.getElementById('gridDisplay').innerHTML = html;
@@ -718,16 +876,22 @@
   }
   
   function filtrar() {
-    if (!currentMode) return;
+    if (!currentMode && !window.currentAdminMode) return;
     var busq = document.getElementById('buscarInput').value.toLowerCase();
-    var filt = productos.filter(function(p) {
+    var cat = localStorage.getItem('adminActiveCategory');
+    var productosCategoria = cat 
+      ? productos.filter(function(p) { return (p.categoria || p.category) === cat; })
+      : productos;
+    var filt = productosCategoria.filter(function(p) {
       var nombreProd = (p.nombre || p.name || '').toLowerCase();
       return !busq || nombreProd.includes(busq);
     });
-    if (currentMode === 'editar') {
+    if (currentMode === 'editar' || window.currentAdminMode === 'editar') {
       renderEditar(filt);
-    } else if (currentMode === 'eliminar') {
+    } else if (currentMode === 'eliminar' || window.currentAdminMode === 'eliminar') {
       renderEliminar(filt);
+    } else {
+      renderProductosConAcciones(filt);
     }
   }
 
@@ -832,6 +996,58 @@
     }
     document.querySelector('#productMenu .close').textContent = 'Cancelar';
     if (seleccionado) document.getElementById('productMenu').classList.add('show');
+  }
+  
+  function seleccionarPortada(id) {
+    var prod = productos.find(function(p) { return (p.codigo || p.id) === id; });
+    if (!prod) return;
+    // Guardar la portada de la categoría en localStorage
+    var cat = localStorage.getItem('adminActiveCategory');
+    var portadas = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
+    portadas[cat] = prod.imagen;
+    localStorage.setItem('categoryPortadas', JSON.stringify(portadas));
+    alert('Imagen de portada actualizada!');
+    // Actualizar la vista
+    showCategoryPreview(cat);
+  }
+  
+  function seleccionarDestacado(id) {
+    var prod = productos.find(function(p) { return (p.codigo || p.id) === id; });
+    if (!prod) return;
+    var cat = localStorage.getItem('adminActiveCategory');
+    var catProducts = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+    var currentFeatured = catProducts.filter(function(p) { return p.destacadoOrden > 0; });
+    
+    if (prod.destacadoOrden > 0) {
+      // Quitar de destacados
+      prod.destacadoOrden = 0;
+    } else {
+      // Agregar a destacados (si hay espacio)
+      if (currentFeatured.length >= 4) {
+        alert('Ya tienes 4 productos destacados. Quita uno primero.');
+        return;
+      }
+      prod.destacadoOrden = currentFeatured.length + 1;
+    }
+    
+    // Guardar cambios en backend
+    guardarDestacadosEnBackend(catProducts);
+    // Actualizar la vista
+    showCategoryPreview(cat);
+  }
+  
+  async function guardarDestacadosEnBackend(products) {
+    for (var i = 0; i < products.length; i++) {
+      var p = products[i];
+      if (p.destacadoOrden !== undefined) {
+        await fetch(API_URL + '/api/productos/' + (p.codigo || p.id), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-store-id': STORE },
+          body: JSON.stringify({ destacadoOrden: p.destacadoOrden })
+        });
+      }
+    }
+    showToast('Destacados actualizados');
   }
   
   function cerrarMenu() {
