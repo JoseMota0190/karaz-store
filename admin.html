@@ -283,13 +283,26 @@
     renderFiltros();
     renderCats();
     if (localStorage.getItem(STORE + '_logged')) mostrarAdmin();
-    document.getElementById('loginBtn').onclick = login;
-    document.getElementById('passInput').onkeyup = function(e) { if(e.key==='Enter') login(); };
-    document.getElementById('logoutBtn').onclick = logout;
-    document.getElementById('buscarInput').oninput = filtrar;
-    document.getElementById('nuevoBtn').onclick = abrirNuevo;
-    document.getElementById('editIntegratedBtn').onclick = function() { window.currentEditMode = true; var currentCat = localStorage.getItem('adminActiveCategory'); if(!currentCat) return; var filtered = productos.filter(function(p) { return (p.categoria || p.category) === currentCat; }); filtered.sort(function(a,b){return parseInt(a.precio||a.price||0)-parseInt(b.precio||b.price||0);}); renderProductosConAcciones(filtered); };
-    document.getElementById('btnNuevo').onclick = function() { 
+    
+    var el;
+    el = document.getElementById('loginBtn'); if (el) el.onclick = login;
+    el = document.getElementById('passInput'); if (el) el.onkeyup = function(e) { if(e.key==='Enter') login(); };
+    el = document.getElementById('logoutBtn'); if (el) el.onclick = logout;
+    el = document.getElementById('buscarInput'); if (el) el.oninput = filtrar;
+    el = document.getElementById('nuevoBtn'); if (el) el.onclick = abrirNuevo;
+    el = document.getElementById('editIntegratedBtn'); if (el) el.onclick = function() {
+      window.currentEditMode = true;
+      var currentCat = localStorage.getItem('adminActiveCategory');
+      if (!currentCat) return;
+      var filtered = productos.filter(function(p) { 
+        return (p.categoria || p.category) === currentCat; 
+      });
+      filtered.sort(function(a, b) {
+        return parseInt(a.precio || a.price || 0) - parseInt(b.precio || b.price || 0);
+      });
+      renderProductosConAcciones(filtered);
+    };
+    el = document.getElementById('btnNuevo'); if (el) el.onclick = function() { 
       document.getElementById('logoArea').style.display = 'none';
       document.getElementById('editArea').style.display = 'block';
       document.getElementById('editIntegratedPanel').style.display = 'block';
@@ -297,28 +310,25 @@
       document.querySelector('.fab-container').style.display = 'flex';
       abrirNuevo(); 
     };
-    document.getElementById('btnEditar').onclick = function() { mostrarModoEditar(); };
-    document.getElementById('btnEliminar').onclick = function() { mostrarModoEliminar(); };
-    document.getElementById('modalCloseBtn').onclick = cerrarModal;
-    document.getElementById('cancelBtn').onclick = cerrarModal;
-    document.getElementById('saveBtn').onclick = guardar;
-    document.getElementById('openFeaturedBtn').onclick = function() {
+    el = document.getElementById('btnEditar'); if (el) el.onclick = function() { mostrarModoEditar(); };
+    el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { mostrarModoEliminar(); };
+    el = document.getElementById('modalCloseBtn'); if (el) el.onclick = cerrarModal;
+    el = document.getElementById('cancelBtn'); if (el) el.onclick = cerrarModal;
+    el = document.getElementById('saveBtn'); if (el) el.onclick = guardar;
+    el = document.getElementById('openFeaturedBtn'); if (el) el.onclick = function() {
       toggleFeaturedPanel();
       abrirModalDestacados();
     };
-    document.getElementById('saveFeaturedBtn').onclick = guardarDestacadosDesdeModal;
-    document.getElementById('menuEditBtn').onclick = abrirEditar;
-    document.getElementById('menuDeleteBtn').onclick = eliminar;
-    document.getElementById('menuCloseBtn').onclick = cerrarMenu;
-    document.getElementById('uploadBox').onclick = function() { document.getElementById('fileInput').click(); };
-    document.getElementById('fileInput').onchange = function() { subirFoto('fileInput', 'imageUrl', 'previewImg', 'uploadBox'); };
-    document.getElementById('fileInput2').onchange = function() { subirFoto('fileInput2', 'imageUrl2', 'previewImg2', 'uploadBox2'); };
-    document.getElementById('fileInput3').onchange = function() { subirFoto('fileInput3', 'imageUrl3', 'previewImg3', 'uploadBox3'); };
-    
-    // Setup click handlers for upload boxes
-    document.getElementById('uploadBox').onclick = function() { document.getElementById('fileInput').click(); };
-    document.getElementById('uploadBox2').onclick = function() { document.getElementById('fileInput2').click(); };
-    document.getElementById('uploadBox3').onclick = function() { document.getElementById('fileInput3').click(); };
+    el = document.getElementById('saveFeaturedBtn'); if (el) el.onclick = guardarDestacadosDesdeModal;
+    el = document.getElementById('menuEditBtn'); if (el) el.onclick = abrirEditar;
+    el = document.getElementById('menuDeleteBtn'); if (el) el.onclick = eliminar;
+    el = document.getElementById('menuCloseBtn'); if (el) el.onclick = cerrarMenu;
+    el = document.getElementById('uploadBox'); if (el) el.onclick = function() { document.getElementById('fileInput').click(); };
+    el = document.getElementById('fileInput'); if (el) el.onchange = function() { subirFoto('fileInput', 'imageUrl', 'previewImg', 'uploadBox'); };
+    el = document.getElementById('fileInput2'); if (el) el.onchange = function() { subirFoto('fileInput2', 'imageUrl2', 'previewImg2', 'uploadBox2'); };
+    el = document.getElementById('fileInput3'); if (el) el.onchange = function() { subirFoto('fileInput3', 'imageUrl3', 'previewImg3', 'uploadBox3'); };
+    el = document.getElementById('uploadBox2'); if (el) el.onclick = function() { document.getElementById('fileInput2').click(); };
+    el = document.getElementById('uploadBox3'); if (el) el.onclick = function() { document.getElementById('fileInput3').click(); };
   }
   
   function renderFiltros() {
