@@ -298,6 +298,63 @@ function mostrarDeleteSuccessModal() {
       });
   }
 
+  function ejecutarSanitizacion() {
+    showConfirm(
+      '🧹 Sanitizar tienda',
+      '¿Deseas limpiar automáticamente los productos destacados inválidos y las portadas huérfanas?',
+      function() {
+        // Mostrar loading
+        var btn = document.querySelector('button[onclick="ejecutarSanitizacion()"]');
+        var originalText = btn ? btn.textContent : '';
+        if (btn) {
+          btn.textContent = '⏳ Sanitizando...';
+          btn.disabled = true;
+        }
+
+        fetch(API + '/api/sanitizar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-store-id': STORE,
+            'x-admin-password': localStorage.getItem(STORE + '_admin_auth') || ''
+          }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (btn) {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }
+
+          var mensaje = '';
+          if (data.results) {
+            var d = data.results.destacados.limpiados;
+            var p = data.results.portadas.limpiadas;
+            if (d === 0 && p === 0) {
+              mensaje = '¡Todo está limpio! No se encontraron destacados ni portadas inválidas.';
+            } else {
+              mensaje = 'Se limpiaron:\n';
+              if (d > 0) mensaje += '• ' + d + ' producto(s) destacado(s) inválido(s)\n';
+              if (p > 0) mensaje += '• ' + p + ' portada(s) huérfana(s)\n';
+              mensaje += '\nRecargá la página para ver los cambios.';
+            }
+          } else {
+            mensaje = data.message || 'Sanitización completada.';
+          }
+          showAlert('✅ Sanitización completada', mensaje);
+        })
+        .catch(function(err) {
+          if (btn) {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }
+          console.error('Error en sanitización:', err);
+          showAlert('❌ Error', 'No se pudo completar la sanitización. Intentá de nuevo.');
+        });
+      }
+    );
+  }
+
   function renderDestacadosPreview(cat) {
     var filtered = productos.filter(function(p) { return (p.categoria || p.category) === cat && p.destacadoOrden > 0; });
     var count = filtered.length;
@@ -1475,6 +1532,7 @@ var uploadingCount = 0;
   window.logout = logout;
   window.quitarPortada = quitarPortada;
   window.seleccionarPortada = seleccionarPortada;
+  window.ejecutarSanitizacion = ejecutarSanitizacion;
   window.seleccionarDestacado = seleccionarDestacado;
   window.guardarDestacadosCambios = guardarDestacadosCambios;
   window.cancelarDestacadosCambios = cancelarDestacadosCambios;
