@@ -12,6 +12,13 @@ let currentLightboxIndex = 0;
 let currentSort = 'relevantes';
 let categoryImages = {};
 
+// ══════════════════════════════════════════════
+// PAGINACIÓN
+// ══════════════════════════════════════════════
+const PRODUCTS_PER_PAGE = 20;
+let currentPage = 1;
+let currentCategoryProducts = []; // productos filtrados de la categoría actual
+
 document.addEventListener('keydown', (e) => {
   const lightbox = document.getElementById('lightbox');
   if (!lightbox || !lightbox.classList.contains('active')) return;
@@ -575,14 +582,20 @@ function openCategory(cat) {
       headerEl.style.display = 'none';
     }
 
-    const products = PRODUCTS.filter(p => p.category === cat);
-    const sortedProducts = sortProducts(products);
-    renderGrid(sortedProducts);
+    // Mostrar skeleton mientras "cargamos"
+    showSkeleton(8);
 
-    gridWrap.classList.add('visible');
-    const navH = $('navbar').offsetHeight;
-    const top = document.querySelector('.catalog-main').offsetTop - navH;
-    window.scrollTo({ top, behavior: 'smooth' });
+    // Pequeño delay para simular carga y dar sensación de fluidez
+    setTimeout(() => {
+      const products = PRODUCTS.filter(p => p.category === cat);
+      const sortedProducts = sortProducts(products);
+      renderGrid(sortedProducts, 1); // Siempre empezar en página 1
+
+      gridWrap.classList.add('visible');
+      const navH = $('navbar').offsetHeight;
+      const top = document.querySelector('.catalog-main').offsetTop - navH;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }, 300);
   }, 280);
 }
 
@@ -648,7 +661,7 @@ function renderCard(p) {
     </article>`;
 }
 
-function renderGrid(products) {
+function renderGrid(products, page = 1) {
   const grid = $('products-grid');
   if (!grid) return;
   if (!products.length) {
@@ -656,9 +669,79 @@ function renderGrid(products) {
       <div style="font-size:3rem;margin-bottom:16px;opacity:.3">💎</div>
       <p style="font-family:var(--font-display);font-size:1.3rem;color:var(--dark)">Sin productos en esta categoría</p>
     </div>`;
+    renderPagination(0, 0);
     return;
   }
-  grid.innerHTML = products.map(p => renderCard(p)).join('');
+
+  currentCategoryProducts = products;
+  currentPage = page;
+
+  const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+  const start = (page - 1) * PRODUCTS_PER_PAGE;
+  const end = start + PRODUCTS_PER_PAGE;
+  const pageProducts = products.slice(start, end);
+
+  grid.innerHTML = pageProducts.map(p => renderCard(p)).join('');
+  grid.classList.add('fade-in');
+  setTimeout(() => grid.classList.remove('fade-in'), 400);
+
+  renderPagination(products.length, totalPages);
+}
+
+function renderPagination(totalItems, totalPages) {
+  const container = document.getElementById('pagination-controls');
+  if (!container) return;
+
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const prevDisabled = currentPage === 1 ? 'disabled' : '';
+  const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+
+  container.innerHTML = `
+    <div class="pagination">
+      <button class="pagination__btn" onclick="changePage(${currentPage - 1})" ${prevDisabled}>
+        ← Anterior
+      </button>
+      <span class="pagination__info">
+        Página ${currentPage} de ${totalPages} (${totalItems} productos)
+      </span>
+      <button class="pagination__btn" onclick="changePage(${currentPage + 1})" ${nextDisabled}>
+        Siguiente →
+      </button>
+    </div>
+  `;
+}
+
+function changePage(newPage) {
+  const totalPages = Math.ceil(currentCategoryProducts.length / PRODUCTS_PER_PAGE);
+  if (newPage < 1 || newPage > totalPages) return;
+  renderGrid(currentCategoryProducts, newPage);
+  const gridWrap = $('catalog-grid-wrap');
+  if (gridWrap) {
+    const navH = $('navbar').offsetHeight;
+    const top = gridWrap.offsetTop - navH - 20;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+}
+
+function showSkeleton(count = 8) {
+  const grid = $('products-grid');
+  if (!grid) return;
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    html += `
+      <div class="skeleton-card">
+        <div class="skeleton sk-img"></div>
+        <div class="skeleton sk-text"></div>
+        <div class="skeleton sk-price"></div>
+        <div class="skeleton sk-btn"></div>
+      </div>
+    `;
+  }
+  grid.innerHTML = html;
 }
 
 function goToProduct(id) { window.location.href = `product.html?id=${id}`; }
