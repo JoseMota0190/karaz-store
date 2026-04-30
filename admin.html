@@ -152,7 +152,7 @@
   <!-- NAVBAR -->
   <header class="navbar" id="navbar" style="background:#F5EDE4;box-shadow:0 4px 20px rgba(26,10,10,.08);">
     <div class="navbar__inner">
-      <a href="javascript:void(0)" onclick="localStorage.removeItem('karaz_admin_category'); location.reload();" class="navbar__brand">
+      <a href="javascript:void(0)" onclick="localStorage.removeItem('karaz_admin_category'); if(window.mostrarInicioAdmin) mostrarInicioAdmin(); return false;" class="navbar__brand">
         <img src="imagenes/logo_granate.png" alt="Karaz" style="height:36px;width:110px;object-fit:contain;">
       </a>
       <div class="navbar__actions" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">

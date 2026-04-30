@@ -690,7 +690,9 @@ function renderProductosConAcciones(list) {
   function mostrarAdmin() {
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('adminPage').classList.add('show');
-    cargarProductos();
+    cargarProductos().then(function() {
+      mostrarInicioAdmin();
+    });
   }
 
   function mostrarInicioAdmin() {
@@ -701,25 +703,11 @@ function renderProductosConAcciones(list) {
   }
 
   function cargarProductos() {
-    fetch(API + '/api/productos', { headers: { 'x-store-id': STORE } })
+    return fetch(API + '/api/productos', { headers: { 'x-store-id': STORE } })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       productos = d;
       filtrar();
-
-      var savedCat = localStorage.getItem('karaz_admin_category');
-      if (savedCat) {
-        var btn = document.querySelector('.filtro-btn[data-cat="' + savedCat + '"]');
-        if (btn) {
-          document.querySelectorAll('.filtro-btn').forEach(function(b) { b.classList.remove('active'); });
-          btn.classList.add('active');
-          showCategoryPreview(savedCat);
-        } else {
-          mostrarInicioAdmin();
-        }
-      } else {
-        mostrarInicioAdmin();
-      }
     });
   }
 
@@ -1297,6 +1285,7 @@ var uploadingCount = 0;
   window.showDestacadosProducts = showDestacadosProducts;
   window.showProductList = showProductList;
   window.volverACategorias = volverACategorias;
+  window.mostrarInicioAdmin = mostrarInicioAdmin;
   window.quitarPortada = quitarPortada;
   window.seleccionarPortada = seleccionarPortada;
   window.seleccionarDestacado = seleccionarDestacado;

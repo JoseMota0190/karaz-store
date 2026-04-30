@@ -399,15 +399,16 @@ function renderCategories() {
 function mapProduct(p) {
   if (p.codigo) {
     return {
-      id:          p.codigo,
-      name:        p.nombre,
-      price:       p.precio,
-      category:    p.categoria,
-      description: p.descripcion || '',
-      image:       p.imagen || '',
-      imagen2:     p.imagen2 || '',
-      imagen3:     p.imagen3 || '',
-      stock:       p.stock || 0,
+      id:             p.codigo,
+      name:           p.nombre,
+      price:          p.precio,
+      category:       p.categoria,
+      description:    p.descripcion || '',
+      image:          p.imagen || '',
+      imagen2:        p.imagen2 || '',
+      imagen3:        p.imagen3 || '',
+      stock:          p.stock || 0,
+      destacadoOrden: p.destacadoOrden || 0,
     };
   }
   return p;
