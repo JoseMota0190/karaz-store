@@ -373,7 +373,7 @@
     };
     el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { 
       var cat = localStorage.getItem('adminActiveCategory');
-      if (!cat) { alert('Por favor selecciona una categoría primero'); return; }
+      // Si no hay categoría seleccionada, mostrar todos los productos
       showProductList(cat, 'eliminar');
     };
     el = document.getElementById('modalCloseBtn'); if (el) el.onclick = cerrarModal;
@@ -509,7 +509,10 @@
     document.getElementById('featuredPanel').style.display = 'none';
     document.querySelector('.fab-container').style.display = 'none';
     
-    var filtered = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+    // Si cat es null, mostrar todos los productos
+    var filtered = cat 
+      ? productos.filter(function(p) { return (p.categoria || p.category) === cat; })
+      : productos;
     filtered.sort(function(a, b) {
       var precioA = parseInt(a.precio || a.price || 0);
       var precioB = parseInt(b.precio || b.price || 0);
@@ -521,7 +524,13 @@
   function volverACategorias() {
     document.getElementById('editAreaBackBtn').style.display = 'none';
     var cat = localStorage.getItem('adminActiveCategory');
-    if (cat) showCategoryPreview(cat);
+    if (cat) {
+      showCategoryPreview(cat);
+    } else {
+      // Volver al inicio del admin
+      document.getElementById('logoArea').style.display = 'block';
+      document.getElementById('editArea').style.display = 'none';
+    }
   }
   
   function activarModoEdicion() {
