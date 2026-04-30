@@ -297,6 +297,23 @@ app.put('/api/productos/:id/visita', requireStore, async (req, res) => {
   }
 });
 
+// Endpoint específico para actualizar solo destacadoOrden (sin multer, JSON puro)
+// DEBE ir ANTES de app.put('/api/productos/:id') para que Express no lo capture como :id
+app.put('/api/productos/:id/destacado', requireStore, async (req, res) => {
+  try {
+    const { destacadoOrden } = req.body;
+    const actualizado = await Producto.findOneAndUpdate(
+      { codigo: req.params.id, storeId: req.storeId },
+      { destacadoOrden: destacadoOrden || 0 },
+      { new: true }
+    );
+    if (!actualizado) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ success: true, destacadoOrden: actualizado.destacadoOrden });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/productos', requireStore, upload.single('imagen'), async (req, res) => {
   try {
     const { codigo, nombre, precio, categoria, descripcion, destacado, destacadoOrden, imagen2, imagen3 } = req.body;
@@ -343,22 +360,6 @@ app.put('/api/productos/:id', requireStore, upload.single('imagen'), async (req,
     );
     if (!actualizado) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json(actualizado);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Endpoint específico para actualizar solo destacadoOrden (sin multer, JSON puro)
-app.put('/api/productos/:id/destacado', requireStore, async (req, res) => {
-  try {
-    const { destacadoOrden } = req.body;
-    const actualizado = await Producto.findOneAndUpdate(
-      { codigo: req.params.id, storeId: req.storeId },
-      { destacadoOrden: destacadoOrden || 0 },
-      { new: true }
-    );
-    if (!actualizado) return res.status(404).json({ error: 'Producto no encontrado' });
-    res.json({ success: true, destacadoOrden: actualizado.destacadoOrden });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
