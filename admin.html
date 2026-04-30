@@ -362,12 +362,9 @@
       renderProductosConAcciones(filtered);
     };
     el = document.getElementById('btnNuevo'); if (el) el.onclick = function() { 
-      document.getElementById('logoArea').style.display = 'none';
-      document.getElementById('editArea').style.display = 'block';
-      document.getElementById('editIntegratedPanel').style.display = 'block';
-      document.getElementById('featuredPanel').style.display = 'block';
-      document.querySelector('.fab-container').style.display = 'flex';
-      abrirNuevo(); 
+      var cat = localStorage.getItem('adminActiveCategory');
+      if (!cat) { alert('Por favor selecciona una categoría primero'); return; }
+      showProductList(cat, 'nuevo');
     };
     el = document.getElementById('btnEditar'); if (el) el.onclick = function() { 
       var cat = localStorage.getItem('adminActiveCategory');
@@ -858,20 +855,8 @@
         if (btn) {
           document.querySelectorAll('.filtro-btn').forEach(function(b) { b.classList.remove('active'); });
           btn.classList.add('active');
-          document.getElementById('logoArea').style.display = 'none';
-          document.getElementById('editArea').style.display = 'block';
-          document.getElementById('editIntegratedPanel').style.display = 'block';
-          document.getElementById('featuredPanel').style.display = 'block';
-          document.querySelector('.fab-container').style.display = 'flex';
-          var filtered = productos.filter(function(p) {
-            return (p.categoria || p.category) === savedCat;
-          });
-          filtered.sort(function(a, b) {
-            var precioA = parseInt(a.precio || a.price || 0);
-            var precioB = parseInt(b.precio || b.price || 0);
-            return precioA - precioB;
-          });
-          renderProductosConAcciones(filtered);
+          // Usar showProductList para mostrar los productos correctamente sin paneles viejos
+          showProductList(savedCat, 'editar');
         }
       }
     });
