@@ -327,12 +327,12 @@
 
 <div id="successModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;">
   <div style="background:white;width:90%;max-width:380px;border-radius:16px;padding:32px 24px;text-align:center;border:3px solid #5C0F14;box-shadow:0 8px 32px rgba(92,15,20,0.3);">
-    <div style="font-size:3rem;margin-bottom:12px;">✅</div>
-    <h2 style="font-family:'Limelight',serif;color:#5C0F14;font-size:1.4rem;margin-bottom:8px;">¡Producto guardado con éxito!</h2>
-    <p style="color:#5C0F14;font-size:0.95rem;margin-bottom:24px;">¿Desea cargar otro producto?</p>
+    <div id="successModalIcon" style="font-size:3rem;margin-bottom:12px;">✅</div>
+    <h2 id="successModalTitle" style="font-family:'Limelight',serif;color:#5C0F14;font-size:1.4rem;margin-bottom:8px;">¡Producto guardado con éxito!</h2>
+    <p id="successModalText" style="color:#5C0F14;font-size:0.95rem;margin-bottom:24px;">¿Desea cargar otro producto?</p>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button onclick="cerrarSuccessModal(true)" style="padding:12px 28px;background:#D9BCA3;color:#5C0F14;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'Limelight',serif;">Sí, cargar más</button>
-      <button onclick="cerrarSuccessModal(false)" style="padding:12px 28px;background:white;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;">No, terminar</button>
+      <button id="successModalBtnYes" onclick="cerrarSuccessModal(true)" style="padding:12px 28px;background:#D9BCA3;color:#5C0F14;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'Limelight',serif;">Sí, cargar más</button>
+      <button id="successModalBtnNo" onclick="cerrarSuccessModal(false)" style="padding:12px 28px;background:white;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;">No, terminar</button>
     </div>
   </div>
 </div>
@@ -418,9 +418,18 @@ function cerrarAlertModal(result) {
       abrirNuevo();
     };
     el = document.getElementById('btnEditar'); if (el) el.onclick = function() { 
-      var cat = localStorage.getItem('adminActiveCategory');
-      // Si no hay categoría seleccionada, mostrar todos los productos
-      showProductList(cat, 'editar');
+      if (productos.length === 0) {
+        showAlert('⚠️ Catálogo vacío', 'No hay productos para editar');
+        return;
+      }
+      showConfirm('✏️ Editar producto', '¿Desea editar un producto?', function() {
+        showProductList(null, 'editar');
+      }, function() {
+        // Volver a inicio sin productos
+        document.getElementById('logoArea').style.display = 'block';
+        document.getElementById('editArea').style.display = 'none';
+        document.getElementById('categoryPreview').style.display = 'none';
+      });
     };
     el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { 
       var cat = localStorage.getItem('adminActiveCategory');
@@ -486,7 +495,14 @@ function cerrarAlertModal(result) {
     var btnEliminar = document.getElementById('previewBtnEliminar');
     
     btnNuevo.onclick = function() { abrirNuevo(); };
-    btnEditar.onclick = function() { showProductList(cat, 'editar'); };
+    btnEditar.onclick = function() { 
+      var catProducts = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+      if (catProducts.length === 0) {
+        showAlert('⚠️ Sin productos', 'No hay productos en esta categoría para editar');
+        return;
+      }
+      showProductList(cat, 'editar'); 
+    };
     btnEliminar.onclick = function() { showProductList(cat, 'eliminar'); };
   }
   
@@ -1267,11 +1283,19 @@ function renderProductosConAcciones(list) {
     document.getElementById('successModal').style.display = 'none';
     cargarProductos();
     cerrarModal();
+    
+    var opType = window.lastOperationType || 'nuevo';
+    
     if (cargarMas) {
-      // Si quiere cargar más: abrir formulario de nuevo producto
-      abrirNuevo();
+      if (opType === 'editar') {
+        // Editar + Sí: mostrar página de inicio con productos y búsqueda
+        showProductList(null, 'editar');
+      } else {
+        // Nuevo + Sí: abrir formulario de nuevo producto
+        abrirNuevo();
+      }
     } else {
-      // Si no: volver al inicio del admin sin recargar página
+      // Click en "No" siempre vuelve al inicio sin productos
       document.getElementById('logoArea').style.display = 'block';
       document.getElementById('editArea').style.display = 'none';
       document.getElementById('categoryPreview').style.display = 'none';
@@ -1283,6 +1307,27 @@ function renderProductosConAcciones(list) {
   }
   
   function mostrarSuccessModal() {
+    var opType = window.lastOperationType || 'nuevo';
+    var icon = document.getElementById('successModalIcon');
+    var title = document.getElementById('successModalTitle');
+    var text = document.getElementById('successModalText');
+    var btnYes = document.getElementById('successModalBtnYes');
+    var btnNo = document.getElementById('successModalBtnNo');
+    
+    if (opType === 'editar') {
+      icon.textContent = '✏️';
+      title.textContent = '¡Producto editado con éxito!';
+      text.textContent = '¿Desea editar otro producto?';
+      btnYes.textContent = 'Sí, editar más';
+      btnNo.textContent = 'No, terminar';
+    } else {
+      icon.textContent = '✅';
+      title.textContent = '¡Producto guardado con éxito!';
+      text.textContent = '¿Desea cargar otro producto?';
+      btnYes.textContent = 'Sí, cargar más';
+      btnNo.textContent = 'No, terminar';
+    }
+    
     document.getElementById('successModal').style.display = 'flex';
   }
   
@@ -1330,22 +1375,25 @@ var uploadingCount = 0;
   function guardar() {
     // Validación obligatoria
     var img = document.getElementById('imageUrl').value;
-    if (!img) { showAlert('Sube al menos una foto'); return; }
+    if (!img) { showAlert('📷 Foto requerida', 'Sube al menos una foto'); return; }
     if (uploadingCount > 0) { 
-      showAlert('Espera un momento, las fotos aún están subiendo...'); 
+      showAlert('⏳ Subiendo fotos', 'Espera un momento, las fotos aún están subiendo...'); 
       return; 
     }
     var nombre = document.getElementById('nameInput').value.trim();
-    if (!nombre) { showAlert('Ingresa el nombre'); return; }
+    if (!nombre) { showAlert('📝 Nombre requerido', 'Ingresa el nombre del producto'); return; }
     var precio = parseInt(document.getElementById('priceInput').value);
-    if (!precio || isNaN(precio)) { showAlert('Ingresa el precio'); return; }
+    if (!precio || isNaN(precio)) { showAlert('💰 Precio requerido', 'Ingresa el precio del producto'); return; }
     var cat = document.querySelector('.cat.active input')?.value;
-    if (!cat) { showAlert('Selecciona una categoría'); return; }
+    if (!cat) { showAlert('📂 Categoría requerida', 'Selecciona una categoría'); return; }
+    
+    // Determinar si es edición o creación
+    var isEditing = !!editando;
     
     var pass = localStorage.getItem(STORE + '_logged');
     var img2 = document.getElementById('imageUrl2')?.value || '';
     var img3 = document.getElementById('imageUrl3')?.value || '';
-    console.log('Guardando - img:', img, 'img2:', img2, 'img3:', img3);
+    console.log('Guardando - img:', img, 'img2:', img2, 'img3:', img3, 'isEditing:', isEditing);
     var data = { 
       nombre: nombre, 
       precio: precio, 
@@ -1364,9 +1412,11 @@ var uploadingCount = 0;
       body: JSON.stringify(data)
     })
     .then(function() { 
+        // Guardar tipo de operación para el modal de éxito
+        window.lastOperationType = isEditing ? 'editar' : 'nuevo';
         mostrarSuccessModal();
       })
-      .catch(function() { showAlert('Error al guardar'); });
+      .catch(function() { showAlert('❌ Error', 'Error al guardar el producto'); });
   }
   
   function eliminar() {
