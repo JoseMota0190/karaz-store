@@ -702,13 +702,9 @@ const cat = CONFIG.categories?.find(c => c.id === p.category);
   
   lightboxStore = images.length ? images : [mainImg];
   
-  const thumbnails = images.map((img, idx) => {
-    const thumbSrc = img || `https://placehold.co/100x100/D6F2EE/1A8A78?text=${idx+1}`;
-    return `<img class="product-detail__thumb ${idx === 0 ? 'active' : ''}" 
-      src="${sanitize(thumbSrc)}" 
-      onclick="openLightbox(${idx})" 
-      alt="Foto ${idx + 1}">`;
-  }).join('');
+  const imageCounter = images.length > 1 
+    ? `<div class="image-counter">${window.currentImageIndex + 1}/${images.length}</div>` 
+    : '';
 
   $('product-detail').innerHTML = `
     <div class="product-detail__gallery">
@@ -726,8 +722,8 @@ const cat = CONFIG.categories?.find(c => c.id === p.category);
           onclick="openLightbox(0)"
           onerror="this.src='https://placehold.co/600x600/D6F2EE/1A8A78?text=✨'">
         ${images.length > 1 ? `<button class="gallery-nav gallery-nav--next" onclick="changeGalleryImage(1)">&#10095;</button>` : ''}
+        ${imageCounter}
       </div>
-      ${images.length > 1 ? `<div class="product-detail__thumbs">${thumbnails}</div>` : ''}
     </div>
     <div class="product-detail__info">
       <p class="product-detail__cat">${sanitize(cat ? cat.label : p.category)}</p>
@@ -1117,7 +1113,6 @@ function changeGalleryImage(delta) {
   const mainImg = document.querySelector('.product-detail__main-img');
   if (mainImg) mainImg.src = newSrc;
   
-  document.querySelectorAll('.product-detail__thumb').forEach((thumb, idx) => {
-    thumb.classList.toggle('active', idx === window.currentImageIndex);
-  });
+  const counter = document.querySelector('.image-counter');
+  if (counter) counter.textContent = `${window.currentImageIndex + 1}/${images.length}`;
 }
