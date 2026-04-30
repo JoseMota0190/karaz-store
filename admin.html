@@ -501,6 +501,8 @@
   
   function showProductList(cat, mode) {
     window.currentAdminMode = mode;
+    // Ocultar la página de inicio y mostrar el área de edición
+    document.getElementById('logoArea').style.display = 'none';
     document.getElementById('categoryPreview').style.display = 'none';
     document.getElementById('editArea').style.display = 'block';
     document.getElementById('editAreaBackBtn').style.display = 'flex';
