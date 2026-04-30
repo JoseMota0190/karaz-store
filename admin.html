@@ -1059,21 +1059,28 @@ function renderProductosConAcciones(list) {
   function seleccionar(id) {
     console.log('seleccionar called with id:', id, 'mode:', currentMode);
     seleccionado = productos.find(function(p) { return (p.codigo || p.id) === id; });
-    document.getElementById('menuDeleteBtn').dataset.prodId = id;
-    document.getElementById('menuEditBtn').dataset.prodId = id;
     
-    var deleteBtn = document.getElementById('menuDeleteBtn');
-    var editBtn = document.getElementById('menuEditBtn');
+    // Si el modo es editar o nuevo, mostrar alert de confirmación
+    if (currentMode === 'editar' || window.currentAdminMode === 'editar') {
+      showConfirm('✏️ Editar producto', '¿Desea editar este producto?', function() {
+        abrirEditar();
+      }, function() {
+        // Cancelar - no hacer nada
+      });
+      return;
+    }
     
+    // Si el modo es eliminar, mantener el comportamiento original
     if (currentMode === 'eliminar') {
+      document.getElementById('menuDeleteBtn').dataset.prodId = id;
+      document.getElementById('menuEditBtn').dataset.prodId = id;
+      var deleteBtn = document.getElementById('menuDeleteBtn');
+      var editBtn = document.getElementById('menuEditBtn');
       deleteBtn.style.display = 'block';
       editBtn.style.display = 'none';
-    } else {
-      deleteBtn.style.display = 'none';
-      editBtn.style.display = 'block';
+      document.querySelector('#productMenu .close').textContent = 'Cancelar';
+      if (seleccionado) document.getElementById('productMenu').classList.add('show');
     }
-    document.querySelector('#productMenu .close').textContent = 'Cancelar';
-    if (seleccionado) document.getElementById('productMenu').classList.add('show');
   }
   
   function seleccionarPortada(id) {
