@@ -3017,10 +3017,10 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.9);
   border: none;
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  font-size: 0.5rem;
+  font-size: 0.7rem;
   color: #5C0F14;
   cursor: pointer;
   z-index: 10;
