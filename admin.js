@@ -682,9 +682,12 @@ function renderProductosConAcciones(list) {
   }
 
   function logout() {
+    console.log('🚪 Cerrando sesión...');
     localStorage.removeItem(STORE + '_admin_auth');
     localStorage.removeItem('karaz_admin_category');
-    location.reload();
+    console.log('🗑️ localStorage limpiado. Recargando...');
+    // Forzar recarga completa sin caché
+    window.location.href = window.location.href.split('?')[0] + '?logout=' + Date.now();
   }
 
   function mostrarAdmin() {

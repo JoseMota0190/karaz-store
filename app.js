@@ -5,6 +5,8 @@
 
 'use strict';
 
+console.log('✅ APP.JS v20250430-FASE1 cargado correctamente');
+
 let CONFIG   = {};
 let PRODUCTS = [];
 let lightboxStore = [];
@@ -416,19 +418,37 @@ function mapProduct(p) {
 
 async function loadProducts() {
   try {
+    console.log('🔄 Cargando productos desde API...');
     const res = await fetch(`${API_URL}/api/productos`, {
       headers: apiHeaders()
     });
     const data = await res.json();
+    console.log('📦 Datos crudos del backend:', data.length, 'productos');
     if (data.length > 0) {
+      // DEBUG: mostrar primer producto crudo para ver si tiene destacadoOrden
+      console.log('🔍 Primer producto crudo:', { 
+        nombre: data[0].nombre || data[0].name, 
+        destacadoOrden: data[0].destacadoOrden,
+        categoria: data[0].categoria || data[0].category
+      });
       PRODUCTS = data.filter(p => p.activo !== false).map(mapProduct);
+      // DEBUG: verificar que destacadoOrden llega después de mapProduct
+      const conDestacado = PRODUCTS.filter(p => p.destacadoOrden > 0);
+      console.log('✅ Productos mapeados:', PRODUCTS.length);
+      console.log('🔥 Destacados encontrados:', conDestacado.length);
+      if (conDestacado.length > 0) {
+        console.log('🔥 Lista de destacados:', conDestacado.map(p => ({name: p.name, orden: p.destacadoOrden})));
+      }
       return;
     }
-  } catch {}
+  } catch(err) {
+    console.error('❌ Error cargando productos:', err);
+  }
   // Fallback: cargar desde JSON local solo si API falla
   try {
     const res = await fetch('productos.json');
     PRODUCTS = await res.json();
+    console.log('📦 Productos cargados desde JSON local (fallback):', PRODUCTS.length);
   } catch {
     PRODUCTS = [];
   }
@@ -612,10 +632,17 @@ function cloudinaryThumb(url, size = 400) {
 function renderCard(p) {
   const imgSrc = cloudinaryThumb(p.image) || `https://placehold.co/400x400/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
   
+  // DEBUG: mostrar info del primer producto de cada render
+  if (!window._debugRenderCardCount) window._debugRenderCardCount = 0;
+  if (window._debugRenderCardCount < 3) {
+    console.log('🎴 renderCard:', p.name, '| destacadoOrden:', p.destacadoOrden, '| category:', p.category);
+    window._debugRenderCardCount++;
+  }
+  
   // Iconos de destacado y reciente
   let badges = '';
   if (p.destacadoOrden > 0) {
-    badges += '<span class="product-badge product-badge--fire">🔥</span>';
+    badges += '<span class="product-badge product-badge--fire">🔥 Destacado</span>';
   }
   const esReciente = isRecentProduct(p, PRODUCTS);
   if (esReciente) {
