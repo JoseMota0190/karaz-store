@@ -3007,8 +3007,8 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   display: block;
   text-align: center;
   background: #fff;
-  padding: 16px;
-  min-height: 350px;
+  padding: 8px;
+  min-height: auto;
 }
 
 .gallery-nav {
