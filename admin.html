@@ -422,14 +422,7 @@ function cerrarAlertModal(result) {
         showAlert('⚠️ Catálogo vacío', 'No hay productos para editar');
         return;
       }
-      showConfirm('✏️ Editar producto', '¿Desea editar un producto?', function() {
-        showProductList(null, 'editar');
-      }, function() {
-        // Volver a inicio sin productos
-        document.getElementById('logoArea').style.display = 'block';
-        document.getElementById('editArea').style.display = 'none';
-        document.getElementById('categoryPreview').style.display = 'none';
-      });
+      showProductList(null, 'editar');
     };
     el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { 
       var cat = localStorage.getItem('adminActiveCategory');
