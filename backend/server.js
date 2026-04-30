@@ -302,8 +302,8 @@ app.post('/api/productos', requireStore, upload.single('imagen'), async (req, re
       precio, 
       categoria, 
       imagen, 
-      imagen2: imagen2 || null, 
-      imagen3: imagen3 || null, 
+      imagen2: imagen2 || '', 
+      imagen3: imagen3 || '', 
       descripcion, 
       destacado, 
       destacadoOrden: destacadoOrden || 0
@@ -326,8 +326,8 @@ app.put('/api/productos/:id', requireStore, upload.single('imagen'), async (req,
       descripcion, 
       destacado, 
       destacadoOrden, 
-      imagen2: imagen2 || null, 
-      imagen3: imagen3 || null 
+      imagen2: imagen2 || '', 
+      imagen3: imagen3 || '' 
     };
     if (req.file) updateData.imagen = req.file.path;
     const actualizado = await Producto.findOneAndUpdate(
