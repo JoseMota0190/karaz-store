@@ -271,6 +271,15 @@
   </div>
 </div>
 
+<div id="deleteSuccessModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;">
+  <div style="background:white;width:90%;max-width:380px;border-radius:16px;padding:32px 24px;text-align:center;border:3px solid #5C0F14;box-shadow:0 8px 32px rgba(92,15,20,0.3);">
+    <div style="font-size:3rem;margin-bottom:12px;">🗑️</div>
+    <h2 style="font-family:'Limelight',serif;color:#D9BCA3;font-size:1.4rem;margin-bottom:8px;">¡Producto eliminado!</h2>
+    <p style="color:#5C0F14;font-size:0.95rem;margin-bottom:24px;">El producto ha sido eliminado con éxito</p>
+    <button onclick="cerrarDeleteSuccessModal()" style="padding:12px 28px;background:#5C0F14;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;">Aceptar</button>
+  </div>
+</div>
+
 <script>
 // PROTEGER: Evitar conflictos con app.js
 (function() {
@@ -942,6 +951,16 @@
     document.getElementById('successModal').style.display = 'flex';
   }
   
+  function cerrarDeleteSuccessModal() {
+    document.getElementById('deleteSuccessModal').style.display = 'none';
+    cargarProductos();
+    location.reload();
+  }
+  
+  function mostrarDeleteSuccessModal() {
+    document.getElementById('deleteSuccessModal').style.display = 'flex';
+  }
+  
   function subirFoto(fileInputId, imageUrlId, previewImgId, uploadBoxId) {
     var file = document.getElementById(fileInputId).files[0];
     if (!file) return;
@@ -1019,8 +1038,7 @@
     })
     .then(function(res) { 
       console.log('Response:', res.status);
-      alert('✓ Producto eliminado con éxito');
-      cargarProductos(); 
+      mostrarDeleteSuccessModal();
     })
     .catch(function(err) { 
       console.error('Error:', err); 
@@ -1040,6 +1058,8 @@
   window.cerrarModal = cerrarModal;
   window.cerrarSuccessModal = cerrarSuccessModal;
   window.mostrarSuccessModal = mostrarSuccessModal;
+  window.cerrarDeleteSuccessModal = cerrarDeleteSuccessModal;
+  window.mostrarDeleteSuccessModal = mostrarDeleteSuccessModal;
   window.subirFoto = subirFoto;
   window.abrirEditarCard = abrirEditarCard;
   window.eliminarProductoCard = eliminarProductoCard;
