@@ -790,16 +790,21 @@
   }
   
   function seleccionar(id) {
-    console.log('seleccionar called with id:', id);
+    console.log('seleccionar called with id:', id, 'mode:', currentMode);
     seleccionado = productos.find(function(p) { return (p.codigo || p.id) === id; });
     document.getElementById('menuDeleteBtn').dataset.prodId = id;
     document.getElementById('menuEditBtn').dataset.prodId = id;
     
-    // Show only edit option
     var deleteBtn = document.getElementById('menuDeleteBtn');
     var editBtn = document.getElementById('menuEditBtn');
-    deleteBtn.style.display = 'none';
-    editBtn.style.display = 'block';
+    
+    if (currentMode === 'eliminar') {
+      deleteBtn.style.display = 'block';
+      editBtn.style.display = 'none';
+    } else {
+      deleteBtn.style.display = 'none';
+      editBtn.style.display = 'block';
+    }
     document.querySelector('#productMenu .close').textContent = 'Cancelar';
     if (seleccionado) document.getElementById('productMenu').classList.add('show');
   }
