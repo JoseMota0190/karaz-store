@@ -380,6 +380,8 @@ function mapProduct(p) {
       category:    p.categoria,
       description: p.descripcion || '',
       image:       p.imagen || '',
+      imagen2:     p.imagen2 || '',
+      imagen3:     p.imagen3 || '',
       stock:       p.stock || 0,
     };
   }
