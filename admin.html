@@ -356,6 +356,20 @@
 </div>
 
 <script>
+// Función global para cerrar el alert modal
+function cerrarAlertModal(result) {
+  var modal = document.getElementById('alertModal');
+  if (modal) modal.classList.remove('show');
+  if (window._confirmCallback) {
+    if (result === true && window._confirmCallback.onConfirm) {
+      window._confirmCallback.onConfirm();
+    } else if (result === false && window._confirmCallback.onCancel) {
+      window._confirmCallback.onCancel();
+    }
+    window._confirmCallback = null;
+  }
+}
+
 // PROTEGER: Evitar conflictos con app.js
 (function() {
   'use strict';
@@ -1472,7 +1486,6 @@ var uploadingCount = 0;
   window.abrirNuevoDesdeCategoria = abrirNuevoDesdeCategoria;
   window.showAlert = showAlert;
   window.showConfirm = showConfirm;
-  window.cerrarAlertModal = cerrarAlertModal;
   
   // Funciones para mostrar alerts y confirms estilizados
   function showAlert(titulo, mensaje) {
@@ -1506,19 +1519,6 @@ var uploadingCount = 0;
     window._confirmCallback = { onConfirm: onConfirm, onCancel: onCancel };
     modal.classList.add('show');
   }
-  
-  window.cerrarAlertModal = function(result) {
-    var modal = document.getElementById('alertModal');
-    modal.classList.remove('show');
-    if (window._confirmCallback) {
-      if (result === true && window._confirmCallback.onConfirm) {
-        window._confirmCallback.onConfirm();
-      } else if (result === false && window._confirmCallback.onCancel) {
-        window._confirmCallback.onCancel();
-      }
-      window._confirmCallback = null;
-    }
-  };
   
   function showToast(msg) {
     var existing = document.getElementById('toast');
