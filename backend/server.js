@@ -261,7 +261,13 @@ app.delete('/api/stores/:storeId', requireSuperAdmin, async (req, res) => {
 
 app.get('/api/productos', requireStore, async (req, res) => {
   try {
-    const productos = await Producto.find({ storeId: req.storeId, activo: true });
+    const productos = await Producto.find({ storeId: req.storeId, activo: true }).lean();
+    // Asegurar que cada producto tenga destacadoOrden (para documentos antiguos sin el campo)
+    productos.forEach(p => {
+      if (p.destacadoOrden === undefined || p.destacadoOrden === null) {
+        p.destacadoOrden = 0;
+      }
+    });
     res.json(productos);
   } catch (err) {
     res.status(500).json({ error: err.message });

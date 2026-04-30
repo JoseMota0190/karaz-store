@@ -683,11 +683,15 @@ function renderProductosConAcciones(list) {
 
   function logout() {
     console.log('🚪 Cerrando sesión...');
+    // Borrar TODAS las keys posibles (viejas y nuevas)
     localStorage.removeItem(STORE + '_admin_auth');
+    localStorage.removeItem(STORE + '_logged'); // key vieja
+    localStorage.removeItem('karaz_logged'); // key vieja
+    localStorage.removeItem('adminActiveCategory'); // key vieja
     localStorage.removeItem('karaz_admin_category');
-    console.log('🗑️ localStorage limpiado. Recargando...');
-    // Forzar recarga completa sin caché
-    window.location.href = window.location.href.split('?')[0] + '?logout=' + Date.now();
+    console.log('🗑️ localStorage limpiado');
+    // Recargar la página para volver al login
+    window.location.reload();
   }
 
   function mostrarAdmin() {
@@ -1289,6 +1293,7 @@ var uploadingCount = 0;
   window.showProductList = showProductList;
   window.volverACategorias = volverACategorias;
   window.mostrarInicioAdmin = mostrarInicioAdmin;
+  window.logout = logout;
   window.quitarPortada = quitarPortada;
   window.seleccionarPortada = seleccionarPortada;
   window.seleccionarDestacado = seleccionarDestacado;
