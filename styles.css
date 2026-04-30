@@ -2633,8 +2633,8 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   
   /* Título colección - ajustado para móvil */
   .catalog-heading__title { 
-    font-size: 1.5rem !important;
-    letter-spacing: 0.15em !important; 
+    font-size: 1.8rem !important;
+    letter-spacing: 0.1em !important; 
     margin-bottom: 16px;
     padding: 0 10px;
   }
