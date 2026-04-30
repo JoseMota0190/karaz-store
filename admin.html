@@ -1351,12 +1351,27 @@ function renderProductosConAcciones(list) {
   function eliminarOtroProducto() {
     document.getElementById('deleteSuccessModal').style.display = 'none';
     var cat = localStorage.getItem('adminActiveCategory');
-    var productsToShow = cat ? productos.filter(function(p) { return (p.categoria || p.category) === cat; }) : productos;
-    if (productsToShow.length > 0) {
-      showProductList(cat, 'eliminar');
-    } else {
-      showAlert('⚠️ Sin productos', 'No hay más productos para eliminar');
-    }
+    
+    fetch(API + '/api/productos', { headers: { 'x-store-id': STORE } })
+    .then(function(res) { return res.json(); })
+    .then(function(prods) {
+      productos = prods.filter(function(p) { return p.activo !== false; }).map(function(p) {
+        if (p.codigo) {
+          return { codigo: p.codigo, nombre: p.nombre, precio: p.precio, categoria: p.categoria, descripcion: p.descripcion || '', imagen: p.imagen || '', imagen2: p.imagen2 || '', imagen3: p.imagen3 || '', stock: p.stock || 0, destacadoOrden: p.destacadoOrden || 0 };
+        }
+        return p;
+      });
+      
+      var productsToShow = cat ? productos.filter(function(p) { return (p.categoria || p.category) === cat; }) : productos;
+      if (productsToShow.length > 0) {
+        showProductList(cat, 'eliminar');
+      } else {
+        showAlert('⚠️ Sin productos', 'No hay más productos para eliminar');
+      }
+    })
+    .catch(function() { 
+      showAlert('⚠️ Error', 'No se pudo cargar los productos');
+    });
   }
   
   function mostrarDeleteSuccessModal() {
