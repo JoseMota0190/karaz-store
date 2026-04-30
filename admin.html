@@ -82,7 +82,10 @@
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
     .form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 0.95rem; }
-    .upload { border: 2px dashed #ddd; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; }
+    .upload { border: 2px dashed #ddd; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; position: relative; }
+    .upload.uploading { border-color: #f59e0b; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .upload.uploading::after { content: '⏳ Subiendo...'; position: absolute; bottom: 8px; left: 0; right: 0; font-size: 0.75rem; color: #f59e0b; }
     .upload img { border-radius: 8px; width: 100%; aspect-ratio: 1; object-fit: cover; display: none; }
     .upload.show img { display: block; }
     .upload .icon { font-size: 2rem; }
@@ -843,6 +846,7 @@
   
   function abrirNuevo() {
     editando = null;
+    uploadingCount = 0;
     document.getElementById('modalTitle').innerHTML = 'Nuevo producto';
     document.getElementById('nameInput').value = '';
     document.getElementById('priceInput').value = '';
@@ -865,6 +869,7 @@
     if (!editBtn) { alert('Error: botón no encontrado'); return; }
     var prodId = editBtn.dataset.prodId;
     if (!prodId) { alert('No hay producto seleccionado'); return; }
+    uploadingCount = 0;
     
     var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
     if (!prod || typeof prod !== 'object') { 
@@ -961,9 +966,13 @@
     document.getElementById('deleteSuccessModal').style.display = 'flex';
   }
   
+var uploadingCount = 0;
+
   function subirFoto(fileInputId, imageUrlId, previewImgId, uploadBoxId) {
     var file = document.getElementById(fileInputId).files[0];
     if (!file) return;
+    uploadingCount++;
+    uploadBoxId && document.getElementById(uploadBoxId).classList.add('uploading');
     var reader = new FileReader();
     reader.onload = function(e) {
       document.getElementById(previewImgId).src = e.target.result;
@@ -974,7 +983,15 @@
       fetch('https://api.cloudinary.com/v1_1/dh6kkq9w7/image/upload', { method: 'POST', body: fd })
       .then(function(r) { return r.json(); })
       .then(function(d) {
-        if (d.secure_url) document.getElementById(imageUrlId).value = d.secure_url;
+        uploadingCount--;
+        if (uploadingCount === 0 && uploadBoxId) document.getElementById(uploadBoxId).classList.remove('uploading');
+        if (d.secure_url) {
+          document.getElementById(imageUrlId).value = d.secure_url;
+        }
+      })
+      .catch(function() {
+        uploadingCount--;
+        if (uploadingCount === 0 && uploadBoxId) document.getElementById(uploadBoxId).classList.remove('uploading');
       });
     };
     reader.readAsDataURL(file);
@@ -984,6 +1001,10 @@
     // Validación obligatoria
     var img = document.getElementById('imageUrl').value;
     if (!img) { alert('Sube al menos una foto'); return; }
+    if (uploadingCount > 0) { 
+      alert('Espera un momento, las fotos aún están subiendo...'); 
+      return; 
+    }
     var nombre = document.getElementById('nameInput').value.trim();
     if (!nombre) { alert('Ingresa el nombre'); return; }
     var precio = parseInt(document.getElementById('priceInput').value);
@@ -1012,7 +1033,7 @@
       headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': pass },
       body: JSON.stringify(data)
     })
-.then(function() { 
+    .then(function() { 
         mostrarSuccessModal();
       })
       .catch(function() { alert('Error al guardar'); });
