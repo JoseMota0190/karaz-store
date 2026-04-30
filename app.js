@@ -298,17 +298,12 @@ function getCategories() {
 
 function buildCategoryImages() {
   categoryImages = {};
-  // Las portadas ya se cargan en loadConfig() desde el backend
-  // Aquí solo usamos los datos ya cargados o fallback a productos
+  // Las portadas se cargan en loadConfig() desde el backend CONFIG.categories
+  // Si una categoría no tiene imageUrl, se mostrará el fallback CSS (fondo granate + texto dorado)
   const cats = getCategories();
   cats.forEach(cat => {
-    // Ya viene de loadConfig en categoryImages[cat.id]
-    // Si no existe, usar el primer producto como fallback
-    if (!categoryImages[cat.id]) {
-      const prods = PRODUCTS.filter(p => p.category === cat.id);
-      if (prods.length > 0 && prods[0].image) {
-        categoryImages[cat.id] = prods[0].image;
-      }
+    if (cat.imageUrl && cat.imageUrl.trim() !== '') {
+      categoryImages[cat.id] = cat.imageUrl;
     }
   });
 }
@@ -376,12 +371,19 @@ function renderCategories() {
   const cats = getCategories();
   if (!cats.length) return;
 
-  container.innerHTML = cats.map(cat => `
+  container.innerHTML = cats.map(cat => {
+    const hasImage = cat.imageUrl && cat.imageUrl.trim() !== '';
+    const imgHtml = hasImage
+      ? `<img src="${sanitize(cat.imageUrl)}" alt="${sanitize(cat.label)}" class="cat-card__img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`
+      : '';
+    const fallbackHtml = !hasImage
+      ? `<div class="cat-card__fallback"><span class="cat-card__fallback-text">${sanitize(cat.label)}</span></div>`
+      : '';
+    return `
     <div class="cat-card" data-cat="${sanitize(cat.id)}">
       <div class="cat-card__img-wrap">
-        <img src="${sanitize(cat.imageUrl || `https://placehold.co/600x400/D6F2EE/1A8A78?text=${encodeURIComponent(cat.label)}`)}"
-             alt="${sanitize(cat.label)}" class="cat-card__img"
-             onerror="this.src='https://placehold.co/600x400/D6F2EE/1A8A78?text=${encodeURIComponent(cat.label)}'">
+        ${imgHtml}
+        ${fallbackHtml}
         <div class="cat-card__overlay"></div>
         <div class="cat-card__content">
           <span class="cat-card__label">${sanitize(cat.label)}</span>
@@ -389,7 +391,7 @@ function renderCategories() {
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // ══════════════════════════════════════════════

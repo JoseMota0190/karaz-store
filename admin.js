@@ -216,7 +216,7 @@ function mostrarDeleteSuccessModal() {
       });
     }
 
-    // Validación B: verificar que la imagen de config pertenezca a un producto actual de la categoría
+    // Validación: verificar que la imagen de config pertenezca a un producto actual de la categoría
     if (portadaImg) {
       var productosCat = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
       var existe = productosCat.some(function(p) {
@@ -232,24 +232,29 @@ function mostrarDeleteSuccessModal() {
     var imgEl = document.getElementById('portadaImg');
     var placeholder = document.getElementById('portadaPlaceholder');
     var btnQuitar = document.getElementById('btnQuitarPortada');
+    var previewDiv = document.getElementById('portadaPreview');
+
+    // Resetear estilos del preview
+    previewDiv.style.background = '';
+    previewDiv.style.display = 'flex';
 
     if (portadaImg) {
       imgEl.src = portadaImg;
       imgEl.style.display = 'block';
       placeholder.style.display = 'none';
+      previewDiv.style.background = 'white';
       if (btnQuitar) btnQuitar.style.display = 'inline-block';
     } else {
-      // Si no hay portada guardada, usar el primer producto destacado o el primero
-      var filtered = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
-      var portadaProd = filtered.find(function(p) { return p.destacadoOrden > 0; }) || filtered[0];
-      if (portadaProd && portadaProd.imagen) {
-        imgEl.src = portadaProd.imagen;
-        imgEl.style.display = 'block';
-        placeholder.style.display = 'none';
-      } else {
-        imgEl.style.display = 'none';
-        placeholder.style.display = 'block';
-      }
+      // Fallback: fondo granate con nombre de categoría en dorado
+      imgEl.style.display = 'none';
+      placeholder.style.display = 'block';
+      previewDiv.style.background = '#5C0F14';
+      var catLabel = '';
+      cats.forEach(function(c) { if (c.id === cat) catLabel = c.label; });
+      placeholder.textContent = catLabel || cat;
+      placeholder.style.color = '#C9A962';
+      placeholder.style.fontSize = '1.3rem';
+      placeholder.style.fontWeight = '600';
       if (btnQuitar) btnQuitar.style.display = 'none';
     }
   }
