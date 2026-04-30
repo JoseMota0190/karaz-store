@@ -1314,7 +1314,6 @@ var uploadingCount = 0;
     if (!deleteBtn) { alert('Error: botón no encontrado'); return; }
     var prodId = deleteBtn.dataset.prodId;
     if (!prodId) { 
-      // Buscar en productos locales como respaldo
       if (productos.length > 0) {
         prodId = productos[0].codigo || productos[0].id;
       }
@@ -1333,6 +1332,45 @@ var uploadingCount = 0;
     .then(function(res) { 
       console.log('Response:', res.status);
       mostrarDeleteSuccessModal();
+      
+      // Recargar productos y volver a la página de inicio
+      setTimeout(function() {
+        fetch(API + '/api/productos', {
+          headers: { 'x-store-id': STORE }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(prods) {
+          productos = prods.filter(function(p) { return p.activo !== false; }).map(function(p) {
+            if (p.codigo) {
+              return {
+                codigo: p.codigo,
+                nombre: p.nombre,
+                precio: p.precio,
+                categoria: p.categoria,
+                descripcion: p.descripcion || '',
+                imagen: p.imagen || '',
+                imagen2: p.imagen2 || '',
+                imagen3: p.imagen3 || '',
+                stock: p.stock || 0,
+                destacadoOrden: p.destacadoOrden || 0
+              };
+            }
+            return p;
+          });
+          
+          // Volver a la página de inicio del admin
+          document.getElementById('logoArea').style.display = 'block';
+          document.getElementById('editArea').style.display = 'none';
+          document.getElementById('categoryPreview').style.display = 'none';
+          document.getElementById('editAreaBackBtn').style.display = 'none';
+          document.getElementById('editIntegratedPanel').style.display = 'none';
+          document.getElementById('featuredPanel').style.display = 'none';
+          document.querySelector('.fab-container').style.display = 'none';
+          
+          // Actualizar los filtros con los nuevos productos
+          renderFiltros();
+        });
+      }, 1500);
     })
     .catch(function(err) { 
       console.error('Error:', err); 
