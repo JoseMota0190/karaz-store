@@ -777,6 +777,9 @@
   function eliminarProductoCard(prodId) {
     if (!confirm('¿Eliminar este producto?')) return;
     var token = localStorage.getItem(STORE + '_logged');
+    var currentCat = localStorage.getItem('adminActiveCategory');
+    var currentMode = window.currentAdminMode;
+    
     fetch(API + '/api/productos/' + prodId, {
       method: 'DELETE',
       headers: { 'x-store-id': STORE, 'x-admin-password': token }
@@ -784,8 +787,39 @@
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success || data.message) {
-        alert('Producto eliminado con éxito');
-        setTimeout(function() { location.reload(); }, 1000);
+        showToast('Producto eliminado');
+        // Recargar productos desde el backend
+        fetch(API + '/api/productos', {
+          headers: { 'x-store-id': STORE }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(prods) {
+          // Mapear productos igual que en loadProducts
+          productos = prods.filter(function(p) { return p.activo !== false; }).map(function(p) {
+            if (p.codigo) {
+              return {
+                codigo: p.codigo,
+                nombre: p.nombre,
+                precio: p.precio,
+                categoria: p.categoria,
+                descripcion: p.descripcion || '',
+                imagen: p.imagen || '',
+                imagen2: p.imagen2 || '',
+                imagen3: p.imagen3 || '',
+                stock: p.stock || 0,
+                destacadoOrden: p.destacadoOrden || 0
+              };
+            }
+            return p;
+          });
+          
+          // Actualizar la vista actual sin recargar la página
+          if (currentCat && currentMode) {
+            showProductList(currentCat, currentMode);
+          } else if (currentCat) {
+            showCategoryPreview(currentCat);
+          }
+        });
       } else {
         showToast('Error: ' + (data.error || 'Error desconocido'));
       }
