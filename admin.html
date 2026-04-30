@@ -1246,6 +1246,9 @@ function renderProductosConAcciones(list) {
     document.getElementById('uploadBox').classList.remove('show');
     document.getElementById('uploadBox2').classList.remove('show');
     document.getElementById('uploadBox3').classList.remove('show');
+    // Limpiar file inputs
+    var fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(function(input) { input.value = ''; });
     document.querySelectorAll('.cat').forEach(function(c) { c.classList.remove('active'); });
     document.getElementById('productModal').classList.add('show');
   }
