@@ -719,7 +719,7 @@ const cat = CONFIG.categories?.find(c => c.id === p.category);
         ${images.length > 1 ? `<button class="gallery-nav gallery-nav--prev" onclick="changeGalleryImage(-1)">&#10094;</button>` : ''}
         <img src="${sanitize(mainImg)}" alt="${sanitize(p.name)}"
           class="product-detail__main-img"
-          onclick="openLightbox(0)"
+          onclick="openLightbox(window.currentImageIndex)"
           onerror="this.src='https://placehold.co/600x600/D6F2EE/1A8A78?text=✨'">
         ${images.length > 1 ? `<button class="gallery-nav gallery-nav--next" onclick="changeGalleryImage(1)">&#10095;</button>` : ''}
         ${imageCounter}
@@ -1067,18 +1067,12 @@ async function deleteProduct(id) {
 // ══════════════════════════════════════════════
 
 function openLightbox(index) {
-  if (!lightboxStore.length) {
-    const mainImg = document.querySelector('.product-detail__main-img');
-    if (mainImg) {
-      lightboxStore = [mainImg.src];
-    }
-  }
-  if (!lightboxStore.length || !lightboxStore[0]) return;
+  if (!lightboxStore || !lightboxStore.length) return;
   
-  currentLightboxIndex = index;
+  currentLightboxIndex = index !== undefined ? index : window.currentImageIndex;
   const lightbox = $('lightbox');
   const img = $('lightbox-img');
-  if (lightbox && img) {
+  if (lightbox && img && lightboxStore[currentLightboxIndex]) {
     img.src = lightboxStore[currentLightboxIndex];
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
