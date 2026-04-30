@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Karaz Admin</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%235a0f14'/><text y='72' x='50' text-anchor='middle' font-family='Limelight,serif' font-size='58' fill='%23D9BCA3'>K</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
   <style>
     :root { --c: #5C0F14; --bg: #FDF8F3; }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
@@ -254,6 +255,18 @@
     <div style="padding:12px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
       <span id="featuredModalCount" style="font-size:0.85rem;color:#666;">0 seleccionados</span>
       <button id="saveFeaturedModalBtn" style="padding:12px 24px;background:#5C0F14;color:white;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="successModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;">
+  <div style="background:white;width:90%;max-width:380px;border-radius:16px;padding:32px 24px;text-align:center;border:3px solid #5C0F14;box-shadow:0 8px 32px rgba(92,15,20,0.3);">
+    <div style="font-size:3rem;margin-bottom:12px;">✅</div>
+    <h2 style="font-family:'Limelight',serif;color:#5C0F14;font-size:1.4rem;margin-bottom:8px;">¡Producto guardado con éxito!</h2>
+    <p style="color:#5C0F14;font-size:0.95rem;margin-bottom:24px;">¿Desea cargar otro producto?</p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button onclick="cerrarSuccessModal(true)" style="padding:12px 28px;background:#D9BCA3;color:#5C0F14;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'Limelight',serif;">Sí, cargar más</button>
+      <button onclick="cerrarSuccessModal(false)" style="padding:12px 28px;background:white;color:#5C0F14;border:2px solid #5C0F14;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;">No, terminar</button>
     </div>
   </div>
 </div>
@@ -914,6 +927,21 @@
     document.getElementById('productModal').classList.remove('show');
   }
   
+  function cerrarSuccessModal(cargarMas) {
+    document.getElementById('successModal').style.display = 'none';
+    cargarProductos();
+    cerrarModal();
+    if (cargarMas) {
+      abrirNuevo();
+    } else {
+      location.reload();
+    }
+  }
+  
+  function mostrarSuccessModal() {
+    document.getElementById('successModal').style.display = 'flex';
+  }
+  
   function subirFoto(fileInputId, imageUrlId, previewImgId, uploadBoxId) {
     var file = document.getElementById(fileInputId).files[0];
     if (!file) return;
@@ -963,15 +991,7 @@
       body: JSON.stringify(data)
     })
 .then(function() { 
-        if (confirm('✓ Producto guardado con éxito!\n\n¿Desea guardar otro producto?')) {
-          cargarProductos();
-          cerrarModal();
-          abrirNuevo();
-        } else {
-          cargarProductos();
-          cerrarModal();
-          location.reload();
-        }
+        mostrarSuccessModal();
       })
       .catch(function() { alert('Error al guardar'); });
   }
@@ -1018,6 +1038,8 @@
   window.abrirEditar = abrirEditar;
   window.eliminar = eliminar;
   window.cerrarModal = cerrarModal;
+  window.cerrarSuccessModal = cerrarSuccessModal;
+  window.mostrarSuccessModal = mostrarSuccessModal;
   window.subirFoto = subirFoto;
   window.abrirEditarCard = abrirEditarCard;
   window.eliminarProductoCard = eliminarProductoCard;
