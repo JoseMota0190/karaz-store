@@ -525,7 +525,7 @@ function renderProductosConAcciones(list) {
 
     var completed = 0;
     updates.forEach(function(u) {
-      fetch(API + '/api/productos/' + u.id, {
+      fetch(API + '/api/productos/' + u.id + '/destacado', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': token },
         body: JSON.stringify({ destacadoOrden: u.destacadoOrden })
@@ -536,6 +536,12 @@ function renderProductosConAcciones(list) {
           showToast('Productos destacados actualizados');
           cerrarModalDestacados();
           cargarProductos();
+        }
+      })
+      .catch(function() {
+        completed++;
+        if (completed === updates.length) {
+          showToast('⚠️ Error al guardar algunos destacados');
         }
       });
     });
@@ -928,7 +934,7 @@ function renderProductosConAcciones(list) {
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
       if (p.destacadoOrden !== undefined) {
-        await fetch(API + '/api/productos/' + (p.codigo || p.id), {
+        await fetch(API + '/api/productos/' + (p.codigo || p.id) + '/destacado', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': pass },
           body: JSON.stringify({ destacadoOrden: p.destacadoOrden })

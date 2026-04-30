@@ -348,6 +348,22 @@ app.put('/api/productos/:id', requireStore, upload.single('imagen'), async (req,
   }
 });
 
+// Endpoint específico para actualizar solo destacadoOrden (sin multer, JSON puro)
+app.put('/api/productos/:id/destacado', requireStore, async (req, res) => {
+  try {
+    const { destacadoOrden } = req.body;
+    const actualizado = await Producto.findOneAndUpdate(
+      { codigo: req.params.id, storeId: req.storeId },
+      { destacadoOrden: destacadoOrden || 0 },
+      { new: true }
+    );
+    if (!actualizado) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ success: true, destacadoOrden: actualizado.destacadoOrden });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.delete('/api/productos/:id', requireStore, async (req, res) => {
   try {
     const eliminado = await Producto.findOneAndDelete({ codigo: req.params.id, storeId: req.storeId });
