@@ -363,12 +363,12 @@
     };
     el = document.getElementById('btnNuevo'); if (el) el.onclick = function() { 
       var cat = localStorage.getItem('adminActiveCategory');
-      if (!cat) { alert('Por favor selecciona una categoría primero'); return; }
+      // Si no hay categoría seleccionada, mostrar todos los productos
       showProductList(cat, 'nuevo');
     };
     el = document.getElementById('btnEditar'); if (el) el.onclick = function() { 
       var cat = localStorage.getItem('adminActiveCategory');
-      if (!cat) { alert('Por favor selecciona una categoría primero'); return; }
+      // Si no hay categoría seleccionada, mostrar todos los productos
       showProductList(cat, 'editar');
     };
     el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { 
@@ -572,7 +572,7 @@
         var clickAction = '';
         if (mode === 'editar' || isEditMode) {
           clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
-        } else if (mode === 'eliminar') {
+        } else if (mode === 'eliminar' || mode === 'nuevo' || mode === 'editar') {
           clickAction = 'onclick="seleccionar(\'' + prodId + '\')"';
         } else if (mode === 'portada') {
           clickAction = 'onclick="seleccionarPortada(\'' + prodId + '\')"';
@@ -583,7 +583,7 @@
         var cursorStyle = clickAction ? 'cursor:pointer;' : '';
         
         var actionHtml = '';
-        if (mode === 'eliminar') {
+        if (mode === 'eliminar' || mode === 'nuevo' || mode === 'editar') {
           actionHtml = '<div style="position:absolute;top:8px;right:8px;display:flex;gap:4px;"><button onclick="event.stopPropagation();eliminarProductoCard(\'' + prodId + '\')" style="width:32px;height:32px;background:white;border-radius:50%;border:1px solid #ddd;cursor:pointer;font-size:14px;">🗑️</button></div>';
         } else if (mode === 'portada') {
           actionHtml = '<div style="position:absolute;bottom:8px;right:8px;background:#5C0F14;color:white;padding:4px 8px;border-radius:4px;font-size:12px;">🖼️ Portada</div>';
