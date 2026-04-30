@@ -414,9 +414,8 @@ function cerrarAlertModal(result) {
       renderProductosConAcciones(filtered);
     };
     el = document.getElementById('btnNuevo'); if (el) el.onclick = function() { 
-      var cat = localStorage.getItem('adminActiveCategory');
-      // Si no hay categoría seleccionada, mostrar todos los productos
-      showProductList(cat, 'nuevo');
+      // Directamente abrir el formulario de nuevo producto
+      abrirNuevo();
     };
     el = document.getElementById('btnEditar'); if (el) el.onclick = function() { 
       var cat = localStorage.getItem('adminActiveCategory');
@@ -486,7 +485,7 @@ function cerrarAlertModal(result) {
     var btnEditar = document.getElementById('previewBtnEditar');
     var btnEliminar = document.getElementById('previewBtnEliminar');
     
-    btnNuevo.onclick = function() { showProductList(cat, 'nuevo'); };
+    btnNuevo.onclick = function() { abrirNuevo(); };
     btnEditar.onclick = function() { showProductList(cat, 'editar'); };
     btnEliminar.onclick = function() { showProductList(cat, 'eliminar'); };
   }
