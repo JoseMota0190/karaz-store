@@ -1255,9 +1255,17 @@ function renderProductosConAcciones(list) {
     cargarProductos();
     cerrarModal();
     if (cargarMas) {
+      // Si quiere cargar más: abrir formulario de nuevo producto
       abrirNuevo();
     } else {
-      location.reload();
+      // Si no: volver al inicio del admin sin recargar página
+      document.getElementById('logoArea').style.display = 'block';
+      document.getElementById('editArea').style.display = 'none';
+      document.getElementById('categoryPreview').style.display = 'none';
+      document.getElementById('editAreaBackBtn').style.display = 'none';
+      document.getElementById('editIntegratedPanel').style.display = 'none';
+      document.getElementById('featuredPanel').style.display = 'none';
+      document.querySelector('.fab-container').style.display = 'none';
     }
   }
   
