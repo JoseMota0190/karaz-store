@@ -343,11 +343,13 @@ function isRecentProduct(product, allProducts) {
 
 function changeSort(value) {
   currentSort = value;
+  const gridWrap = $('catalog-grid-wrap');
   const activeCat = document.querySelector('.cat-card.active')?.dataset?.cat || 
-                   new URLSearchParams(window.location.search).get('cat');
+                   new URLSearchParams(window.location.search).get('cat') ||
+                   (gridWrap && gridWrap.classList.contains('visible') ? $('catalog-active-title')?.textContent?.toLowerCase() : null);
   if (activeCat) {
     const products = PRODUCTS.filter(p => p.category === activeCat);
-    const sortedProducts = sortProducts(products);
+    const sortedProducts = sortProducts(products, value);
     renderGrid(sortedProducts);
   }
 }
