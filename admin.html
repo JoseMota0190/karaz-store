@@ -105,6 +105,35 @@
     .menu .edit { color: var(--c); }
     .menu .delete { color: #e74c3c; }
     .menu .close { text-align: center; background: #eee; margin-top: 10px; border-radius: 8px; border: none; }
+    
+    /* Alert Modal personalizados */
+    .showAlert-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; align-items: center; justify-content: center; }
+    .showAlert-modal.show { display: flex; }
+    .showAlert-modal-box { background: white; width: 90%; max-width: 400px; border-radius: 16px; border: 3px solid #5C0F14; padding: 28px 24px; text-align: center; box-shadow: 0 8px 32px rgba(92,15,20,0.3); }
+    .showAlert-modal-title { font-family: 'Limelight', serif; color: #5C0F14; font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; }
+    .showAlert-modal-text { color: #5C0F14; font-size: 1rem; margin-bottom: 24px; font-style: italic; line-height: 1.5; }
+    .showAlert-modal-btn { padding: 14px 36px; background: #5C0F14; color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .showAlert-modal-btn:hover { background: #7a1a1f; }
+    .showAlert-modal-btns { display: flex; gap: 12px; justify-content: center; }
+    .showAlert-modal-btn-cancel { background: white; color: #5C0F14; border: 2px solid #5C0F14; }
+    .showAlert-modal-btn-cancel:hover { background: #fdf8f5; }
+    
+    /* Toast mejorado con estilo Karaz */
+    #toast { 
+      background: #5C0F14 !important; 
+      color: white !important; 
+      border-radius: 12px !important; 
+      font-family: 'Limelight', serif !important; 
+      border: 2px solid #D9BCA3 !important;
+      box-shadow: 0 4px 20px rgba(92,15,20,0.4) !important;
+      font-size: 0.95rem !important;
+      padding: 14px 24px !important;
+    }
+    
+    /* Mejorar modal de producto existente */
+    .modal-box { border: 3px solid #5C0F14; }
+    .modal-header h2 { font-family: 'Limelight', serif; color: #5C0F14; }
+    .modal-footer .btn-save { background: #5C0F14; }
   </style>
 </head>
 <body>
@@ -314,6 +343,15 @@
     <h2 style="font-family:'Limelight',serif;color:#D9BCA3;font-size:1.4rem;margin-bottom:8px;">¡Producto eliminado!</h2>
     <p style="color:#5C0F14;font-size:0.95rem;margin-bottom:24px;">El producto ha sido eliminado con éxito</p>
     <button onclick="cerrarDeleteSuccessModal()" style="padding:12px 28px;background:#5C0F14;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;">Aceptar</button>
+  </div>
+</div>
+
+<!-- Alert Modal para reemplazar alert() y confirm() -->
+<div id="alertModal" class="alert-modal">
+  <div class="alert-modal-box">
+    <h2 id="alertModalTitle" class="alert-modal-title"></h2>
+    <p id="alertModalText" class="alert-modal-text"></p>
+    <div id="alertModalBtns" class="alert-modal-btns"></div>
   </div>
 </div>
 
@@ -658,7 +696,7 @@ function renderProductosConAcciones(list) {
         var checked = document.querySelectorAll('.featured-checkbox:checked');
         if (checked.length > 4) {
           this.checked = false;
-          alert('Máximo 4 productos destacados');
+          showAlert('Máximo 4 productos destacados');
         }
         document.getElementById('featuredCount').textContent = checked.length + ' seleccionados de 4 permitidos';
       };
@@ -675,7 +713,7 @@ function renderProductosConAcciones(list) {
     var selectedIds = Array.from(checkedBoxes).map(function(cb) { return cb.value; });
     
     if (selectedIds.length > 4) {
-      alert('Máximo 4 productos destacados');
+      showAlert('Máximo 4 productos destacados');
       return;
     }
     
@@ -724,7 +762,7 @@ function renderProductosConAcciones(list) {
       return (p.codigo || p.id) === prodId; 
     });
     if (!prod) {
-      alert('Producto no encontrado. ID: ' + prodId);
+      showAlert('Producto no encontrado. ID: ' + prodId);
       return;
     }
     document.getElementById('modalTitle').textContent = 'Editar';
@@ -793,52 +831,35 @@ function renderProductosConAcciones(list) {
   }
   
   function eliminarProductoCard(prodId) {
-    if (!confirm('¿Eliminar este producto?')) return;
     var token = localStorage.getItem(STORE + '_logged');
     var currentCat = localStorage.getItem('adminActiveCategory');
     
-    fetch(API + '/api/productos/' + prodId, {
-      method: 'DELETE',
-      headers: { 'x-store-id': STORE, 'x-admin-password': token }
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.success || data.message) {
-        showToast('Producto eliminado con éxito');
-        // Recargar productos desde el backend y volver a la vista de categoría
-        fetch(API + '/api/productos', {
-          headers: { 'x-store-id': STORE }
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(prods) {
-          productos = prods.filter(function(p) { return p.activo !== false; }).map(function(p) {
-            if (p.codigo) {
-              return {
-                codigo: p.codigo,
-                nombre: p.nombre,
-                precio: p.precio,
-                categoria: p.categoria,
-                descripcion: p.descripcion || '',
-                imagen: p.imagen || '',
-                imagen2: p.imagen2 || '',
-                imagen3: p.imagen3 || '',
-                stock: p.stock || 0,
-                destacadoOrden: p.destacadoOrden || 0
-              };
-            }
-            return p;
+    showConfirm('🗑️ Confirmar eliminación', '¿Eliminar este producto?', function() {
+      fetch(API + '/api/productos/' + prodId, {
+        method: 'DELETE',
+        headers: { 'x-store-id': STORE, 'x-admin-password': token }
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success || data.message) {
+          showToast('Producto eliminado con éxito');
+          fetch(API + '/api/productos', { headers: { 'x-store-id': STORE } })
+          .then(function(res) { return res.json(); })
+          .then(function(prods) {
+            productos = prods.filter(function(p) { return p.activo !== false; }).map(function(p) {
+              if (p.codigo) {
+                return { codigo: p.codigo, nombre: p.nombre, precio: p.precio, categoria: p.categoria, descripcion: p.descripcion || '', imagen: p.imagen || '', imagen2: p.imagen2 || '', imagen3: p.imagen3 || '', stock: p.stock || 0, destacadoOrden: p.destacadoOrden || 0 };
+              }
+              return p;
+            });
+            if (currentCat) { showCategoryPreview(currentCat); }
           });
-          
-          // Volver a la vista de categoría con la estructura nueva
-          if (currentCat) {
-            showCategoryPreview(currentCat);
-          }
-        });
-      } else {
-        showToast('Error: ' + (data.error || 'Error desconocido'));
-      }
-    })
-    .catch(function() { showToast('Error de conexión'); });
+        } else {
+          showToast('Error: ' + (data.error || 'Error desconocido'));
+        }
+      })
+      .catch(function() { showToast('Error de conexión'); });
+    });
   }
   
   function renderCats() {
@@ -1073,13 +1094,13 @@ function renderProductosConAcciones(list) {
       })
       .then(function(res) { return res.json(); })
       .then(function() {
-        alert('Imagen de portada actualizada!');
+        showAlert('Imagen de portada actualizada!');
         // Actualizar la vista
         showCategoryPreview(cat);
       })
       .catch(function(err) {
         console.error('Error guardando portada:', err);
-        alert('Error al guardar. Intenta de nuevo.');
+        showAlert('Error al guardar. Intenta de nuevo.');
       });
   }
   
@@ -1096,7 +1117,7 @@ function renderProductosConAcciones(list) {
     } else {
       // Agregar a destacados (si hay espacio)
       if (currentFeatured.length >= 4) {
-        alert('Ya tienes 4 productos destacados. Quita uno primero.');
+        showAlert('Ya tienes 4 productos destacados. Quita uno primero.');
         return;
       }
       prod.destacadoOrden = currentFeatured.length + 1;
@@ -1154,14 +1175,14 @@ function renderProductosConAcciones(list) {
   
   function abrirEditar() {
     var editBtn = document.getElementById('menuEditBtn');
-    if (!editBtn) { alert('Error: botón no encontrado'); return; }
+    if (!editBtn) { showAlert('Error: botón no encontrado'); return; }
     var prodId = editBtn.dataset.prodId;
-    if (!prodId) { alert('No hay producto seleccionado'); return; }
+    if (!prodId) { showAlert('No hay producto seleccionado'); return; }
     uploadingCount = 0;
     
     var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
     if (!prod || typeof prod !== 'object') { 
-      alert('Producto no encontrado'); 
+      showAlert('Producto no encontrado'); 
       return; 
     }
     
@@ -1288,17 +1309,17 @@ var uploadingCount = 0;
   function guardar() {
     // Validación obligatoria
     var img = document.getElementById('imageUrl').value;
-    if (!img) { alert('Sube al menos una foto'); return; }
+    if (!img) { showAlert('Sube al menos una foto'); return; }
     if (uploadingCount > 0) { 
-      alert('Espera un momento, las fotos aún están subiendo...'); 
+      showAlert('Espera un momento, las fotos aún están subiendo...'); 
       return; 
     }
     var nombre = document.getElementById('nameInput').value.trim();
-    if (!nombre) { alert('Ingresa el nombre'); return; }
+    if (!nombre) { showAlert('Ingresa el nombre'); return; }
     var precio = parseInt(document.getElementById('priceInput').value);
-    if (!precio || isNaN(precio)) { alert('Ingresa el precio'); return; }
+    if (!precio || isNaN(precio)) { showAlert('Ingresa el precio'); return; }
     var cat = document.querySelector('.cat.active input')?.value;
-    if (!cat) { alert('Selecciona una categoría'); return; }
+    if (!cat) { showAlert('Selecciona una categoría'); return; }
     
     var pass = localStorage.getItem(STORE + '_logged');
     var img2 = document.getElementById('imageUrl2')?.value || '';
@@ -1324,26 +1345,26 @@ var uploadingCount = 0;
     .then(function() { 
         mostrarSuccessModal();
       })
-      .catch(function() { alert('Error al guardar'); });
+      .catch(function() { showAlert('Error al guardar'); });
   }
   
   function eliminar() {
     var deleteBtn = document.getElementById('menuDeleteBtn');
-    if (!deleteBtn) { alert('Error: botón no encontrado'); return; }
+    if (!deleteBtn) { showAlert('Error: botón no encontrado'); return; }
     var prodId = deleteBtn.dataset.prodId;
     if (!prodId) { 
       if (productos.length > 0) {
         prodId = productos[0].codigo || productos[0].id;
       }
-      if (!prodId) { alert('No hay producto seleccionado'); return; }
+      if (!prodId) { showAlert('No hay producto seleccionado'); return; }
     }
     var prod = productos.find(function(p) { return (p.codigo || p.id) === prodId; });
     var prodNombre = prod ? (prod.nombre || prod.name || 'este producto') : 'este producto';
-    if (!confirm('¿Eliminar el producto "' + prodNombre + '"?')) return;
-    cerrarMenu();
-    var pass = localStorage.getItem(STORE + '_logged');
-    console.log('Eliminando producto con ID:', prodId);
-    fetch(API + '/api/productos/' + prodId, {
+    showConfirm('🗑️ Confirmar eliminación', '¿Eliminar el producto "' + prodNombre + '"?', function() {
+      cerrarMenu();
+      var pass = localStorage.getItem(STORE + '_logged');
+      console.log('Eliminando producto con ID:', prodId);
+      fetch(API + '/api/productos/' + prodId, {
       method: 'DELETE',
       headers: { 'x-store-id': STORE, 'x-admin-password': pass }
     })
@@ -1392,7 +1413,8 @@ var uploadingCount = 0;
     })
     .catch(function(err) { 
       console.error('Error:', err); 
-      alert('Error al eliminar: ' + err.message); 
+      showAlert('Error al eliminar: ' + err.message); 
+    });
     });
   }
   
@@ -1440,6 +1462,55 @@ var uploadingCount = 0;
   window.seleccionarPortada = seleccionarPortada;
   window.seleccionarDestacado = seleccionarDestacado;
   window.abrirNuevoDesdeCategoria = abrirNuevoDesdeCategoria;
+  window.showAlert = showAlert;
+  window.showConfirm = showConfirm;
+  window.cerrarAlertModal = cerrarAlertModal;
+  
+  // Funciones para mostrar alerts y confirms estilizados
+  function showAlert(titulo, mensaje) {
+    // Si solo pasan un argumento, usarlo como mensaje con título genérico
+    if (!mensaje) {
+      mensaje = titulo;
+      titulo = 'ℹ️ Información';
+    }
+    var modal = document.getElementById('alertModal');
+    var titleEl = document.getElementById('alertModalTitle');
+    var textEl = document.getElementById('alertModalText');
+    var btnsEl = document.getElementById('alertModalBtns');
+    
+    titleEl.textContent = titulo;
+    textEl.textContent = mensaje;
+    btnsEl.innerHTML = '<button class="alert-modal-btn" onclick="cerrarAlertModal()">Aceptar</button>';
+    
+    modal.classList.add('show');
+  }
+  
+  function showConfirm(titulo, mensaje, onConfirm, onCancel) {
+    var modal = document.getElementById('alertModal');
+    var titleEl = document.getElementById('alertModalTitle');
+    var textEl = document.getElementById('alertModalText');
+    var btnsEl = document.getElementById('alertModalBtns');
+    
+    titleEl.textContent = titulo;
+    textEl.textContent = mensaje;
+    btnsEl.innerHTML = '<button class="alert-modal-btn alert-modal-btn-cancel" onclick="cerrarAlertModal(false)">Cancelar</button><button class="alert-modal-btn" onclick="cerrarAlertModal(true)">Confirmar</button>';
+    
+    window._confirmCallback = { onConfirm: onConfirm, onCancel: onCancel };
+    modal.classList.add('show');
+  }
+  
+  window.cerrarAlertModal = function(result) {
+    var modal = document.getElementById('alertModal');
+    modal.classList.remove('show');
+    if (window._confirmCallback) {
+      if (result === true && window._confirmCallback.onConfirm) {
+        window._confirmCallback.onConfirm();
+      } else if (result === false && window._confirmCallback.onCancel) {
+        window._confirmCallback.onCancel();
+      }
+      window._confirmCallback = null;
+    }
+  };
   
   function showToast(msg) {
     var existing = document.getElementById('toast');
