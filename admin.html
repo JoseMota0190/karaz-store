@@ -444,8 +444,16 @@
   }
   
   function renderPortadaPreview(cat) {
-    var portadas = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
-    var portadaImg = portadas[cat];
+    // Leer portada del config del backend (cargado en loadConfig)
+    var portadaImg = null;
+    if (window.CONFIG && window.CONFIG.categories) {
+      window.CONFIG.categories.forEach(function(c) {
+        if (c.id === cat && c.imageUrl) {
+          portadaImg = c.imageUrl;
+        }
+      });
+    }
+    
     var imgEl = document.getElementById('portadaImg');
     var placeholder = document.getElementById('portadaPlaceholder');
     if (portadaImg) {
@@ -995,14 +1003,51 @@
   function seleccionarPortada(id) {
     var prod = productos.find(function(p) { return (p.codigo || p.id) === id; });
     if (!prod) return;
-    // Guardar la portada de la categoría en localStorage
     var cat = localStorage.getItem('adminActiveCategory');
-    var portadas = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
-    portadas[cat] = prod.imagen;
-    localStorage.setItem('categoryPortadas', JSON.stringify(portadas));
-    alert('Imagen de portada actualizada!');
-    // Actualizar la vista
-    showCategoryPreview(cat);
+    var newImageUrl = prod.imagen;
+    
+    // Guardar la portada de la categoría en el backend
+    var configData = { storeId: STORE };
+    
+    // Obtener categorías actuales del config (si existen)
+    fetch(API_URL + '/api/config?store=' + STORE)
+      .then(function(res) { return res.json(); })
+      .then(function(config) {
+        var categories = config.categories || [];
+        // Buscar la categoría y actualizar su imageUrl
+        var catFound = false;
+        categories = categories.map(function(c) {
+          if (c.id === cat) {
+            catFound = true;
+            return { id: c.id, label: c.label || cat, imageUrl: newImageUrl, ctaText: c.ctaText || 'Ver colección →' };
+          }
+          return { id: c.id, label: c.label || c.id, imageUrl: c.imageUrl || '', ctaText: c.ctaText || 'Ver colección →' };
+        });
+        
+        // Si no existe la categoría, agregarla
+        if (!catFound) {
+          categories.push({ id: cat, label: cat, imageUrl: newImageUrl, ctaText: 'Ver colección →' });
+        }
+        
+        configData.categories = categories;
+        
+        // Guardar en backend
+        return fetch(API_URL + '/api/config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-store-id': STORE, 'x-admin-password': localStorage.getItem(STORE + '_adminPass') || '' },
+          body: JSON.stringify(configData)
+        });
+      })
+      .then(function(res) { return res.json(); })
+      .then(function() {
+        alert('Imagen de portada actualizada!');
+        // Actualizar la vista
+        showCategoryPreview(cat);
+      })
+      .catch(function(err) {
+        console.error('Error guardando portada:', err);
+        alert('Error al guardar. Intenta de nuevo.');
+      });
   }
   
   function seleccionarDestacado(id) {

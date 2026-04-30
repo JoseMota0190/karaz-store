@@ -125,6 +125,15 @@ async function loadConfig() {
     if (res.ok) {
       const apiConfig = await res.json();
       CONFIG = { ...defaults, ...apiConfig };
+      
+      // Cargar portadas de categorías desde la config
+      if (CONFIG.categories && CONFIG.categories.length > 0) {
+        CONFIG.categories.forEach(cat => {
+          if (cat.imageUrl) {
+            categoryImages[cat.id] = cat.imageUrl;
+          }
+        });
+      }
     } else {
       console.error(`Store "${STORE_ID}" not found. HTTP ${res.status}`);
     }
@@ -289,21 +298,13 @@ function getCategories() {
 
 function buildCategoryImages() {
   categoryImages = {};
-  // Primero revisar localStorage del admin para portadas guardadas
-  let portadasAdmin = {};
-  try {
-    portadasAdmin = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
-  } catch (e) {
-    portadasAdmin = {};
-  }
-  
+  // Las portadas ya se cargan en loadConfig() desde el backend
+  // Aquí solo usamos los datos ya cargados o fallback a productos
   const cats = getCategories();
   cats.forEach(cat => {
-    // Usar imagen guardada del admin si existe
-    if (portadasAdmin[cat.id]) {
-      categoryImages[cat.id] = portadasAdmin[cat.id];
-    } else {
-      // Fallback: primer producto de la categoría
+    // Ya viene de loadConfig en categoryImages[cat.id]
+    // Si no existe, usar el primer producto como fallback
+    if (!categoryImages[cat.id]) {
       const prods = PRODUCTS.filter(p => p.category === cat.id);
       if (prods.length > 0 && prods[0].image) {
         categoryImages[cat.id] = prods[0].image;
@@ -530,20 +531,13 @@ function getCatLabel(id) {
 }
 
 function initCatCards() {
-  // Actualizar imágenes de las tarjetas con las portadas del admin
-  let portadasAdmin = {};
-  try {
-    portadasAdmin = JSON.parse(localStorage.getItem('categoryPortadas') || '{}');
-  } catch (e) {
-    portadasAdmin = {};
-  }
-  
+  // Actualizar imágenes de las tarjetas con las portadas del backend
   document.querySelectorAll('.cat-card').forEach(card => {
     const catId = card.dataset.cat;
-    // Si hay portada guardada, actualizar la imagen
-    if (portadasAdmin[catId]) {
+    // Usar imagen de portada del backend (cargada en loadConfig)
+    if (categoryImages[catId]) {
       const imgEl = card.querySelector('.cat-card__img');
-      if (imgEl) imgEl.src = portadasAdmin[catId];
+      if (imgEl) imgEl.src = categoryImages[catId];
     }
     card.addEventListener('click', () => {
       openCategory(catId);
