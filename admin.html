@@ -992,14 +992,16 @@
     if (!cat) { alert('Selecciona una categoría'); return; }
     
     var pass = localStorage.getItem(STORE + '_logged');
+    var img2 = document.getElementById('imageUrl2')?.value || '';
+    var img3 = document.getElementById('imageUrl3')?.value || '';
     var data = { 
       nombre: nombre, 
       precio: precio, 
       categoria: cat, 
-      imagen: img,
-      imagen2: document.getElementById('imageUrl2')?.value || '',
-      imagen3: document.getElementById('imageUrl3')?.value || ''
+      imagen: img
     };
+    if (img2) data.imagen2 = img2;
+    if (img3) data.imagen3 = img3;
     if (editando) data.codigo = editando;
     var url = editando ? API + '/api/productos/' + editando : API + '/api/productos';
     var metodo = editando ? 'PUT' : 'POST';
