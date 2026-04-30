@@ -341,8 +341,12 @@
   <div style="background:white;width:90%;max-width:380px;border-radius:16px;padding:32px 24px;text-align:center;border:3px solid #5C0F14;box-shadow:0 8px 32px rgba(92,15,20,0.3);">
     <div style="font-size:3rem;margin-bottom:12px;">🗑️</div>
     <h2 style="font-family:'Limelight',serif;color:#D9BCA3;font-size:1.4rem;margin-bottom:8px;">¡Producto eliminado!</h2>
-    <p style="color:#5C0F14;font-size:0.95rem;margin-bottom:24px;">El producto ha sido eliminado con éxito</p>
-    <button onclick="cerrarDeleteSuccessModal()" style="padding:12px 28px;background:#5C0F14;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;">Aceptar</button>
+    <p style="color:#5C0F14;font-size:0.95rem;margin-bottom:16px;">El producto ha sido eliminado con éxito</p>
+    <p style="color:#5C0F14;font-size:0.9rem;margin-bottom:20px;font-weight:500;">¿Desea eliminar otro producto?</p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button onclick="eliminarOtroProducto()" style="padding:10px 20px;background:#28a745;color:white;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;">Sí, eliminar más</button>
+      <button onclick="cerrarDeleteSuccessModal()" style="padding:10px 20px;background:#dc2626;color:white;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;">No, terminar</button>
+    </div>
   </div>
 </div>
 
@@ -425,9 +429,11 @@ function cerrarAlertModal(result) {
       showProductList(null, 'editar');
     };
     el = document.getElementById('btnEliminar'); if (el) el.onclick = function() { 
-      var cat = localStorage.getItem('adminActiveCategory');
-      // Si no hay categoría seleccionada, mostrar todos los productos
-      showProductList(cat, 'eliminar');
+      if (productos.length === 0) {
+        showAlert('⚠️ Catálogo vacío', 'No hay productos para eliminar');
+        return;
+      }
+      showProductList(null, 'eliminar');
     };
     el = document.getElementById('modalCloseBtn'); if (el) el.onclick = cerrarModal;
     el = document.getElementById('cancelBtn'); if (el) el.onclick = cerrarModal;
@@ -496,7 +502,14 @@ function cerrarAlertModal(result) {
       }
       showProductList(cat, 'editar'); 
     };
-    btnEliminar.onclick = function() { showProductList(cat, 'eliminar'); };
+    btnEliminar.onclick = function() { 
+      var catProducts = productos.filter(function(p) { return (p.categoria || p.category) === cat; });
+      if (catProducts.length === 0) {
+        showAlert('⚠️ Sin productos', 'No hay productos en esta categoría para eliminar');
+        return;
+      }
+      showProductList(cat, 'eliminar'); 
+    };
   }
   
   function renderPortadaPreview(cat) {
@@ -864,7 +877,7 @@ function renderProductosConAcciones(list) {
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.success || data.message) {
-          showToast('Producto eliminado con éxito');
+          mostrarDeleteSuccessModal();
           fetch(API + '/api/productos', { headers: { 'x-store-id': STORE } })
           .then(function(res) { return res.json(); })
           .then(function(prods) {
@@ -1070,18 +1083,6 @@ function renderProductosConAcciones(list) {
         // Cancelar - no hacer nada
       });
       return;
-    }
-    
-    // Si el modo es eliminar, mantener el comportamiento original
-    if (currentMode === 'eliminar') {
-      document.getElementById('menuDeleteBtn').dataset.prodId = id;
-      document.getElementById('menuEditBtn').dataset.prodId = id;
-      var deleteBtn = document.getElementById('menuDeleteBtn');
-      var editBtn = document.getElementById('menuEditBtn');
-      deleteBtn.style.display = 'block';
-      editBtn.style.display = 'none';
-      document.querySelector('#productMenu .close').textContent = 'Cancelar';
-      if (seleccionado) document.getElementById('productMenu').classList.add('show');
     }
   }
   
@@ -1337,6 +1338,17 @@ function renderProductosConAcciones(list) {
     document.getElementById('deleteSuccessModal').style.display = 'none';
     cargarProductos();
     location.reload();
+  }
+  
+  function eliminarOtroProducto() {
+    document.getElementById('deleteSuccessModal').style.display = 'none';
+    var cat = localStorage.getItem('adminActiveCategory');
+    var productsToShow = cat ? productos.filter(function(p) { return (p.categoria || p.category) === cat; }) : productos;
+    if (productsToShow.length > 0) {
+      showProductList(cat, 'eliminar');
+    } else {
+      showAlert('⚠️ Sin productos', 'No hay más productos para eliminar');
+    }
   }
   
   function mostrarDeleteSuccessModal() {
