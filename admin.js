@@ -76,6 +76,9 @@ function mostrarDeleteSuccessModal() {
   var editando = null;
   var seleccionado = null;
   var currentMode = null;
+  var adminPageSize = 20;
+  var adminCurrentPage = 1;
+  var adminCurrentList = [];
 
   var cats = [
     { id: 'anillos', label: '💍 Anillos' },
@@ -420,6 +423,7 @@ function mostrarDeleteSuccessModal() {
       actualizarBotonesDestacados();
     }
     
+    adminCurrentPage = 1;
     renderProductosConAcciones(filtered);
   }
 
@@ -448,10 +452,35 @@ function mostrarDeleteSuccessModal() {
       var precioB = parseInt(b.precio || b.price || 0);
       return precioA - precioB;
     });
+    adminCurrentPage = 1;
     renderProductosConAcciones(filtered);
   }
 
+  function renderPaginacion(totalItems) {
+    var totalPages = Math.ceil(totalItems / adminPageSize);
+    if (totalPages <= 1) return '';
+    var html = '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:12px;padding:20px;">';
+    html += '<button onclick="window.cambiarPaginaAdmin(-1)" style="padding:8px 16px;background:#5C0F14;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;' + (adminCurrentPage === 1 ? 'opacity:0.5;cursor:not-allowed;' : '') + '" ' + (adminCurrentPage === 1 ? 'disabled' : '') + '>&#10094; Anterior</button>';
+    html += '<span style="font-size:0.9rem;color:#5C0F14;font-weight:500;">Página ' + adminCurrentPage + ' de ' + totalPages + '</span>';
+    html += '<button onclick="window.cambiarPaginaAdmin(1)" style="padding:8px 16px;background:#5C0F14;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;' + (adminCurrentPage === totalPages ? 'opacity:0.5;cursor:not-allowed;' : '') + '" ' + (adminCurrentPage === totalPages ? 'disabled' : '') + '>Siguiente &#10095;</button>';
+    html += '</div>';
+    return html;
+  }
+
+  window.cambiarPaginaAdmin = function(dir) {
+    var totalPages = Math.ceil(adminCurrentList.length / adminPageSize);
+    adminCurrentPage += dir;
+    if (adminCurrentPage < 1) adminCurrentPage = 1;
+    if (adminCurrentPage > totalPages) adminCurrentPage = totalPages;
+    renderProductosConAcciones(adminCurrentList);
+  };
+
 function renderProductosConAcciones(list) {
+    adminCurrentList = list;
+    var totalItems = list.length;
+    var start = (adminCurrentPage - 1) * adminPageSize;
+    var end = start + adminPageSize;
+    var paginated = list.slice(start, end);
     var html = '';
     var currentCategory = localStorage.getItem('karaz_admin_category') || '';
     var mode = window.currentAdminMode;
@@ -468,10 +497,10 @@ function renderProductosConAcciones(list) {
       html += '<div style="grid-column:1/-1;padding:12px;background:#FFF5E6;border-radius:10px;margin-bottom:12px;text-align:center;"><span style="color:#5C0F14;font-size:0.9rem;">🔥 Tocá los productos para agregarlos o quitarlos de destacados</span></div>';
     }
 
-    if (list.length === 0) {
+    if (paginated.length === 0) {
       html += '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay productos</div>';
     } else {
-      list.forEach(function(p) {
+      paginated.forEach(function(p) {
         var img = p.imagen || p.image || 'https://placehold.co/200x200/eee/999?text=📷';
         var nombre = p.nombre || p.name || 'Sin nombre';
         var precio = p.precio || p.price || 0;
@@ -514,8 +543,15 @@ function renderProductosConAcciones(list) {
         html += '<div class="card" style="position:relative;' + cursorStyle + (isFeatured && mode === 'destacados' ? 'border:3px solid #D9BCA3;' : '') + '" ' + clickAction + '><img src="' + img + '"><div class="card-info"><div class="card-name">' + nombre + fuegoIcon + '</div><div class="card-precio">$' + precio + '</div></div>' + actionHtml + '</div>';
       });
     }
+    html += renderPaginacion(totalItems);
     document.getElementById('gridDisplay').innerHTML = html;
-    document.getElementById('countDisplay').innerHTML = list.length + ' productos';
+    var countText = totalItems + ' productos';
+    if (totalItems > adminPageSize) {
+      var startCount = (adminCurrentPage - 1) * adminPageSize + 1;
+      var endCount = Math.min(adminCurrentPage * adminPageSize, totalItems);
+      countText = 'Mostrando ' + startCount + '-' + endCount + ' de ' + totalItems + ' productos';
+    }
+    document.getElementById('countDisplay').innerHTML = countText;
 
     // Show/hide featured panel button
     var featuredPanel = document.getElementById('featuredPanel');
@@ -826,35 +862,38 @@ function renderProductosConAcciones(list) {
       var nombreProd = (p.nombre || p.name || '').toLowerCase();
       return !busq || nombreProd.includes(busq);
     });
-    if (currentMode === 'editar' || window.currentAdminMode === 'editar') {
-      renderEditar(filt);
-    } else if (currentMode === 'eliminar' || window.currentAdminMode === 'eliminar') {
-      renderEliminar(filt);
-    } else {
-      renderProductosConAcciones(filt);
-    }
+    adminCurrentPage = 1;
+    renderProductosConAcciones(filt);
   }
 
   function mostrarModoEditar() {
+    window.currentAdminMode = 'editar';
     currentMode = 'editar';
     document.getElementById('logoArea').style.display = 'none';
     document.getElementById('editArea').style.display = 'block';
     document.getElementById('buscarInput').value = '';
-    // Filtrar por categoría activa para no renderizar todos los productos
     var cat = localStorage.getItem('karaz_admin_category');
     var filtrados = cat ? productos.filter(function(p) { return (p.categoria || p.category) === cat; }) : productos;
-    renderEditar(filtrados);
+    filtrados.sort(function(a, b) {
+      return parseInt(a.precio || a.price || 0) - parseInt(b.precio || b.price || 0);
+    });
+    adminCurrentPage = 1;
+    renderProductosConAcciones(filtrados);
   }
 
   function mostrarModoEliminar() {
+    window.currentAdminMode = 'eliminar';
     currentMode = 'eliminar';
     document.getElementById('logoArea').style.display = 'none';
     document.getElementById('editArea').style.display = 'block';
     document.getElementById('buscarInput').value = '';
-    // Filtrar por categoría activa para no renderizar todos los productos
     var cat = localStorage.getItem('karaz_admin_category');
     var filtrados = cat ? productos.filter(function(p) { return (p.categoria || p.category) === cat; }) : productos;
-    renderEliminar(filtrados);
+    filtrados.sort(function(a, b) {
+      return parseInt(a.precio || a.price || 0) - parseInt(b.precio || b.price || 0);
+    });
+    adminCurrentPage = 1;
+    renderProductosConAcciones(filtrados);
   }
 
   function getCatLabel(catId) {
@@ -1395,8 +1434,15 @@ var uploadingCount = 0;
     }
     var nombre = document.getElementById('nameInput').value.trim();
     if (!nombre) { showAlert('📝 Nombre requerido', 'Ingresa el nombre del producto'); return; }
-    var precio = parseInt(document.getElementById('priceInput').value);
-    if (!precio || isNaN(precio)) { showAlert('💰 Precio requerido', 'Ingresa el precio del producto'); return; }
+    var precioRaw = document.getElementById('priceInput').value.trim();
+    if (!precioRaw) { showAlert('💰 Precio requerido', 'Ingresa el precio del producto'); return; }
+    var precioNum = Number(precioRaw);
+    if (isNaN(precioNum) || !isFinite(precioNum) || precioNum < 0) {
+      showAlert('💰 Precio inválido', 'Ingresa solo números (sin letras ni símbolos)'); return;
+    }
+    var precio = parseInt(precioRaw, 10);
+    if (precio < 1) { showAlert('💰 Precio muy bajo', 'El precio mínimo es $1'); return; }
+    if (precio > 999999) { showAlert('💰 Precio muy alto', 'El precio máximo permitido es $999.999'); return; }
     var cat = document.querySelector('.cat.active input')?.value;
     if (!cat) { showAlert('📂 Categoría requerida', 'Selecciona una categoría'); return; }
 
