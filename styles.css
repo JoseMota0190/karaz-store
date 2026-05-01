@@ -593,7 +593,7 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 .catalog-sort-bar {
   display: flex;
   justify-content: flex-end;
-  padding: 0 16px 12px;
+  padding: 0 0 12px;
 }
 
 .product-sort-select {
@@ -2577,38 +2577,45 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 /* ── Header de categoría activa ────────────── */
 .catalog-active-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 28px 14px 20px;
+  gap: 12px;
+  padding: 28px 14px 16px;
   max-width: 960px;
   margin: 0 auto;
-  position: relative;
 }
 
-/* Mobile: mostrar botón volver, título centrado */
+.catalog-active-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Mobile: título arriba, controles debajo */
 @media (max-width: 600px) {
+  .catalog-active-header {
+    padding: 14px 12px 10px;
+    gap: 10px;
+  }
   .catalog-back-btn {
     display: inline-flex !important;
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
     padding: 8px 14px;
     font-size: 12px;
-  }
-  .catalog-active-header {
-    padding: 14px 12px 12px;
     position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
   }
   .catalog-active-title {
     font-size: 1.3rem;
     text-align: center;
-    padding-left: 40px;
+    padding-left: 0;
   }
 }
 
 .catalog-back-btn {
-  position: absolute;
-  left: 14px;
   background: var(--dark);
   border: 2px solid var(--dark);
   border-radius: var(--r-full);
@@ -2642,8 +2649,8 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   font-weight: 400;
   font-style: italic;
   color: var(--teal);
-  flex: 1;
   text-align: center;
+  margin: 0;
 }
 
 .catalog-grid-wrap {

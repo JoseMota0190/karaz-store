@@ -13,7 +13,7 @@
   
   <!-- Favicon: K dorado -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%235a0f14'/><text y='72' x='50' text-anchor='middle' font-family='Limelight,serif' font-size='58' fill='%23D9BCA3'>K</text></svg>">
-  <link rel="stylesheet" href="styles.css?v=41">
+  <link rel="stylesheet" href="styles.css?v=42">
 </head>
 <body>
 
@@ -151,17 +151,19 @@
     <!-- Grid — aparece al seleccionar categoría -->
     <div class="catalog-grid-wrap" id="catalog-grid-wrap" style="display:none">
       <div class="catalog-active-header">
-        <button class="catalog-back-btn" id="catalog-back">← Volver</button>
         <h3 class="catalog-active-title" id="catalog-active-title"></h3>
+        <div class="catalog-active-controls">
+          <button class="catalog-back-btn" id="catalog-back">← Volver</button>
+          <div class="catalog-sort-bar">
+            <select id="product-sort" class="product-sort-select" onchange="changeSort(this.value)">
+              <option value="relevantes">Más relevantes</option>
+              <option value="menor-mayor">Precio: Menor a Mayor</option>
+              <option value="mayor-menor">Precio: Mayor a Menor</option>
+            </select>
+          </div>
+        </div>
       </div>
       <img id="category-header-img" class="category-header-img" style="width:100%;max-height:200px;object-fit:cover;display:none;margin-bottom:16px;border-radius:12px;" alt="">
-      <div class="catalog-sort-bar">
-        <select id="product-sort" class="product-sort-select" onchange="changeSort(this.value)">
-          <option value="relevantes">Más relevantes</option>
-          <option value="menor-mayor">Precio: Menor a Mayor</option>
-          <option value="mayor-menor">Precio: Mayor a Menor</option>
-        </select>
-      </div>
       <div class="products-grid" id="products-grid" role="list" aria-label="Productos"></div>
       <div id="pagination-controls"></div>
     </div>
