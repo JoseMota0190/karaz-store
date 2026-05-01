@@ -213,11 +213,8 @@ function injectConfig() {
     show('hero-phone-link');
   }
 
-  // Categories — skip if already rendered in HTML (SSR optimization)
-  const catCards = $('cat-cards');
-  if (catCards && !catCards.children.length) {
-    renderCategories();
-  }
+  // Categories — always render dynamically from config
+  renderCategories();
 
   // About section — already visible in HTML, just update if config differs
   if (CONFIG.about?.enabled) {
