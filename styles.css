@@ -3039,8 +3039,25 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   height: 100%;
 }
 
-.lightbox__prev { left: 20px; }
-.lightbox__next { right: 20px; }
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+.lightbox__prev,
+.lightbox__next {
+  pointer-events: auto;
+}
+
+.lightbox__prev { left: auto; right: auto; }
+.lightbox__next { left: auto; right: auto; }
 
 @media (max-width: 640px) {
   .lightbox__content {
@@ -3051,6 +3068,16 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   .lightbox__img {
     max-height: 70vh;
     max-width: 92%;
+  }
+  .lightbox__nav {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    justify-content: center;
+    gap: 16px;
+    padding: 0;
   }
   .lightbox__prev,
   .lightbox__next {
