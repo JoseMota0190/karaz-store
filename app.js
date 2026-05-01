@@ -629,14 +629,10 @@ function cloudinaryThumb(url, size = 400) {
 function renderCard(p) {
   const imgSrc = cloudinaryThumb(p.image) || `https://placehold.co/400x400/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
   
-  // Iconos de destacado y reciente
+  // Iconos de destacado
   let badges = '';
   if (p.destacadoOrden > 0) {
     badges += '<span class="product-badge product-badge--fire">🔥 Destacado</span>';
-  }
-  const esReciente = isRecentProduct(p, PRODUCTS);
-  if (esReciente) {
-    badges += '<span class="product-badge product-badge--new">✨ New</span>';
   }
   
   const featuredClass = p.destacadoOrden > 0 ? 'product-card--featured' : '';
