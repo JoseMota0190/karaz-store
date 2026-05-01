@@ -108,6 +108,11 @@ x-admin-password: (password del admin)
 - [x] **Sanitización automática**: endpoint backend para limpiar destacados y portadas inválidas
 - [x] **Optimización de imágenes**: resize automático con Cloudinary (400px, 800px, 1200px)
 - [x] **Admin optimizado**: filtra por categoría para evitar lag con 200+ productos
+- [x] **Validación de precio en admin**: solo números enteros positivos, mínimo $1, máximo $999.999. Rechaza letras, símbolos, decimales y negativos. Decimales se truncan hacia abajo automáticamente.
+- [x] **Paginación en Editar/Eliminar**: 20 productos por página con controles "Anterior / Siguiente". Búsqueda filtra todos los productos de la categoría y luego pagina el resultado.
+- [x] **Flechas lightbox color granate**: fondo crema marcado con sombra pronunciada para mejor visibilidad
+- [x] **Flechas lightbox en móvil**: reposicionadas debajo de la imagen (en vez de a los lados) con forma rectangular para mejor UX en pantallas pequeñas
+- [x] **Header del catálogo reorganizado**: título de categoría en línea superior, botón "Volver" + menú de ordenamiento en línea inferior
 
 ## Schema de Base de Datos
 
