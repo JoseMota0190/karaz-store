@@ -3091,12 +3091,12 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   color: #5C0F14;
   cursor: pointer;
   z-index: 10;
@@ -3104,8 +3104,8 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
   align-items: center;
   justify-content: center;
   transition: all .2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  padding: 6px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+  padding: 8px;
 }
 
 .gallery-nav:hover {
@@ -3114,11 +3114,22 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 400; line-height
 }
 
 .gallery-nav--prev {
-  left: 10px;
+  left: 12px;
 }
 
 .gallery-nav--next {
-  right: 10px;
+  right: 12px;
+}
+
+@media (max-width: 600px) {
+  .gallery-nav {
+    width: 56px;
+    height: 56px;
+    font-size: 1.4rem;
+    padding: 10px;
+  }
+  .gallery-nav--prev { left: 8px; }
+  .gallery-nav--next { right: 8px; }
 }
 
 .image-counter {
