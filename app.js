@@ -818,9 +818,9 @@ const cat = CONFIG.categories?.find(c => c.id === p.category);
   window.currentProductImages = images;
   window.currentImageIndex = 0;
   
-  const mainImg = images[0] || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
+  const mainImg = cloudinaryThumb(images[0], 800) || `https://placehold.co/600x600/D6F2EE/1A8A78?text=${encodeURIComponent(p.name)}`;
   
-  lightboxStore = images.length ? images : [mainImg];
+  lightboxStore = images.length ? images.map(img => cloudinaryThumb(img, 1200)) : [mainImg];
   
   const imageCounter = images.length > 1 
     ? `<div class="image-counter">${window.currentImageIndex + 1}/${images.length}</div>` 
