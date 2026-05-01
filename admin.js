@@ -840,7 +840,10 @@ function renderProductosConAcciones(list) {
     document.getElementById('logoArea').style.display = 'none';
     document.getElementById('editArea').style.display = 'block';
     document.getElementById('buscarInput').value = '';
-    renderEditar(productos);
+    // Filtrar por categoría activa para no renderizar todos los productos
+    var cat = localStorage.getItem('karaz_admin_category');
+    var filtrados = cat ? productos.filter(function(p) { return (p.categoria || p.category) === cat; }) : productos;
+    renderEditar(filtrados);
   }
 
   function mostrarModoEliminar() {
@@ -848,7 +851,10 @@ function renderProductosConAcciones(list) {
     document.getElementById('logoArea').style.display = 'none';
     document.getElementById('editArea').style.display = 'block';
     document.getElementById('buscarInput').value = '';
-    renderEliminar(productos);
+    // Filtrar por categoría activa para no renderizar todos los productos
+    var cat = localStorage.getItem('karaz_admin_category');
+    var filtrados = cat ? productos.filter(function(p) { return (p.categoria || p.category) === cat; }) : productos;
+    renderEliminar(filtrados);
   }
 
   function getCatLabel(catId) {
