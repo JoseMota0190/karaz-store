@@ -133,10 +133,13 @@ async function loadConfig() {
       const apiConfig = await res.json();
       CONFIG = { ...defaults, ...apiConfig };
       
+      // Limpiar portadas viejas antes de cargar las nuevas
+      categoryImages = {};
+      
       // Cargar portadas de categorías desde la config
       if (CONFIG.categories && CONFIG.categories.length > 0) {
         CONFIG.categories.forEach(cat => {
-          if (cat.imageUrl) {
+          if (cat.imageUrl && cat.imageUrl.trim() !== '') {
             categoryImages[cat.id] = cat.imageUrl;
           }
         });
