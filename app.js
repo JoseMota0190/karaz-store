@@ -352,10 +352,15 @@ function isRecentProduct(product, allProducts) {
   const categoryProducts = allProducts.filter(p => 
     p.category === product.category && !p.destacadoOrden
   );
+  console.log('isRecentProduct:', product.name, 'category:', product.category, 'total:', categoryProducts.length, 'creadoAt:', product.creadoAt);
   const sorted = categoryProducts.sort((a, b) => 
     new Date(b.creadoAt || 0) - new Date(a.creadoAt || 0)
   );
-  return sorted.slice(0, 4).some(p => p.id === product.id);
+  const top4 = sorted.slice(0, 4);
+  console.log('Top 4 recientes:', top4.map(p => ({ name: p.name, creadoAt: p.creadoAt })));
+  const isRecent = top4.some(p => p.id === product.id);
+  console.log('Is recent?', isRecent);
+  return isRecent;
 }
 
 function changeSort(value) {
