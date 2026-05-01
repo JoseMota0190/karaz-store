@@ -985,6 +985,15 @@ function renderProductosConAcciones(list) {
       })
       .then(function(res) { return res.json(); })
       .then(function() {
+        // Actualizar CONFIG en memoria para que renderPortadaPreview vea la nueva imagen
+        if (!window.CONFIG) window.CONFIG = {};
+        if (!window.CONFIG.categories) window.CONFIG.categories = [];
+        var catIdx = window.CONFIG.categories.findIndex(function(c) { return c.id === cat; });
+        if (catIdx >= 0) {
+          window.CONFIG.categories[catIdx].imageUrl = newImageUrl;
+        } else {
+          window.CONFIG.categories.push({ id: cat, label: cat, imageUrl: newImageUrl, ctaText: 'Ver colección →' });
+        }
         showAlert('Imagen de portada actualizada!');
         // Actualizar la vista
         showCategoryPreview(cat);
